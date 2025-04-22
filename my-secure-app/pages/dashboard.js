@@ -1,6 +1,7 @@
 import AuthenticatedLayout from "../src/layout/AuthenticatedLayout";
 import { useEffect, useState } from "react";
 
+
 const DashboardPage = () => {
   const [users, setUsers] = useState([]);
 
