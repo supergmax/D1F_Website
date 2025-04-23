@@ -1,12 +1,15 @@
+'use client';
+
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { TrendingUp } from 'lucide-react';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import Checkbox from '../components/Checkbox';
-import ThemeToggle from '../components/ThemeToggle';
 
 export default function Register() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -17,36 +20,24 @@ export default function Register() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
 
-    if (!formData.username) {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
+    if (!formData.username || formData.username.length < 3) {
       newErrors.username = 'Username must be at least 3 characters';
     }
 
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
 
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
+    if (!formData.password || formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters';
     }
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    if (!formData.invitationLink) {
-      newErrors.invitationLink = 'Invitation link is required';
     }
 
     if (!formData.acceptTerms) {
@@ -56,16 +47,34 @@ export default function Register() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      console.log('Form submitted:', formData);
+      try {
+        const res = await fetch('http://localhost:1337/api/auth/local/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: formData.username,
+            email: formData.email,
+            password: formData.password
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.jwt) {
+          localStorage.setItem('token', data.jwt);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          router.push('/dashboard');
+        } else {
+          setErrors({ general: data.error?.message || 'Registration failed' });
+        }
+      } catch {
+        setErrors({ general: 'Server error' });
+      }
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="fixed top-4 right-4">
-
-      </div>
-      
       <div className="flex-1 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
@@ -122,15 +131,6 @@ export default function Register() {
                 autoComplete="new-password"
               />
 
-              <Input
-                label="Invitation Link"
-                type="text"
-                value={formData.invitationLink}
-                onChange={(e) => setFormData({ ...formData, invitationLink: e.target.value })}
-                error={errors.invitationLink}
-                placeholder="Enter your invitation link"
-              />
-
               <Checkbox
                 label="I accept the terms and conditions"
                 checked={formData.acceptTerms}
@@ -138,6 +138,10 @@ export default function Register() {
                 error={errors.acceptTerms}
               />
             </div>
+
+            {errors.general && (
+              <p className="text-red-500 text-sm text-center">{errors.general}</p>
+            )}
 
             <Button type="submit" className="w-full">
               Create Account
