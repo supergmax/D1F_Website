@@ -7,8 +7,6 @@ import Header from '../src/bolt/components/Header';
 import Hero from '../src/bolt/components/Hero';
 import Statistics from '../src/bolt/components/Statistics';
 import HowItWorks from '../src/bolt/components/HowItWorks';
-import Partners from '../src/bolt/components/Partners';
-import Team from '../src/bolt/components/Team';
 import Footer from '../src/bolt/components/Footer';
 
 
@@ -25,8 +23,6 @@ export default function LandingPage() {
               <Hero />
               <Statistics />
               <HowItWorks />
-              <Partners />
-              <Team />
             </main>
             <Footer />
           </div>
