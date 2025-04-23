@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Head from "next/head";
 import { ThemeProvider } from '../src/bolt/context/ThemeContext';
@@ -8,8 +10,7 @@ import HowItWorks from '../src/bolt/components/HowItWorks';
 import Partners from '../src/bolt/components/Partners';
 import Team from '../src/bolt/components/Team';
 import Footer from '../src/bolt/components/Footer';
-import Login from '../src/bolt/pages/Login';
-import Register from '../src/bolt/pages/Register';
+
 
 export default function LandingPage() {
     return (
