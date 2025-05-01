@@ -1,0 +1,5 @@
+
+---
+
+Tu peux coller ce fichier à la racine de ton dépôt.  
+Besoin d’un fichier `.env.example` ou d’un `supabaseClient.ts` TypeScript prêt à connecter le front Next.js à cette base ?
