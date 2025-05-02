@@ -1,16 +1,19 @@
 #!/bin/bash
 
-echo "📦 Installation des dépendances..."
+set -e
+set -x
+
+echo " Installation des dépendances..."
 npm install
 
-echo "🔐 Connexion Supabase..."
+echo " Connexion Supabase..."
 supabase login
 
-echo "🔗 Liaison au projet cloud..."
+echo " Liaison au projet cloud..."
 supabase link --project-ref zwxhkwgymrmupgnhaiii
 
-echo "🧱 Déploiement de la base..."
+echo " Déploiement de la base..."
 npm run db:init
 
-echo "🚀 Lancement du projet..."
+echo " Lancement du projet..."
 npm run dev
