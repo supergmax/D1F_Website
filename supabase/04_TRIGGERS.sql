@@ -4,6 +4,72 @@
 -- Description : Triggers automatiques pour cohérence métier
 -- =====================================================
 
+-- Fonction d'insertion du profil lors de la création d'un utilisateur auth
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (
+    id,
+    first_name,
+    last_name,
+    address,
+    billing_address,
+    country,
+    language,
+    affiliate_id,
+    godfather_id,
+    token_balance,
+    role,
+    photo_url,
+    corp_id,
+    error_location,
+    note,
+    label,
+    created_at,
+    updated_at
+  )
+  VALUES (
+    NEW.id,
+    NEW.raw_user_meta_data ->> 'first_name',
+    NEW.raw_user_meta_data ->> 'last_name',
+    NEW.raw_user_meta_data ->> 'address',
+    NEW.raw_user_meta_data ->> 'billing_address',
+    NEW.raw_user_meta_data ->> 'country',
+    COALESCE(NEW.raw_user_meta_data ->> 'language', 'fr'),
+    NEW.raw_user_meta_data ->> 'affiliate_id',
+    NEW.raw_user_meta_data ->> 'godfather_id',
+    COALESCE((NEW.raw_user_meta_data ->> 'token_balance')::INT, 0),
+    COALESCE((NEW.raw_user_meta_data ->> 'role')::role_enum, 'user'),
+    NEW.raw_user_meta_data ->> 'photo_url',
+    NULL,
+    NULL,
+    NULL,
+    'none',
+    NOW(),
+    NOW()
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Déclencheur sur insertion dans auth.users
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+COMMENT ON FUNCTION public.handle_new_user IS 'Crée automatiquement un profil dans public.profiles depuis raw_user_meta_data.';
+COMMENT ON TRIGGER on_auth_user_created ON auth.users IS 'Déclenché après création d’un utilisateur dans auth.users.';
+
+
+-- Création du trigger
+CREATE TRIGGER update_profiles_updated_at
+BEFORE UPDATE ON public.profiles
+FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+CREATE TRIGGER update_corporations_updated_at
+BEFORE UPDATE ON public.corporations
+FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
 -- =====================================================
 -- TRIGGER : Génération d’un affiliate_id unique
 -- =====================================================

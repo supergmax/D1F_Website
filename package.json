@@ -9,7 +9,7 @@
         "lint": "next lint",
         "format": "prettier --write .",
         "init": "npm install && npm run db:start",
-        "reset": "npm run db:reset && npm run db:init && npm run clean && npm install && npm run dev",
+        "reset": "npm run db:reset && npm run clean && npm install && npm run dev",
         "softreset": "npm run clean && npm install && npm run dev",
         "clean": "node cleanup.js",
         "db:init": "./init-db.sh",
@@ -17,7 +17,7 @@
         "db:start": "supabase start",
         "db:stop": "supabase stop",
         "db:push": "supabase db push",
-        "db:reset": "supabase db reset",
+        "db:reset": "npm run db:stop && npm run db:start",
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
