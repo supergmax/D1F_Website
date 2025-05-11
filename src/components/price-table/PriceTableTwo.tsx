@@ -1,29 +1,30 @@
 import React from "react";
 import { CheckLineIcon, CloseLineIcon } from "../../icons";
+import TokenInModal from "../example/ModalExample/TokenInModal"
 
 const personalPack = [
-  { name: "5 website", included: true },
-  { name: "500 MB Storage", included: true },
-  { name: "Unlimited Sub-Domain", included: true },
-  { name: "3 Custom Domain", included: true },
-  { name: "Free SSL Certificate", included: false },
-  { name: "Unlimited Traffic", included: false },
+  { name: "unlock instantly", included: true },
+  // { name: "500 MB Storage", included: true },
+  // { name: "Unlimited Sub-Domain", included: true },
+  // { name: "3 Custom Domain", included: true },
+  // { name: "Free SSL Certificate", included: false },
+  // { name: "Unlimited Traffic", included: false },
 ];
 const professionalPack = [
-  { name: "10 website", included: true },
-  { name: "1GB Storage", included: true },
-  { name: "Unlimited Sub-Domain", included: true },
-  { name: "5 Custom Domain", included: true },
-  { name: "Free SSL Certificate", included: true },
-  { name: "Unlimited Traffic", included: false },
+  { name: "will be activate next month", included: true },
+  // { name: "1GB Storage", included: true },
+  // { name: "Unlimited Sub-Domain", included: true },
+  // { name: "5 Custom Domain", included: true },
+  // { name: "Free SSL Certificate", included: true },
+  // { name: "Unlimited Traffic", included: false },
 ];
 const enterprisePack = [
-  { name: "15 website", included: true },
-  { name: "10GB Storage", included: true },
-  { name: "Unlimited Sub-Domain", included: true },
-  { name: "10 Custom Domain", included: true },
-  { name: "Free SSL Certificate", included: true },
-  { name: "Unlimited Traffic", included: true },
+  { name: "will be activate next month", included: true },
+  // { name: "10GB Storage", included: true },
+  // { name: "Unlimited Sub-Domain", included: true },
+  // { name: "10 Custom Domain", included: true },
+  // { name: "Free SSL Certificate", included: true },
+  // { name: "Unlimited Traffic", included: true },
 ];
 
 export default function PriceTableTwo() {
@@ -33,7 +34,7 @@ export default function PriceTableTwo() {
       <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] xl:p-8">
         <div className="flex items-start justify-between -mb-4">
           <span className="block font-semibold text-gray-800 text-theme-xl dark:text-white/90">
-            Personal
+            Buy WithUS Token
           </span>
 
           <span className="flex h-[56px] w-[56px] items-center justify-center rounded-[10.5px] bg-brand-50 text-brand-500">
@@ -57,16 +58,12 @@ export default function PriceTableTwo() {
 
         <div className="flex items-end">
           <h2 className="font-bold text-gray-800 text-title-md dark:text-white/90">
-            $59.00
+            min 50$ = 50WT 
           </h2>
-
-          <span className="inline-block mb-1 text-sm text-gray-500 dark:text-gray-400">
-            / Lifetime
-          </span>
         </div>
 
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          For solo designers & freelancers
+          add token to your balance
         </p>
 
         <div className="w-full h-px my-6 bg-gray-200 dark:bg-gray-800"></div>
@@ -91,16 +88,17 @@ export default function PriceTableTwo() {
           ))}
         </ul>
 
-        <button className="flex w-full items-center justify-center rounded-lg bg-gray-800 p-3.5 text-sm font-medium text-white shadow-theme-xs transition-colors hover:bg-brand-500 dark:bg-white/10">
-          Choose Starter
-        </button>
+        
+          <TokenInModal></TokenInModal>
+        
+        
       </div>
 
       {/* <!-- Pricing item --> */}
       <div className="rounded-2xl border-2 border-brand-500 bg-white p-6 dark:border-brand-500 dark:bg-white/[0.03] xl:p-8">
         <div className="flex items-start justify-between -mb-4">
           <span className="block font-semibold text-gray-800 text-theme-xl dark:text-white/90">
-            Professional
+            With US 3k Challenge
           </span>
 
           <span className="flex h-[56px] w-[56px] items-center justify-center rounded-[10.5px] bg-brand-50 text-brand-500">
@@ -124,16 +122,12 @@ export default function PriceTableTwo() {
 
         <div className="flex items-end">
           <h2 className="font-bold text-gray-800 text-title-md dark:text-white/90">
-            $199.00
+            3000 WT
           </h2>
-
-          <span className="inline-block mb-1 text-sm text-gray-500 dark:text-gray-400">
-            / Lifetime
-          </span>
         </div>
 
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          For working on commercial projects
+          unlock a new challenge
         </p>
 
         <div className="w-full h-px my-6 bg-white/20"></div>
@@ -159,7 +153,7 @@ export default function PriceTableTwo() {
         </ul>
 
         <button className="flex w-full items-center justify-center rounded-lg bg-brand-500 p-3.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600">
-          Choose This Plan
+          GET A CHALLENGE
         </button>
       </div>
 
@@ -167,7 +161,7 @@ export default function PriceTableTwo() {
       <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] xl:p-8">
         <div className="flex items-start justify-between -mb-4">
           <span className="block font-semibold text-gray-800 text-theme-xl dark:text-white/90">
-            Enterprise
+            Safety Mattress
           </span>
 
           <span className="flex h-[56px] w-[56px] items-center justify-center rounded-[10.5px] bg-brand-50 text-brand-500">
@@ -191,16 +185,12 @@ export default function PriceTableTwo() {
 
         <div className="flex items-end">
           <h2 className="font-bold text-gray-800 text-title-md dark:text-white/90">
-            $599.00
+            2500 WT
           </h2>
-
-          <span className="inline-block mb-1 text-sm text-gray-500 dark:text-gray-400">
-            / Lifetime
-          </span>
         </div>
 
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          For teams larger than 5 members
+          Be Safer on your challenge
         </p>
 
         <div className="w-full h-px my-6 bg-gray-200 dark:bg-gray-800"></div>
@@ -228,7 +218,7 @@ export default function PriceTableTwo() {
         </ul>
 
         <button className="flex w-full items-center justify-center rounded-lg bg-gray-800 p-3.5 text-sm font-medium text-white shadow-theme-xs transition-colors hover:bg-brand-500 dark:bg-white/10">
-          Choose This Plan
+          Mattress for your Challenge
         </button>
       </div>
     </div>
