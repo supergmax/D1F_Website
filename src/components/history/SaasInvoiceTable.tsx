@@ -1,5 +1,5 @@
 interface HistoryRow {
-  id?: string; // si jamais tu ajoutes un ID plus tard
+  id?: string; // si besoin pour plus tard
   month: string;
   total_gain: number;
   total_loss: number;
@@ -36,18 +36,16 @@ export default function SaasInvoiceTable({ data, loading }: InvoiceProps) {
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
             {data.map((row, index) => {
-              const net = (row.total_gain || 0) - (row.total_loss || 0);
+              const net = row.total_gain - row.total_loss;
               const status =
                 net > 0 ? "Gain" : net < 0 ? "Perte" : "Stable";
 
               return (
                 <tr key={index}>
                   <td className="px-6 py-4">{row.month}</td>
-                  <td className="px-6 py-4 text-green-600">{row.total_gain}</td>
-                  <td className="px-6 py-4 text-red-600">{row.total_loss}</td>
-                  <td className="px-6 py-4 font-medium">
-                    {row.token_balance_snapshot}
-                  </td>
+                  <td className="px-6 py-4 text-green-600">{row.total_gain.toFixed(2)} €</td>
+                  <td className="px-6 py-4 text-red-600">{row.total_loss.toFixed(2)} €</td>
+                  <td className="px-6 py-4 font-medium">{row.token_balance_snapshot}</td>
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${

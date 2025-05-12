@@ -111,9 +111,10 @@ export default function SignInForm() {
               </p>
             )}
 
-            <Button type="submit" className="w-full" size="sm" onClick={handleLogin}>
+            <Button type="submit" className="w-full" size="sm">
               Se connecter
             </Button>
+
 
             <div className="mt-5 text-center">
               <p className="text-sm text-gray-700 dark:text-gray-400">

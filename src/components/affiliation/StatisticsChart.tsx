@@ -1,49 +1,18 @@
 "use client";
+
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
 import { ApexOptions } from "apexcharts";
-import { supabase } from "@/lib/supabaseClient";
 import ChartTab from "../common/ChartTab";
 
-// Chargement dynamique du graphique
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-export default function StatisticsChart() {
-  const [series, setSeries] = useState([
-    {
-      name: "Affiliés",
-      data: [],
-    },
-  ]);
-  const [categories, setCategories] = useState<string[]>([]);
+interface StatisticsChartProps {
+  data: { date: string; count: number }[];
+}
 
-  useEffect(() => {
-    const fetchAffiliationsStats = async () => {
-      const { data, error } = await supabase
-        .from("affiliations")
-        .select("created_at");
-
-      if (error) {
-        console.error("Erreur récupération affiliations :", error);
-        return;
-      }
-
-      const countsByDay: Record<string, number> = {};
-
-      data?.forEach((entry) => {
-        const day = new Date(entry.created_at).toISOString().slice(0, 10); // format YYYY-MM-DD
-        countsByDay[day] = (countsByDay[day] || 0) + 1;
-      });
-
-      const sortedDays = Object.keys(countsByDay).sort(); // tri chronologique
-      const counts = sortedDays.map((day) => countsByDay[day]);
-
-      setCategories(sortedDays);
-      setSeries([{ name: "Affiliés / jour", data: counts }]);
-    };
-
-    fetchAffiliationsStats();
-  }, []);
+export default function StatisticsChart({ data }: StatisticsChartProps) {
+  const categories = data.map((entry) => entry.date);
+  const counts = data.map((entry) => entry.count);
 
   const options: ApexOptions = {
     legend: { show: false },
@@ -110,7 +79,12 @@ export default function StatisticsChart() {
 
       <div className="max-w-full overflow-x-auto custom-scrollbar">
         <div className="min-w-[1000px] xl:min-w-full">
-          <ReactApexChart options={options} series={series} type="area" height={310} />
+          <ReactApexChart
+            options={options}
+            series={[{ name: "Affiliés / jour", data: counts }]}
+            type="area"
+            height={310}
+          />
         </div>
       </div>
     </div>

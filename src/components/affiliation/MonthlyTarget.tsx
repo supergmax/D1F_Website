@@ -1,47 +1,23 @@
 "use client";
-import { useEffect, useState } from "react";
+
 import dynamic from "next/dynamic";
+import { useState } from "react";
 import { ApexOptions } from "apexcharts";
-import { supabase } from "@/lib/supabaseClient";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { MoreDotIcon } from "@/icons";
 
-// Graphique chargé dynamiquement
+// Chargement du graphique en client
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-export default function MonthlyTarget() {
-  const [series, setSeries] = useState([0]);
-  const [isOpen, setIsOpen] = useState(false);
+interface MonthlyTargetProps {
+  percent: number;
+}
 
+export default function MonthlyTarget({ percent }: MonthlyTargetProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const toggleDropdown = () => setIsOpen(!isOpen);
   const closeDropdown = () => setIsOpen(false);
-
-  useEffect(() => {
-    const fetchAffiliationLevel2 = async () => {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-
-      if (userError || !user) return;
-
-      const { data: allAff, error: affErr } = await supabase
-        .from("affiliations")
-        .select("id, level")
-        .eq("client_id", user.id);
-
-      if (affErr) return console.error(affErr);
-
-      const total = allAff.length;
-      const level2 = allAff.filter((a) => a.level === 2).length;
-      const percent = total > 0 ? (level2 / total) * 100 : 0;
-
-      setSeries([parseFloat(percent.toFixed(2))]);
-    };
-
-    fetchAffiliationLevel2();
-  }, []);
 
   const options: ApexOptions = {
     colors: ["#465FFF"],
@@ -95,22 +71,23 @@ export default function MonthlyTarget() {
               <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
             </button>
             <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
-              <DropdownItem onItemClick={closeDropdown} className="hover:text-brand-500">
-                View More
-              </DropdownItem>
-              <DropdownItem onItemClick={closeDropdown} className="hover:text-red-500">
-                Delete
-              </DropdownItem>
+              <DropdownItem onItemClick={closeDropdown}>View More</DropdownItem>
+              <DropdownItem onItemClick={closeDropdown}>Delete</DropdownItem>
             </Dropdown>
           </div>
         </div>
 
         <div className="relative">
           <div className="max-h-[330px]" id="chartDarkStyle">
-            <ReactApexChart options={options} series={series} type="radialBar" height={330} />
+            <ReactApexChart
+              options={options}
+              series={[percent]}
+              type="radialBar"
+              height={330}
+            />
           </div>
           <span className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-[95%] rounded-full bg-success-50 px-3 py-1 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
-            +{series[0].toFixed(0)}%
+            +{Math.round(percent)}%
           </span>
         </div>
         <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">

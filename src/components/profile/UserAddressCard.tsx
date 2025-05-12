@@ -1,67 +1,35 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useModal } from "../../hooks/useModal";
-import { supabase } from "@/lib/supabaseClient";
-import { Modal } from "../ui/modal";
-import Button from "../ui/button/Button";
-import Input from "../form/input/InputField";
-import Label from "../form/Label";
+'use client';
 
-interface AddressFields {
+import React, { useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { useModal } from '@/hooks/useModal';
+import { Modal } from '@/components/ui/modal';
+import Button from '@/components/ui/button/Button';
+import Input from '@/components/form/input/InputField';
+import Label from '@/components/form/Label';
+
+interface UserAddressCardProps {
+  id: string;
   country: string;
-  city_state: string;
 }
 
-export default function UserAddressCard() {
+export default function UserAddressCard({ id, country }: UserAddressCardProps) {
   const { isOpen, openModal, closeModal } = useModal();
 
-  const [profileId, setProfileId] = useState<string | null>(null);
-  const [fields, setFields] = useState<AddressFields>({
-    country: "",
-    city_state: "",
-  });
+  const [fields, setFields] = useState({ country });
 
-  const handleInputChange = (field: keyof AddressFields, value: string) => {
-    setFields((prev) => ({ ...prev, [field]: value }));
+  const handleInputChange = (value: string) => {
+    setFields({ country: value });
   };
 
-  useEffect(() => {
-    async function fetchAddress() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const user = session?.user;
-      if (!user) return;
-
-      setProfileId(user.id);
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("country")
-        .eq("id", user.id)
-        .single();
-
-      if (data && !error) {
-        setFields({
-          country: data.country || "",
-          city_state: data.city_state || "",
-        });
-      }
-    }
-
-    fetchAddress();
-  }, [supabase]);
-
   const handleSave = async () => {
-    if (!profileId) return;
-
     const { error } = await supabase
-      .from("profiles")
-      .update(fields)
-      .eq("id", profileId);
+      .from('profiles')
+      .update({ country: fields.country })
+      .eq('id', id);
 
     if (error) {
-      console.error("Erreur lors de la sauvegarde :", error.message);
+      console.error('Erreur lors de la mise à jour de l’adresse :', error.message);
     } else {
       closeModal();
     }
@@ -79,11 +47,9 @@ export default function UserAddressCard() {
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
               <div>
                 <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">Country</p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">{fields.country}</p>
-              </div>
-              <div>
-                <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">City/State</p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">{fields.city_state}</p>
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                  {fields.country || 'Non renseigné'}
+                </p>
               </div>
             </div>
           </div>
@@ -104,7 +70,7 @@ export default function UserAddressCard() {
               Edit Address
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
+              Update your country to keep your profile up-to-date.
             </p>
           </div>
           <form className="flex flex-col">
@@ -115,15 +81,7 @@ export default function UserAddressCard() {
                   <Input
                     type="text"
                     value={fields.country}
-                    onChange={(e) => handleInputChange("country", e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label>City/State</Label>
-                  <Input
-                    type="text"
-                    value={fields.city_state}
-                    onChange={(e) => handleInputChange("city_state", e.target.value)}
+                    onChange={(e) => handleInputChange(e.target.value)}
                   />
                 </div>
               </div>

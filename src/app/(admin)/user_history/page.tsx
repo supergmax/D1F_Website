@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { supabase } from "@/lib/supabaseClient";
-import SaasInvoiceTable2 from "@/components/history/SaasInvoiceTable";
-import SaasMetrics from "@/components/history/SaasMetrics";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import SaasInvoiceTable from '@/components/history/SaasInvoiceTable';
+import SaasMetrics from '@/components/history/SaasMetrics';
 
 interface HistoryRow {
   month: string;
-  total_gain: number | string;
-  total_loss: number | string;
-  token_balance_snapshot: number | string;
+  total_gain: number;
+  total_loss: number;
+  token_balance_snapshot: number;
 }
 
 export default function UserHistoryPage() {
@@ -47,30 +47,24 @@ export default function UserHistoryPage() {
         setError("Erreur lors de la récupération de l'historique.");
         console.error(historyError);
       } else if (historyData) {
-        setData(historyData);
+        const parsed = historyData.map((row) => ({
+          month: row.month,
+          total_gain: Number(row.total_gain) || 0,
+          total_loss: Number(row.total_loss) || 0,
+          token_balance_snapshot: Number(row.token_balance_snapshot) || 0,
+        }));
+        setData(parsed);
       }
 
       setLoading(false);
     }
 
     fetchHistory();
-  }, [supabase]);
+  }, []);
 
-  // ✅ Convertir les valeurs en nombre pour éviter les NaN
-  const totalGain = data.reduce(
-    (acc, row) => acc + (Number(row.total_gain) || 0),
-    0
-  );
-
-  const totalLoss = data.reduce(
-    (acc, row) => acc + (Number(row.total_loss) || 0),
-    0
-  );
-
-  const averageProfit =
-    data.length > 0
-      ? Math.round((totalGain - totalLoss) / data.length)
-      : 0;
+  const totalGain = data.reduce((acc, row) => acc + row.total_gain, 0);
+  const totalLoss = data.reduce((acc, row) => acc + row.total_loss, 0);
+  const averageProfit = data.length > 0 ? Math.round((totalGain - totalLoss) / data.length) : 0;
 
   return (
     <div className="space-y-6 w-full">
@@ -86,7 +80,7 @@ export default function UserHistoryPage() {
       />
 
       <div className="w-full">
-        <SaasInvoiceTable2 data={data} loading={loading} />
+        <SaasInvoiceTable data={data} loading={loading} />
       </div>
     </div>
   );

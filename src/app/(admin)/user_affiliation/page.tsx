@@ -11,51 +11,64 @@ export default function Ecommerce() {
   const [lvl1, setLvl1] = useState(0);
   const [lvl2, setLvl2] = useState(0);
   const [total, setTotal] = useState(0);
-  const [dailyData, setDailyData] = useState<{ date: string, count: number }[]>([]);
+  const [monthlyCounts, setMonthlyCounts] = useState<number[]>(Array(12).fill(0));
+  const [dailyData, setDailyData] = useState<{ date: string; count: number }[]>([]);
 
   useEffect(() => {
     const fetchAffiliations = async () => {
-      const user = await supabase.auth.getUser();
-      const profileId = user.data.user?.id;
+      const { data: userData } = await supabase.auth.getUser();
+      const profileId = userData?.user?.id;
       if (!profileId) return;
 
       // Level 1
       const { count: lvl1Count } = await supabase
-        .from('affiliations')
-        .select('*', { count: 'exact', head: true })
-        .eq('profile_id', profileId)
-        .eq('level', 1);
+        .from("affiliations")
+        .select("*", { count: "exact", head: true })
+        .eq("profile_id", profileId)
+        .eq("level", 1);
 
       // Level 2
       const { count: lvl2Count } = await supabase
-        .from('affiliations')
-        .select('*', { count: 'exact', head: true })
-        .eq('profile_id', profileId)
-        .eq('level', 2);
+        .from("affiliations")
+        .select("*", { count: "exact", head: true })
+        .eq("profile_id", profileId)
+        .eq("level", 2);
 
       // Total
       const { count: totalCount } = await supabase
-        .from('affiliations')
-        .select('*', { count: 'exact', head: true })
-        .eq('profile_id', profileId);
+        .from("affiliations")
+        .select("*", { count: "exact", head: true })
+        .eq("profile_id", profileId);
 
-      // Affiliés par jour
-      const { data: rawData, error } = await supabase
-        .from('affiliations')
-        .select('created_at')
-        .eq('profile_id', profileId);
+      // Affiliés mensuels
+      const currentYear = new Date().getFullYear();
+      const { data: rawData } = await supabase
+        .from("affiliations")
+        .select("created_at")
+        .eq("profile_id", profileId)
+        .gte("created_at", `${currentYear}-01-01`)
+        .lte("created_at", `${currentYear}-12-31`);
 
+      const monthlyCountsArr = Array(12).fill(0);
+      rawData?.forEach((row) => {
+        const month = new Date(row.created_at).getMonth(); // 0 = Janvier
+        monthlyCountsArr[month]++;
+      });
+
+      // Affiliés quotidiens
       const grouped: { [key: string]: number } = {};
       rawData?.forEach((row) => {
-        const date = new Date(row.created_at).toISOString().split('T')[0];
+        const date = new Date(row.created_at).toISOString().split("T")[0];
         grouped[date] = (grouped[date] || 0) + 1;
       });
 
       const formatted = Object.entries(grouped).map(([date, count]) => ({ date, count }));
 
+      // Set state
       setLvl1(lvl1Count || 0);
       setLvl2(lvl2Count || 0);
       setTotal(totalCount || 0);
+      setMonthlyCounts(monthlyCountsArr);
       setDailyData(formatted);
     };
 
@@ -66,11 +79,11 @@ export default function Ecommerce() {
     <div className="grid grid-cols-12 gap-4 md:gap-6">
       <div className="col-span-12 space-y-6 xl:col-span-7">
         <EcommerceMetrics count={lvl1} />
-        <MonthlySalesChart total={total} />
+        <MonthlySalesChart monthlyCounts={monthlyCounts} />
       </div>
 
       <div className="col-span-12 xl:col-span-5">
-        <MonthlyTarget count={lvl2} />
+        <MonthlyTarget percent={lvl2} />
       </div>
 
       <div className="col-span-12">

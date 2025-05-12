@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -10,16 +10,20 @@ import SaasMetrics from "@/components/profile/SaasMetrics";
 
 interface UserProfile {
   id: string;
-  username: string;
-  full_name?: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  avatar_url?: string;
-  bio?: string;
-  address?: string;
+  bio: string | null;
+  avatar_url: string | null;
+  facebook_url: string | null;
+  x_url: string | null;
+  linkedin_url: string | null;
+  instagram_url: string | null;
+  country: string | null;
+  address: string | null;
+  affiliate_id: string;
+  godfather_id: string | null;
   created_at: string;
-  affiliate_id?: string;
-  godfather_id?: string;
-  // ajoute ici d'autres champs selon ta table public.profiles
 }
 
 export default function Profile() {
@@ -45,7 +49,7 @@ export default function Profile() {
         .single();
 
       if (!error && data) {
-        setProfile(data);
+        setProfile(data as UserProfile);
       }
 
       setLoading(false);
@@ -55,27 +59,56 @@ export default function Profile() {
   }, []);
 
   if (loading) {
-    return <div className="p-6 text-gray-600 dark:text-gray-300">Chargement du profil...</div>;
+    return (
+      <div className="p-6 text-gray-600 dark:text-gray-300">
+        Chargement du profil...
+      </div>
+    );
   }
 
   if (!profile) {
-    return <div className="p-6 text-red-600">Profil introuvable ou utilisateur non connecté.</div>;
+    return (
+      <div className="p-6 text-red-600">
+        Profil introuvable ou utilisateur non connecté.
+      </div>
+    );
   }
 
   return (
     <div>
+      {/* SaasMetrics en haut de page */}
       <div className="space-y-6">
         <SaasMetrics profileId={profile.id} />
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
+      {/* Section Profil complète */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6 mt-6">
         <h3 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-7">
           Profil
         </h3>
         <div className="space-y-6">
-          <UserMetaCard profile={profile} />
-          <UserInfoCard profile={profile} />
-          <UserAddressCard profile={profile} />
+          <UserMetaCard
+            id={profile.id}
+            first_name={profile.first_name}
+            last_name={profile.last_name}
+            bio={profile.bio ?? ""}
+            facebook_url={profile.facebook_url ?? ""}
+            x_url={profile.x_url ?? ""}
+            linkedin_url={profile.linkedin_url ?? ""}
+            instagram_url={profile.instagram_url ?? ""}
+          />
+
+          <UserInfoCard
+            id={profile.id}
+            first_name={profile.first_name}
+            last_name={profile.last_name}
+            bio={profile.bio ?? ""}
+          />
+
+          <UserAddressCard
+            id={profile.id}
+            country={profile.country ?? ""}
+          />
         </div>
       </div>
     </div>
