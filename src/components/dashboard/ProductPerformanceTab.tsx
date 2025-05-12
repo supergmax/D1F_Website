@@ -3,9 +3,9 @@ import { useState } from "react";
 import { MoreDotIcon } from "../../icons";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import NewUserChart from "./NewUserChart";
-import DailySaleChart from "./DailySaleChart";
-import OnlineSaleChart from "./OnlineSaleChart";
+import NewUserChart from "../saas/NewUserChart";
+import DailySaleChart from "../saas/DailySaleChart";
+import OnlineSaleChart from "../saas/OnlineSaleChart";
 import Image from "next/image";
 
 export default function ProductPerformanceTab() {

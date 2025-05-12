@@ -1,19 +1,58 @@
-import type { Metadata } from "next";
-import { EcommerceMetrics } from "@/components/ecommerce/EcommerceMetrics2";
-import React from "react";
-import SaasInvoiceTable2 from "@/components/saas/SaasInvoiceTable2";
+"use client";
 
-export const metadata: Metadata = {
-  title:
-    "Next.js E-commerce Dashboard | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js Home for TailAdmin Dashboard Template",
-};
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { EcommerceMetrics } from "@/components/payout/EcommerceMetrics";
+import SaasInvoiceTable from "@/components/payout/SaasInvoiceTable";
 
-export default function Ecommerce() {
+interface Payout {
+  id: string;
+  amount_tokens: number;
+  status: "Paid" | "Pending" | "Failed";
+  created_at: string;
+}
+
+export default function UserPayout() {
+  const [payouts, setPayouts] = useState<Payout[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPayouts() {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError || !session?.user) {
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("payouts")
+        .select("id, amount_tokens, status, created_at")
+        .eq("profile_id", session.user.id)
+        .order("created_at", { ascending: false });
+
+      if (!error && data) {
+        setPayouts(data);
+      }
+
+      setLoading(false);
+    }
+
+    fetchPayouts();
+  }, []);
+
+  // 💡 Metrics à calculer et passer à EcommerceMetrics plus tard
+  const totalPaid = payouts
+    .filter((p) => p.status === "Paid")
+    .reduce((acc, p) => acc + Number(p.amount_tokens || 0), 0);
+
   return (
     <div className="flex flex-col w-full min-h-screen px-4 py-6 space-y-6">
-      <EcommerceMetrics />
-      <SaasInvoiceTable2 />
+      <EcommerceMetrics totalPaid={totalPaid} payoutCount={payouts.length} />
+      <SaasInvoiceTable data={payouts} loading={loading} />
     </div>
   );
 }

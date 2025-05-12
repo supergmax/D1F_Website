@@ -1,12 +1,12 @@
 import Image from "next/image";
-import Button from "../ui/button/Button";
+import Button from "../../ui/button/Button";
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "../ui/table";
+} from "../../ui/table";
 
 // Define the TypeScript interface for the table rows
 interface Product {
