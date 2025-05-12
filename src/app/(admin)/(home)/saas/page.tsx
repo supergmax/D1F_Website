@@ -1,10 +1,10 @@
 import ActivitiesCard from "@/components/saas/ActivitiesCard";
-import ChurnRateChart from "@/components/saas/dashboard/ChurnRate";
+import ChurnRateChart from "@/components/saas/ChurnRate";
 import FunnelChart from "@/components/saas/FunnelChart";
 import GrowthChart from "@/components/saas/GrowthRate";
-import ProductPerformanceTab from "@/components/saas/dashboard/ProductPerformanceTab";
-import SaasInvoiceTable from "@/components/saas/dashboard/SaasInvoiceTable";
-import SaasMetrics from "@/components/challenges/SaasMetrics";
+import ProductPerformanceTab from "@/components/saas/ProductPerformanceTab";
+import SaasInvoiceTable from "@/components/saas/SaasInvoiceTable";
+import SaasMetrics from "@/components/saas/SaasMetrics";
 import { Metadata } from "next";
 import React from "react";
 
