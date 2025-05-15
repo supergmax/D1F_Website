@@ -81,7 +81,7 @@ export default function Ecommerce() {
   return (
     <div className="grid grid-cols-12 gap-4 md:gap-6">
       <div className="col-span-12 flex w-full">
-  <div className="w-1/3">
+  <div className="w-1/3 px-2">
         <MetricCard
           icon={<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />}
           label="Affiliés niveau 1"
@@ -90,7 +90,7 @@ export default function Ecommerce() {
           trendType="up"
         />
       </div>
-      <div className="w-1/3">
+      <div className="w-1/3 px-2">
         <MetricCard
           icon={<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />}
           label="Affiliés niveau 2"
@@ -99,7 +99,7 @@ export default function Ecommerce() {
           trendType="up"
         />
       </div>
-      <div className="w-1/3">
+      <div className="w-1/3 px-2">
         <CopyCard icon={<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />}
           id="XB132347"
           label="ID Utilisateur"

@@ -36,8 +36,8 @@ const navItems: NavItem[] = [
   { name: "Shop", icon: <PlusIcon />, path: "/user_shop" },
   { name: "Historique des paiements", icon: <ListIcon />, path: "/user_history" },
   { name: "Formulaire de retrait", icon: <ListIcon />, path: "/user_payout" },
-  { name: "Support", icon: <PaperPlaneIcon />, path: "/support" },
-  { name: "legal", icon: <CheckCircleIcon />, path: "/user_legal" }
+  { name: "Support", icon: <PaperPlaneIcon />, path: "https://withusfunded.com/contact" },
+  { name: "legal", icon: <CheckCircleIcon />, path: "https://withusfunded.com/privacy-policy" }
 ];
 
 {/*{ name: "sucess", icon: <LockIcon />, path: "/success" },
