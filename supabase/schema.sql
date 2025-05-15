@@ -70,13 +70,16 @@ CREATE TABLE public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
+  email TEXT NOT NULL, 
+  id_phone TEXT NOT NULL, 
+  phone TEXT NOT NULL, 
   address TEXT,
   billing_address TEXT,
   country TEXT,
   language TEXT DEFAULT 'fr',
   affiliate_id VARCHAR(6) UNIQUE NOT NULL,
   godfather_id VARCHAR(6),
-  token_balance INTEGER DEFAULT 0 NOT NULL CHECK (token_balance >= 0)
+  token_balance INTEGER DEFAULT 0 NOT NULL CHECK (token_balance >= 0),
   role role_enum DEFAULT 'user' NOT NULL,
   photo_url TEXT,
   corp_id UUID,
@@ -93,6 +96,9 @@ COMMENT ON TABLE public.profiles IS 'Contient les données personnelles et les r
 COMMENT ON COLUMN public.profiles.id IS 'UUID lié à l’utilisateur authentifié Supabase (auth.users.id).';
 COMMENT ON COLUMN public.profiles.first_name IS 'Prénom de l’utilisateur.';
 COMMENT ON COLUMN public.profiles.last_name IS 'Nom de famille de l’utilisateur.';
+COMMENT ON COLUMN public.profiles.email IS 'Adresse email de l’utilisateur, dupliquée depuis auth.users pour un accès direct côté client.';
+COMMENT ON COLUMN public.profiles.id_phone IS 'Indicatif téléphonique international (ex: +33 pour France, +1 pour USA).';
+COMMENT ON COLUMN public.profiles.phone IS 'Numéro de téléphone sans indicatif (ex: 612345678 pour +33 6 12 34 56 78).';
 COMMENT ON COLUMN public.profiles.address IS 'Adresse principale de l’utilisateur.';
 COMMENT ON COLUMN public.profiles.billing_address IS 'Adresse de facturation.';
 COMMENT ON COLUMN public.profiles.country IS 'Pays de résidence.';
@@ -104,8 +110,8 @@ COMMENT ON COLUMN public.profiles.role IS 'Rôle du profil (user, admin, etc.)';
 COMMENT ON COLUMN public.profiles.photo_url IS 'Lien vers la photo de profil.';
 COMMENT ON COLUMN public.profiles.corp_id IS 'ID d’une société liée (corporation).';
 COMMENT ON COLUMN public.profiles.error_location IS 'Source de l’erreur associée à ce profil, le cas échéant.';
-COMMENT ON COLUMN public.affiliations.note IS 'Note interne ou commentaire sur l’utilisateur.';
-COMMENT ON COLUMN public.affiliations.label IS 'Niveau d’importance ou d’alerte associé à l’utilisateur.';
+COMMENT ON COLUMN public.profiles.note IS 'Note interne ou commentaire sur l’utilisateur.';
+COMMENT ON COLUMN public.profiles.label IS 'Niveau d’importance ou d’alerte associé à l’utilisateur.';
 COMMENT ON COLUMN public.profiles.created_at IS 'Date de création du profil (indépendante de auth.users).';
 COMMENT ON COLUMN public.profiles.updated_at IS 'Date de dernière mise à jour du profil.';
 
