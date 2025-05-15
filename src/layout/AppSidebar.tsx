@@ -37,11 +37,12 @@ const navItems: NavItem[] = [
   { name: "Historique des paiements", icon: <ListIcon />, path: "/user_history" },
   { name: "Formulaire de retrait", icon: <ListIcon />, path: "/user_payout" },
   { name: "Support", icon: <PaperPlaneIcon />, path: "/support" },
-  { name: "legal", icon: <CheckCircleIcon />, path: "/user_legal" },
-  { name: "sucess", icon: <LockIcon />, path: "/success" },
-  { name: "SignIn", icon: <LockIcon />, path: "/signin" },
-  { name: "SignUp", icon: <LockIcon />, path: "/signup" },
+  { name: "legal", icon: <CheckCircleIcon />, path: "/user_legal" }
 ];
+
+{/*{ name: "sucess", icon: <LockIcon />, path: "/success" },
+  { name: "SignIn", icon: <LockIcon />, path: "/signin" },
+  { name: "SignUp", icon: <LockIcon />, path: "/signup" },*/}
 
 
 const AppSidebar: React.FC = () => {
