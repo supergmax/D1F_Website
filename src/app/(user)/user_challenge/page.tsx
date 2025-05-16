@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import SaasMetrics from '@/components/challenges/SaasMetrics';
-import SaasInvoiceTable from '@/components/challenges/SaasInvoiceTable';
-import ChallengeResultsTable from '@/components/challenges/ChallengeResultsTable'; // Nouveau composant
+import ChallengeResultsTable from '@/components/challenges/ChallengeResultsTable';
 
 interface Challenge {
   id: string;
@@ -20,30 +19,17 @@ interface ChallengeResult {
   daily_loss: number;
 }
 
-interface Invoice {
-  id: string;
-  created_at: string;
-  amount: number;
-  status: string;
-}
-
-interface Transaction {
-  id: string;
-  date: string;
-  user: string;
-  amount: string;
-  status: 'Complete' | 'Pending' | 'Cancelled';
-}
-
 export default function UserChallenge() {
   const [metrics, setMetrics] = useState({
     totalRevenue: 0,
     totalChallenges: 0,
     activeChallenges: 0,
     averageProfit: 0,
+    totalGainFromResults: 0,
+    totalLossFromResults: 0,
+    netResultFromResults: 0,
   });
 
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [results, setResults] = useState<ChallengeResult[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,7 +43,6 @@ export default function UserChallenge() {
 
       const userId = user.id;
 
-      // 🔹 Fetch challenges
       const { data: challenges } = await supabase
         .from('challenges')
         .select('id, profit, status')
@@ -68,32 +53,27 @@ export default function UserChallenge() {
       const activeChallenges = challenges?.filter(c => c.status === 'active').length || 0;
       const averageProfit = totalChallenges > 0 ? totalRevenue / totalChallenges : 0;
 
-      // 🔹 Fetch invoices
-      const { data: invoices } = await supabase
-        .from('invoices')
-        .select('id, created_at, amount, status')
-        .eq('profile_id', userId);
-
-      const formattedTxns: Transaction[] = (invoices || []).map(inv => ({
-        id: inv.id,
-        date: new Date(inv.created_at).toLocaleDateString('fr-FR'),
-        user: user.email || '',
-        amount: `${(inv.amount / 100).toFixed(2)} €`,
-        status:
-          inv.status === 'paid'
-            ? 'Complete'
-            : inv.status === 'pending'
-            ? 'Pending'
-            : 'Cancelled',
-      }));
-
-      // 🔹 Fetch challenge_results
       const { data: challengeResults } = await supabase
         .from('challenge_results')
-        .select('id, challenge_id, date, daily_gain, daily_loss');
+        .select('id, challenge_id, date, daily_gain, daily_loss')
+        .in('challenge_id', challenges?.map(c => c.id) || []);
 
-      setMetrics({ totalRevenue, totalChallenges, activeChallenges, averageProfit });
-      setTransactions(formattedTxns);
+      const totalGainFromResults =
+        challengeResults?.reduce((acc, res) => acc + (res.daily_gain || 0), 0) || 0;
+      const totalLossFromResults =
+        challengeResults?.reduce((acc, res) => acc + (res.daily_loss || 0), 0) || 0;
+      const netResultFromResults = totalGainFromResults - totalLossFromResults;
+
+      setMetrics({
+        totalRevenue,
+        totalChallenges,
+        activeChallenges,
+        averageProfit,
+        totalGainFromResults,
+        totalLossFromResults,
+        netResultFromResults,
+      });
+
       setResults(challengeResults || []);
       setLoading(false);
     };
@@ -105,7 +85,15 @@ export default function UserChallenge() {
 
   return (
     <div className="space-y-6 w-full">
-      <SaasMetrics {...metrics} />
+      <SaasMetrics
+        totalRevenue={metrics.totalRevenue}
+        totalChallenges={metrics.totalChallenges}
+        activeChallenges={metrics.activeChallenges}
+        averageProfit={metrics.averageProfit}
+        totalGainFromResults={metrics.totalGainFromResults}
+        totalLossFromResults={metrics.totalLossFromResults}
+        netResultFromResults={metrics.netResultFromResults}
+      />
       <ChallengeResultsTable results={results} />
     </div>
   );
