@@ -1,14 +1,21 @@
 "use client";
+
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
-//import NotificationDropdown from "@/components/header/NotificationDropdown";
 import UserDropdown from "@/components/header/UserDropdown";
 import { useSidebar } from "@/context/SidebarContext";
+import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
 const Header: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
+  const [userData, setUserData] = useState<{
+    first_name: string;
+    last_name: string;
+    email: string;
+    token_balance: number;
+  } | null>(null);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
 
@@ -19,6 +26,32 @@ const Header: React.FC = () => {
       toggleMobileSidebar();
     }
   };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const user = session?.user;
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("first_name, last_name, token_balance")
+        .eq("id", user.id)
+        .single();
+
+      if (!error && data) {
+        setUserData({
+          ...data,
+          email: user.email ?? "—",
+        });
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const toggleApplicationMenu = () => {
     setApplicationMenuOpen(!isApplicationMenuOpen);
@@ -35,10 +68,7 @@ const Header: React.FC = () => {
     };
 
     document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   return (
@@ -81,7 +111,6 @@ const Header: React.FC = () => {
                 />
               </svg>
             )}
-            {/* Cross Icon */}
           </button>
 
           <Link href="/" className="lg:hidden">
@@ -120,21 +149,32 @@ const Header: React.FC = () => {
               />
             </svg>
           </button>
-          </div>
+        </div>
+
         <div
           className={`${
             isApplicationMenuOpen ? "flex" : "hidden"
           } items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}
         >
-          <div className="flex items-center gap-2 2xsm:gap-3">
-            {/* <!-- Dark Mode Toggler --> */}
-            <ThemeToggleButton />
-            {/* <!-- Dark Mode Toggler --> */}
-
-            {/* <NotificationDropdown /> */}
-            {/* <!-- Notification Menu Area --> */}
+          <div className="flex flex-col items-end gap-1 text-sm text-gray-700 dark:text-white mr-4">
+            {userData ? (
+              <>
+                <span>
+                  {userData.first_name} {userData.last_name}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {userData.email}
+                </span>
+                <span className="text-xs text-gray-600 dark:text-gray-300">
+                  Balance : <strong>{userData.token_balance}</strong> WT
+                </span>
+              </>
+            ) : (
+              <span>Chargement...</span>
+            )}
           </div>
-          {/* <!-- User Area --> */}
+
+          <ThemeToggleButton />
           <UserDropdown />
         </div>
       </div>
