@@ -41,7 +41,7 @@ export default function SaasInvoiceTable({ data, loading }: InvoiceProps) {
                   <td className="px-6 py-4 text-green-600">
                     {(row.total_invoices / 100).toFixed(2)} €
                   </td>
-                  <td className="px-6 py-4 text-red-600">{row.total_payouts} Tokens</td>
+                  <td className="px-6 py-4 text-red-600">{row.total_payouts} WT</td>
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
