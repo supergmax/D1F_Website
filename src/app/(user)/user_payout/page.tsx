@@ -49,6 +49,7 @@ export default function UserPayout() {
   const totalPaid = payouts
     .filter((p) => p.status === "Paid")
     .reduce((acc, p) => acc + Number(p.amount_tokens || 0), 0);
+    
 
   return (
     <div className="flex flex-col w-full min-h-screen px-4 py-6 space-y-6">
