@@ -21,7 +21,7 @@ export default function SaasMetrics({
           <span className="text-sm text-gray-500 dark:text-gray-400">Total Profit</span>
           <div className="mt-2 flex items-end gap-3">
             <h4 className="text-title-xs font-bold text-gray-800 dark:text-white/90">
-              {totalRevenue} WT
+              {totalRevenue} €
             </h4>
           </div>
         </div>
@@ -40,7 +40,7 @@ export default function SaasMetrics({
         <div className="px-6 py-5">
           <span className="text-sm text-gray-500 dark:text-gray-400">Avg. Profit per Challenge</span>
           <h4 className="mt-2 text-title-xs font-bold text-gray-800 dark:text-white/90">
-            {typeof averageProfit === 'number' ? averageProfit : 'N/A'} WT
+            {typeof averageProfit === 'number' ? averageProfit : 'N/A'} €
           </h4>
         </div>
       </div>
