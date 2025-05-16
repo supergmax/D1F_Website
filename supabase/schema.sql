@@ -43,7 +43,7 @@ COMMENT ON TYPE role_enum IS 'Rôle de l’utilisateur dans le système.';
 CREATE TYPE challenge_status_enum AS ENUM ('open', 'pending', 'active', 'failed', 'completed');
 COMMENT ON TYPE challenge_status_enum IS 'Statut d’un challenge (suivi du process).';
 
-CREATE TYPE invoice_status_enum AS ENUM ('open', 'pending', 'paid', 'failed');
+CREATE TYPE invoice_status_enum AS ENUM ('pending', 'open', 'paid', 'failed');
 COMMENT ON TYPE invoice_status_enum IS 'Statut de facturation lié aux achats de tokens.';
 
 CREATE TYPE payout_status_enum AS ENUM ('requested', 'approved', 'declined', 'paid');
@@ -88,7 +88,8 @@ CREATE TABLE public.profiles (
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT now() NOT NULL,
   updated_at TIMESTAMP DEFAULT now() NOT NULL,
-  CONSTRAINT fk_godfather FOREIGN KEY (godfather_id) REFERENCES public.profiles(affiliate_id) ON DELETE SET NULL
+  CONSTRAINT fk_godfather FOREIGN KEY (godfather_id) REFERENCES public.profiles(affiliate_id) ON DELETE SET NULL,
+  CONSTRAINT fk_profiles_corp FOREIGN KEY (corp_id) REFERENCES public.corporations(id) ON DELETE SET NULL
 );
 
 COMMENT ON TABLE public.profiles IS 'Contient les données personnelles et les rôles des utilisateurs (liés à auth.users).';
@@ -120,7 +121,7 @@ COMMENT ON COLUMN public.profiles.updated_at IS 'Date de dernière mise à jour 
 -- ======================
 CREATE TABLE public.corporations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  profile_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  profile_id UUID NOT NULL,
   corp_name TEXT NOT NULL,
   address TEXT,
   vat_number TEXT,
@@ -128,7 +129,8 @@ CREATE TABLE public.corporations (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT now() NOT NULL,
-  updated_at TIMESTAMP DEFAULT now() NOT NULL
+  updated_at TIMESTAMP DEFAULT now() NOT NULL,
+  CONSTRAINT fk_corp_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE public.corporations IS 'Représente les entités corporate associées aux utilisateurs.';
@@ -149,21 +151,21 @@ COMMENT ON COLUMN public.corporations.updated_at IS 'Date de dernière mise à j
 -- ======================
 CREATE TABLE public.affiliations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  affiliate_id VARCHAR(6) NOT NULL REFERENCES public.profiles(affiliate_id) ON DELETE CASCADE,
+  profile_id UUID NOT NULL,
+  affiliate_id VARCHAR(6) NOT NULL,
   godfather_id VARCHAR(6),
-  level INTEGER NOT NULL CHECK (level IN (1, 2)),
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT unique_affiliation_per_level UNIQUE (client_id, level)
+  CONSTRAINT fk_affil_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE,
+  CONSTRAINT fk_affil_affcode FOREIGN KEY (affiliate_id) REFERENCES public.profiles(affiliate_id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE public.affiliations IS 'Gère les relations de parrainage (cooptation) entre utilisateurs, sur 2 niveaux hiérarchiques.';
 
 COMMENT ON COLUMN public.affiliations.id IS 'Identifiant unique de l’affiliation.';
-COMMENT ON COLUMN public.affiliations.client_id IS 'UUID du profil affilié (filleul).';
+COMMENT ON COLUMN public.affiliations.profile_id IS 'UUID du profil affilié (filleul).';
 COMMENT ON COLUMN public.affiliations.affiliate_id IS 'Code affilié du parrain (correspond à profiles.affiliate_id).';
 COMMENT ON COLUMN public.affiliations.godfather_id IS 'Ancien code parrain si remplacement (historique ou tracking spécifique).';
 COMMENT ON COLUMN public.affiliations.level IS 'Niveau d’affiliation (1 = direct, 2 = indirect).';
@@ -177,7 +179,7 @@ COMMENT ON COLUMN public.affiliations.updated_at IS 'Date de dernière modificat
 -- ======================
 CREATE TABLE public.challenges (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  profile_id UUID NOT NULL,
   name TEXT NOT NULL,
   challenge_num INTEGER NOT NULL,
   status challenge_status_enum DEFAULT 'open' NOT NULL,
@@ -189,13 +191,14 @@ CREATE TABLE public.challenges (
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT unique_challenge_per_user UNIQUE (user_id, challenge_num)
+  CONSTRAINT unique_challenge_per_user UNIQUE (profile_id, challenge_num),
+  CONSTRAINT fk_challenge_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE public.challenges IS 'Contient les informations liées aux challenges achetés par les utilisateurs.';
 
 COMMENT ON COLUMN public.challenges.id IS 'Identifiant unique du challenge.';
-COMMENT ON COLUMN public.challenges.user_id IS 'UUID de l’utilisateur (profil) associé.';
+COMMENT ON COLUMN public.challenges.profile_id IS 'UUID de l’utilisateur (profil) associé.';
 COMMENT ON COLUMN public.challenges.name IS 'Nom du challenge (ex: Alpha, Bêta).';
 COMMENT ON COLUMN public.challenges.challenge_num IS 'Numéro d’ordre du challenge pour un utilisateur (1er, 2e…).';
 COMMENT ON COLUMN public.challenges.status IS 'Statut actuel du challenge (open, active, failed, etc.).';
@@ -213,7 +216,7 @@ COMMENT ON COLUMN public.challenges.updated_at IS 'Dernière date de modificatio
 -- ===============================
 CREATE TABLE public.challenge_results (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  challenge_id UUID NOT NULL REFERENCES public.challenges(id) ON DELETE CASCADE,
+  challenge_id UUID NOT NULL,
   date DATE NOT NULL,
   daily_gain INTEGER DEFAULT 0 CHECK (daily_gain >= 0),
   daily_loss INTEGER DEFAULT 0 CHECK (daily_loss >= 0),
@@ -221,7 +224,8 @@ CREATE TABLE public.challenge_results (
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT unique_day_per_challenge UNIQUE (challenge_id, date)
+  CONSTRAINT unique_day_per_challenge UNIQUE (challenge_id, date),
+  CONSTRAINT fk_chalres_challenge FOREIGN KEY (challenge_id) REFERENCES public.challenges(id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE public.challenge_results IS 'Contient les résultats journaliers pour chaque challenge utilisateur.';
@@ -266,14 +270,16 @@ COMMENT ON COLUMN public.products.updated_at IS 'Dernière mise à jour.';
 -- ==========================
 CREATE TABLE public.purchases (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-  product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
+  profile_id UUID NOT NULL,
+  product_id UUID NOT NULL,
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   total_tokens INTEGER NOT NULL CHECK (total_tokens >= 0),
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  CONSTRAINT fk_purchase_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE,
+  CONSTRAINT fk_purchase_product FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE SET NULL
 );
 
 COMMENT ON TABLE public.purchases IS 'Historique des achats effectués par les utilisateurs via tokens.';
@@ -293,21 +299,20 @@ COMMENT ON COLUMN public.purchases.updated_at IS 'Dernière mise à jour.';
 -- ==========================
 CREATE TABLE public.invoices (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-  stripe_invoice_id TEXT UNIQUE NOT NULL,
+  profile_id UUID NOT NULL,
   amount INTEGER NOT NULL CHECK (amount >= 0),
   status invoice_status_enum DEFAULT 'open',
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  CONSTRAINT fk_invoice_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE public.invoices IS 'Factures liées aux achats Stripe (tokens, challenges).';
 
 COMMENT ON COLUMN public.invoices.id IS 'Identifiant unique de la facture.';
 COMMENT ON COLUMN public.invoices.profile_id IS 'Utilisateur concerné par la facture.';
-COMMENT ON COLUMN public.invoices.stripe_invoice_id IS 'ID unique de la facture Stripe (pour vérification).';
 COMMENT ON COLUMN public.invoices.amount IS 'Montant total de la facture en centimes.';
 COMMENT ON COLUMN public.invoices.status IS 'Statut actuel de la facture (en attente, payée, etc.).';
 COMMENT ON COLUMN public.invoices.note IS 'Note administrative associée à cette facture.';
@@ -320,7 +325,7 @@ COMMENT ON COLUMN public.invoices.updated_at IS 'Dernière mise à jour de la fa
 -- ==========================
 CREATE TABLE public.payouts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  profile_id UUID NOT NULL,
   amount_tokens INTEGER NOT NULL CHECK (amount_tokens > 0),
   status payout_status_enum DEFAULT 'requested',
   requested_at TIMESTAMP DEFAULT NOW() NOT NULL,
@@ -328,7 +333,8 @@ CREATE TABLE public.payouts (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  CONSTRAINT fk_payout_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE public.payouts IS 'Demandes de retrait de tokens faites par les utilisateurs.';
@@ -349,14 +355,15 @@ COMMENT ON COLUMN public.payouts.updated_at IS 'Date de dernière modification d
 -- ==========================
 CREATE TABLE public.transactions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  profile_id UUID NOT NULL,
   type transaction_type_enum NOT NULL,
   ref_id UUID NOT NULL,
   status transaction_status_enum DEFAULT 'pending',
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  CONSTRAINT fk_transaction_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE public.transactions IS 'Log global de toutes les transactions (achats, retraits, factures, etc.).';
@@ -376,8 +383,8 @@ COMMENT ON COLUMN public.transactions.updated_at IS 'Date de dernière mise à j
 -- ==========================
 CREATE TABLE public.history (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-  challenge_id UUID REFERENCES public.challenges(id) ON DELETE SET NULL,
+  profile_id UUID NOT NULL,
+  challenge_id UUID NOT NULL,
   month DATE NOT NULL CHECK (EXTRACT(DAY FROM month) = 1),
   total_gain INTEGER DEFAULT 0 NOT NULL,
   total_loss INTEGER DEFAULT 0 NOT NULL,
@@ -389,7 +396,9 @@ CREATE TABLE public.history (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  CONSTRAINT fk_history_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE,
+  CONSTRAINT fk_history_challenge FOREIGN KEY (challenge_id) REFERENCES public.challenges(id) ON DELETE SET NULL
 );
 
 COMMENT ON TABLE public.history IS 'Historique mensuel consolidé des performances utilisateur/challenges.';

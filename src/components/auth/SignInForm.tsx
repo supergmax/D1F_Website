@@ -41,7 +41,7 @@ export default function SignInForm() {
 
     // Redirection si succès
     setMessage("Connexion réussie !");
-    router.push("/user_dashboard");
+    router.push("/user_profile");
   };
 
   return (

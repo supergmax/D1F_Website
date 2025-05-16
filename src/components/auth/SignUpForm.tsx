@@ -9,7 +9,7 @@ import Checkbox from "@/components/form/input/Checkbox";
 import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
-import CGUModal from "@/components/modal/CGUModal"; // Tu peux adapter le nom selon ton projet
+import CGUModal from "@/components/auth/CGUModal"; // Tu peux adapter le nom selon ton projet
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -27,8 +27,8 @@ export default function SignUpForm() {
     password: '',
     id_phone: '',
     phone: '',
-    address: '',
-    billing_address: '',
+    // address: '',
+    // billing_address: '',
     country: '',
     language: 'fr',
     affiliate_code: '',
@@ -104,8 +104,8 @@ export default function SignUpForm() {
       email: form.email,
       id_phone: form.id_phone,
       phone: form.phone,
-      address: form.address || null,
-      billing_address: form.billing_address || null,
+      // address: form.address || null,
+      // billing_address: form.billing_address || null,
       country: form.country || null,
       language: form.language,
       affiliate_id,
@@ -188,11 +188,11 @@ export default function SignUpForm() {
             </span>
           </div>
 
-          <Label>Address</Label>
+          {/* <Label>Address</Label>
           <Input name="address" value={form.address} onChange={handleChange} />
 
           <Label>Billing Address</Label>
-          <Input name="billing_address" value={form.billing_address} onChange={handleChange} />
+          <Input name="billing_address" value={form.billing_address} onChange={handleChange} /> */}
 
           <Label>Country</Label>
           <Input name="country" value={form.country} onChange={handleChange} />

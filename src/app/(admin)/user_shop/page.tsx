@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PriceTableTwo from "@/components/price-table/PriceTableTwo";
+import PriceTableTwo from "@/components/shop/PriceTableTwo";
 import React from "react";
 
 
