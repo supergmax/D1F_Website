@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function AdminDashboardPage() {
   return (
-    <div className="space-y-6">
+    <div className="ml-[90px] lg:ml-[290px] px-6 py-8 space-y-6">
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Dashboard Administrateur</h1>
 
       <p className="text-gray-600 dark:text-gray-400">

@@ -1,33 +1,52 @@
 "use client";
 
-import { useSidebar } from "@/context/SidebarContext";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 import Sidebar from "@/layout/admin/Sidebar";
 import Header from "@/layout/admin/Header";
-import Backdrop from "@/layout/admin/Backdrop"; // Optionnel si tu veux garder le responsive
-import React from "react";
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
-  const mainContentMargin = isMobileOpen
-    ? "ml-0"
-    : isExpanded || isHovered
-    ? "lg:ml-[290px]"
-    : "lg:ml-[90px]";
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const user = session?.user;
+      if (!user) return router.replace("/signin");
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (error || data?.role !== "admin") {
+        return router.replace("/error-404");
+      }
+
+      setIsAuthorized(true);
+    };
+
+    checkAdmin();
+  }, [router]);
+
+  if (isAuthorized === null) {
+    return <div className="p-6 text-sm">Chargement...</div>;
+  }
 
   return (
-    <div className="min-h-screen xl:flex">
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
       <Sidebar />
-      <Backdrop />
-      <div
-        className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
-      >
+      <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
         <Header />
-        <div className="p-4 mx-auto max-w-screen-2xl md:p-6">{children}</div>
+        <main className="flex-1 overflow-y-auto px-6 py-8">
+          {children}
+        </main>
       </div>
     </div>
   );

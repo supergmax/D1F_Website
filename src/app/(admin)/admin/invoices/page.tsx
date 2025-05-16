@@ -40,7 +40,7 @@ export default function AdminInvoicesPage() {
   }, []);
 
   return (
-    <div>
+    <div className="ml-[90px] lg:ml-[290px] px-6 py-8">
       <h1 className="text-xl font-semibold mb-6">Gestion des Factures</h1>
       {loading ? (
         <p>Chargement...</p>
