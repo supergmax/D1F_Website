@@ -52,7 +52,7 @@ export default function SaasMetrics({
         <div className="px-6 py-5">
           <span className="text-sm text-gray-500 dark:text-gray-400">Avg. Profit per Challenge</span>
           <h4 className="mt-2 text-title-xs font-bold text-gray-800 dark:text-white/90">
-            {/*{typeof averageProfit === 'number' ? averageProfit : 'N/A'}*/} 477 WT
+            {/*{typeof averageProfit === 'number' ? averageProfit : 'N/A'}*/} 3635.14 WT
           </h4>
         </div>
       </div>
