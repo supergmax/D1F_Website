@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
-import UserAddressCard from "@/components/profile/UserAddressCard";
-import UserInfoCard from "@/components/profile/UserInfoCard";
-import UserMetaCard from "@/components/profile/UserMetaCard";
-import SaasMetrics from "@/components/profile/SaasMetrics";
+import UserAddressCard from '@/components/profile/UserAddressCard';
+import UserInfoCard from '@/components/profile/UserInfoCard';
+import UserMetaCard from '@/components/profile/UserMetaCard';
+import SaasMetrics from '@/components/profile/SaasMetrics';
 
 interface UserProfile {
   id: string;
@@ -24,10 +24,15 @@ interface UserProfile {
   affiliate_id: string;
   godfather_id: string | null;
   created_at: string;
+  token_balance: number;
 }
 
 export default function Profile() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalChallenges, setTotalChallenges] = useState(0);
+  const [activeChallenges, setActiveChallenges] = useState(0);
+  const [averageProfit, setAverageProfit] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,14 +47,33 @@ export default function Profile() {
         return;
       }
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", session.user.id)
+      const userId = session.user.id;
+
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
         .single();
 
-      if (!error && data) {
-        setProfile(data as UserProfile);
+      const { data: challengesData } = await supabase
+        .from('challenges')
+        .select('id, profit, status')
+        .eq('profile_id', userId);
+
+      if (profileData) {
+        setProfile(profileData);
+      }
+
+      if (challengesData) {
+        const total = challengesData.reduce((acc, c) => acc + (c.profit || 0), 0);
+        const totalCount = challengesData.length;
+        const activeCount = challengesData.filter(c => c.status === 'active').length;
+        const avg = totalCount > 0 ? total / totalCount : 0;
+
+        setTotalRevenue(total);
+        setTotalChallenges(totalCount);
+        setActiveChallenges(activeCount);
+        setAverageProfit(avg);
       }
 
       setLoading(false);
@@ -76,9 +100,15 @@ export default function Profile() {
 
   return (
     <div>
-      {/* SaasMetrics en haut de page */}
+      {/* SaasMetrics dynamique */}
       <div className="space-y-6">
-        <SaasMetrics profileId={profile.id} />
+        <SaasMetrics
+          totalRevenue={totalRevenue}
+          totalChallenges={totalChallenges}
+          activeChallenges={activeChallenges}
+          averageProfit={averageProfit}
+          tokenBalance={profile.token_balance}
+        />
       </div>
 
       {/* Section Profil complète */}
@@ -91,24 +121,19 @@ export default function Profile() {
             id={profile.id}
             first_name={profile.first_name}
             last_name={profile.last_name}
-            bio={profile.bio ?? ""}
-            facebook_url={profile.facebook_url ?? ""}
-            x_url={profile.x_url ?? ""}
-            linkedin_url={profile.linkedin_url ?? ""}
-            instagram_url={profile.instagram_url ?? ""}
+            bio={profile.bio ?? ''}
+            facebook_url={profile.facebook_url ?? ''}
+            x_url={profile.x_url ?? ''}
+            linkedin_url={profile.linkedin_url ?? ''}
+            instagram_url={profile.instagram_url ?? ''}
           />
-
           <UserInfoCard
             id={profile.id}
             first_name={profile.first_name}
             last_name={profile.last_name}
-            bio={profile.bio ?? ""}
+            bio={profile.bio ?? ''}
           />
-
-          <UserAddressCard
-            id={profile.id}
-            country={profile.country ?? ""}
-          />
+          <UserAddressCard id={profile.id} country={profile.country ?? ''} />
         </div>
       </div>
     </div>
