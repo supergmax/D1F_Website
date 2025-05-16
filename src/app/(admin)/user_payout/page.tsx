@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { EcommerceMetrics } from "@/components/payout/EcommerceMetrics";
+import { EcommerceMetrics2 } from "@/components/payout/EcommerceMetrics2";
 import SaasInvoiceTable from "@/components/payout/SaasInvoiceTable";
 
 interface Payout {

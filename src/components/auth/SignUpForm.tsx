@@ -16,6 +16,7 @@ export default function SignUpForm() {
     first_name: '',
     last_name: '',
     email: '',
+    phone: '',
     password: '',
   });
   const [error, setError] = useState('');
