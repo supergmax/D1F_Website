@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import SaasMetrics from '@/components/challenges/SaasMetrics';
-import SaasInvoiceTable2 from '@/components/challenges/SaasInvoiceTable';
+import SaasInvoiceTable from '@/components/challenges/SaasInvoiceTable';
 import ChallengeResultsTable from '@/components/challenges/ChallengeResultsTable'; // Nouveau composant
 
 interface Challenge {

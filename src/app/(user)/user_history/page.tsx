@@ -5,20 +5,19 @@ import { supabase } from '@/lib/supabaseClient';
 import SaasInvoiceTable from '@/components/history/SaasInvoiceTable';
 import SaasMetrics from '@/components/history/SaasMetrics';
 
-interface HistoryRow {
+interface MonthlyRow {
   month: string;
-  total_gain: number;
-  total_loss: number;
-  token_balance_snapshot: number;
+  total_invoices: number;
+  total_payouts: number;
 }
 
 export default function UserHistoryPage() {
-  const [data, setData] = useState<HistoryRow[]>([]);
+  const [data, setData] = useState<MonthlyRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchHistory() {
+    async function fetchData() {
       const {
         data: { session },
         error: sessionError,
@@ -37,34 +36,62 @@ export default function UserHistoryPage() {
         return;
       }
 
-      const { data: historyData, error: historyError } = await supabase
-        .from("history")
-        .select("month, total_gain, total_loss, token_balance_snapshot")
-        .eq("profile_id", user.id)
-        .order("month", { ascending: false });
+      const userId = user.id;
 
-      if (historyError) {
-        setError("Erreur lors de la récupération de l'historique.");
-        console.error(historyError);
-      } else if (historyData) {
-        const parsed = historyData.map((row) => ({
-          month: row.month,
-          total_gain: Number(row.total_gain) || 0,
-          total_loss: Number(row.total_loss) || 0,
-          token_balance_snapshot: Number(row.token_balance_snapshot) || 0,
-        }));
-        setData(parsed);
+      const { data: invoices } = await supabase
+        .from("invoices")
+        .select("amount, created_at")
+        .eq("profile_id", userId)
+        .eq("status", "paid");
+
+      const { data: payouts } = await supabase
+        .from("payouts")
+        .select("amount_tokens, processed_at")
+        .eq("profile_id", userId)
+        .eq("status", "paid");
+
+      const monthMap: Record<string, MonthlyRow> = {};
+
+      for (const inv of invoices || []) {
+        const date = new Date(inv.created_at);
+        const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, '0')}`;
+
+        if (!monthMap[monthKey]) {
+          monthMap[monthKey] = { month: monthKey, total_invoices: 0, total_payouts: 0 };
+        }
+
+        monthMap[monthKey].total_invoices += inv.amount;
       }
 
+      for (const po of payouts || []) {
+        const date = new Date(po.processed_at);
+        const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, '0')}`;
+
+        if (!monthMap[monthKey]) {
+          monthMap[monthKey] = { month: monthKey, total_invoices: 0, total_payouts: 0 };
+        }
+
+        monthMap[monthKey].total_payouts += po.amount_tokens;
+      }
+
+      const monthlyData = Object.values(monthMap).sort((a, b) =>
+        a.month > b.month ? -1 : 1
+      );
+
+      setData(monthlyData);
       setLoading(false);
     }
 
-    fetchHistory();
+    fetchData();
   }, []);
 
-  const totalGain = data.reduce((acc, row) => acc + row.total_gain, 0);
-  const totalLoss = data.reduce((acc, row) => acc + row.total_loss, 0);
-  const averageProfit = data.length > 0 ? Math.round((totalGain - totalLoss) / data.length) : 0;
+  const totalIn = data.reduce((acc, row) => acc + row.total_invoices, 0);
+  const totalOut = data.reduce((acc, row) => acc + row.total_payouts, 0);
+  const netAverage = data.length > 0 ? Math.round((totalIn - totalOut) / data.length) : 0;
 
   return (
     <div className="space-y-6 w-full">
@@ -74,14 +101,8 @@ export default function UserHistoryPage() {
         </div>
       )}
 
-      <SaasMetrics
-        totalRevenue={totalGain}
-        averageProfit={averageProfit}
-      />
-
-      <div className="w-full">
-        <SaasInvoiceTable data={data} loading={loading} />
-      </div>
+      <SaasMetrics totalRevenue={totalIn} averageProfit={netAverage} />
+      <SaasInvoiceTable data={data} loading={loading} />
     </div>
   );
 }
