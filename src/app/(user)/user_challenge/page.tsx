@@ -4,11 +4,20 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import SaasMetrics from '@/components/challenges/SaasMetrics';
 import SaasInvoiceTable2 from '@/components/challenges/SaasInvoiceTable';
+import ChallengeResultsTable from '@/components/challenges/ChallengeResultsTable'; // Nouveau composant
 
 interface Challenge {
   id: string;
   profit: number;
   status: string;
+}
+
+interface ChallengeResult {
+  id: string;
+  challenge_id: string;
+  date: string;
+  daily_gain: number;
+  daily_loss: number;
 }
 
 interface Invoice {
@@ -35,6 +44,7 @@ export default function UserChallenge() {
   });
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [results, setResults] = useState<ChallengeResult[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,7 +53,6 @@ export default function UserChallenge() {
 
       const { data: authData } = await supabase.auth.getUser();
       const user = authData?.user;
-
       if (!user) return;
 
       const userId = user.id;
@@ -78,8 +87,14 @@ export default function UserChallenge() {
             : 'Cancelled',
       }));
 
+      // 🔹 Fetch challenge_results
+      const { data: challengeResults } = await supabase
+        .from('challenge_results')
+        .select('id, challenge_id, date, daily_gain, daily_loss');
+
       setMetrics({ totalRevenue, totalChallenges, activeChallenges, averageProfit });
       setTransactions(formattedTxns);
+      setResults(challengeResults || []);
       setLoading(false);
     };
 
@@ -91,7 +106,7 @@ export default function UserChallenge() {
   return (
     <div className="space-y-6 w-full">
       <SaasMetrics {...metrics} />
-      <SaasInvoiceTable2 transactions={transactions} />
+      <ChallengeResultsTable results={results} />
     </div>
   );
 }
