@@ -6,6 +6,11 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import SupportModal from "@/components/example/ModalExample/SupportModal"
 
+  // Simulé ici - à remplacer par fetch ou Supabase plus tard
+  const userEmail = "user1@d1f.test";
+  const userName = "USER 1";
+  const userBalance = 120.5;
+
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -31,7 +36,16 @@ export default function UserDropdown() {
           />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">UserTest_1</span>
+        {/* Email + Balance */}
+        <div className="flex items-center space-x-2">
+          <span className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-md">
+            {userBalance} WT
+          </span>
+
+          <span className="font-medium text-theme-sm text-gray-700 dark:text-gray-300 truncate max-w-[130px]">
+            {userEmail}
+          </span>
+        </div>
 
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
@@ -58,12 +72,17 @@ export default function UserDropdown() {
         onClose={closeDropdown}
         className="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
       >
-        <div>
-          <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            USER 1
-          </span>
+        <div className="mb-2">
+          <div className="flex items-center justify-between">
+            <span className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">
+              {userName}
+            </span>
+            <span className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-md">
+              {userBalance} WT
+            </span>
+          </div>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            USER1@D1f.test
+            {userEmail}
           </span>
         </div>
 
@@ -145,3 +164,15 @@ export default function UserDropdown() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+        
+
+

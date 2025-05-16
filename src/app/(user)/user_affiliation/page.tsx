@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import EcommerceMetrics from "@/components/affiliation/EcommerceMetrics";
-import MonthlyTarget from "@/components/affiliation/MonthlyTarget";
+//import EcommerceMetrics from "@/components/affiliation/EcommerceMetrics";
+//import MonthlyTarget from "@/components/affiliation/MonthlyTarget";
 import MonthlySalesChart from "@/components/affiliation/MonthlySalesChart";
 import StatisticsChart from "@/components/affiliation/StatisticsChart";
+import { MetricCard } from "@/components/affiliation/MetricCard";
+import { CopyCard } from "@/components/affiliation/CopyCard";
+import { GroupIcon, BoxIconLine } from "@/icons";
 
 export default function Ecommerce() {
   const [lvl1, setLvl1] = useState(0);
@@ -77,16 +80,37 @@ export default function Ecommerce() {
 
   return (
     <div className="grid grid-cols-12 gap-4 md:gap-6">
-      <div className="col-span-12 space-y-6 xl:col-span-7">
-        <EcommerceMetrics count={lvl1} />
-        <MonthlySalesChart monthlyCounts={monthlyCounts} />
+      <div className="col-span-12 flex w-full">
+  <div className="w-1/3 px-2">
+        <MetricCard
+          icon={<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />}
+          label="Affiliés niveau 1"
+          value={lvl1.toString()}
+          trend="+1"
+          trendType="up"
+        />
       </div>
-
-      <div className="col-span-12 xl:col-span-5">
-        <MonthlyTarget percent={lvl2} />
+      <div className="w-1/3 px-2">
+        <MetricCard
+          icon={<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />}
+          label="Affiliés niveau 2"
+          value={lvl2.toString()}
+          trend="+2"
+          trendType="up"
+        />
       </div>
+      <div className="w-1/3 px-2">
+        <CopyCard icon={<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />}
+          id="XB132347"
+          label="ID Utilisateur"
+        />
+      </div>
+    </div>
 
       <div className="col-span-12">
+        <div className="py-3">
+          <MonthlySalesChart monthlyCounts={monthlyCounts} />
+        </div>
         <StatisticsChart data={dailyData} />
       </div>
     </div>
