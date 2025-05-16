@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
-const AppHeader: React.FC = () => {
+const Header: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
@@ -142,4 +142,4 @@ const AppHeader: React.FC = () => {
   );
 };
 
-export default AppHeader;
+export default Header;

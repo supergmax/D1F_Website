@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
@@ -39,9 +39,24 @@ export default function SignInForm() {
       return;
     }
 
-    // Redirection si succès
-    setMessage("Connexion réussie !");
-    router.push("/user_profile");
+    // 🔍 Récupérer le rôle depuis la table profiles
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .single();
+
+    if (profileError || !profile?.role) {
+      setMessage("Erreur lors de la récupération du rôle.");
+      return;
+    }
+
+    // ✅ Redirection selon le rôle
+    if (profile.role === "admin") {
+      router.push("/admin");
+    } else {
+      router.push("/user_profile");
+    }
   };
 
   return (
@@ -114,7 +129,6 @@ export default function SignInForm() {
             <Button type="submit" className="w-full" size="sm">
               Se connecter
             </Button>
-
 
             <div className="mt-5 text-center">
               <p className="text-sm text-gray-700 dark:text-gray-400">

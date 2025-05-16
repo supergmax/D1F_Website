@@ -1,5 +1,5 @@
 -- =====================================================
--- schema.SQL (v6)
+-- schema.SQL (v10)
 -- Base de données D1F - DayOneFunded
 -- Description : Tables, ENUMs, Champs, Contraintes, Commentaires
 -- =====================================================
@@ -87,9 +87,7 @@ CREATE TABLE public.profiles (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT now() NOT NULL,
-  updated_at TIMESTAMP DEFAULT now() NOT NULL,
-  CONSTRAINT fk_godfather FOREIGN KEY (godfather_id) REFERENCES public.profiles(affiliate_id) ON DELETE SET NULL,
-  CONSTRAINT fk_profiles_corp FOREIGN KEY (corp_id) REFERENCES public.corporations(id) ON DELETE SET NULL
+  updated_at TIMESTAMP DEFAULT now() NOT NULL
 );
 
 COMMENT ON TABLE public.profiles IS 'Contient les données personnelles et les rôles des utilisateurs (liés à auth.users).';
@@ -129,8 +127,7 @@ CREATE TABLE public.corporations (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT now() NOT NULL,
-  updated_at TIMESTAMP DEFAULT now() NOT NULL,
-  CONSTRAINT fk_corp_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
+  updated_at TIMESTAMP DEFAULT now() NOT NULL
 );
 
 COMMENT ON TABLE public.corporations IS 'Représente les entités corporate associées aux utilisateurs.';
@@ -141,8 +138,8 @@ COMMENT ON COLUMN public.corporations.corp_name IS 'Nom légal de la société.'
 COMMENT ON COLUMN public.corporations.address IS 'Adresse complète du siège social.';
 COMMENT ON COLUMN public.corporations.vat_number IS 'Numéro de TVA ou équivalent.';
 COMMENT ON COLUMN public.corporations.country IS 'Pays de domiciliation de la société.';
-COMMENT ON COLUMN public.affiliations.note IS 'Note interne ou commentaire sur la société.';
-COMMENT ON COLUMN public.affiliations.label IS 'Niveau d’importance ou d’alerte associé à la société.';
+COMMENT ON COLUMN public.corporations.note IS 'Note interne ou commentaire sur la société.';
+COMMENT ON COLUMN public.corporations.label IS 'Niveau d’importance ou d’alerte associé à la société.';
 COMMENT ON COLUMN public.corporations.created_at IS 'Date de création de la fiche société.';
 COMMENT ON COLUMN public.corporations.updated_at IS 'Date de dernière mise à jour.';
 
@@ -157,9 +154,7 @@ CREATE TABLE public.affiliations (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT fk_affil_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE,
-  CONSTRAINT fk_affil_affcode FOREIGN KEY (affiliate_id) REFERENCES public.profiles(affiliate_id) ON DELETE CASCADE
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 COMMENT ON TABLE public.affiliations IS 'Gère les relations de parrainage (cooptation) entre utilisateurs, sur 2 niveaux hiérarchiques.';
@@ -168,7 +163,6 @@ COMMENT ON COLUMN public.affiliations.id IS 'Identifiant unique de l’affiliati
 COMMENT ON COLUMN public.affiliations.profile_id IS 'UUID du profil affilié (filleul).';
 COMMENT ON COLUMN public.affiliations.affiliate_id IS 'Code affilié du parrain (correspond à profiles.affiliate_id).';
 COMMENT ON COLUMN public.affiliations.godfather_id IS 'Ancien code parrain si remplacement (historique ou tracking spécifique).';
-COMMENT ON COLUMN public.affiliations.level IS 'Niveau d’affiliation (1 = direct, 2 = indirect).';
 COMMENT ON COLUMN public.affiliations.note IS 'Note interne ou commentaire sur l’affiliation.';
 COMMENT ON COLUMN public.affiliations.label IS 'Niveau d’importance ou d’alerte associé à l’affiliation.';
 COMMENT ON COLUMN public.affiliations.created_at IS 'Date de création de la relation de parrainage.';
@@ -191,8 +185,7 @@ CREATE TABLE public.challenges (
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT unique_challenge_per_user UNIQUE (profile_id, challenge_num),
-  CONSTRAINT fk_challenge_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
+  CONSTRAINT unique_challenge_per_user UNIQUE (profile_id, challenge_num)
 );
 
 COMMENT ON TABLE public.challenges IS 'Contient les informations liées aux challenges achetés par les utilisateurs.';
@@ -224,8 +217,7 @@ CREATE TABLE public.challenge_results (
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT unique_day_per_challenge UNIQUE (challenge_id, date),
-  CONSTRAINT fk_chalres_challenge FOREIGN KEY (challenge_id) REFERENCES public.challenges(id) ON DELETE CASCADE
+  CONSTRAINT unique_day_per_challenge UNIQUE (challenge_id, date)
 );
 
 COMMENT ON TABLE public.challenge_results IS 'Contient les résultats journaliers pour chaque challenge utilisateur.';
@@ -277,9 +269,7 @@ CREATE TABLE public.purchases (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT fk_purchase_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE,
-  CONSTRAINT fk_purchase_product FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE SET NULL
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 COMMENT ON TABLE public.purchases IS 'Historique des achats effectués par les utilisateurs via tokens.';
@@ -305,8 +295,7 @@ CREATE TABLE public.invoices (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT fk_invoice_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 COMMENT ON TABLE public.invoices IS 'Factures liées aux achats Stripe (tokens, challenges).';
@@ -333,8 +322,7 @@ CREATE TABLE public.payouts (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT fk_payout_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 COMMENT ON TABLE public.payouts IS 'Demandes de retrait de tokens faites par les utilisateurs.';
@@ -362,8 +350,7 @@ CREATE TABLE public.transactions (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT fk_transaction_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 COMMENT ON TABLE public.transactions IS 'Log global de toutes les transactions (achats, retraits, factures, etc.).';
@@ -396,9 +383,7 @@ CREATE TABLE public.history (
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  CONSTRAINT fk_history_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE,
-  CONSTRAINT fk_history_challenge FOREIGN KEY (challenge_id) REFERENCES public.challenges(id) ON DELETE SET NULL
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 COMMENT ON TABLE public.history IS 'Historique mensuel consolidé des performances utilisateur/challenges.';
@@ -418,3 +403,73 @@ COMMENT ON COLUMN public.history.note IS 'Commentaires libres.';
 COMMENT ON COLUMN public.history.label IS 'Étiquette de priorité ou de signalement.';
 COMMENT ON COLUMN public.history.created_at IS 'Date de création de l’enregistrement.';
 COMMENT ON COLUMN public.history.updated_at IS 'Date de mise à jour de l’enregistrement.';
+
+-- ==========================
+-- CONSTRAINT : FOREIGN KEYS
+-- ==========================
+
+-- PROFILES → PROFILES & CORPORATIONS
+ALTER TABLE public.profiles
+ADD CONSTRAINT fk_godfather 
+FOREIGN KEY (godfather_id) REFERENCES public.profiles(affiliate_id) ON DELETE SET NULL;
+
+ALTER TABLE public.profiles
+ADD CONSTRAINT fk_profiles_corp
+FOREIGN KEY (corp_id) REFERENCES public.corporations(id) ON DELETE SET NULL;
+
+-- CORPORATIONS → PROFILES
+ALTER TABLE public.corporations
+ADD CONSTRAINT fk_corp_profile
+FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+-- AFFILIATIONS → PROFILES
+ALTER TABLE public.affiliations
+ADD CONSTRAINT fk_affil_profile
+FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+ALTER TABLE public.affiliations
+ADD CONSTRAINT fk_affil_affcode
+FOREIGN KEY (affiliate_id) REFERENCES public.profiles(affiliate_id) ON DELETE CASCADE;
+
+-- CHALLENGES → PROFILES
+ALTER TABLE public.challenges
+ADD CONSTRAINT fk_challenge_profile
+FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+-- CHALLENGE_RESULTS → CHALLENGES
+ALTER TABLE public.challenge_results
+ADD CONSTRAINT fk_chalres_challenge
+FOREIGN KEY (challenge_id) REFERENCES public.challenges(id) ON DELETE CASCADE;
+
+-- PURCHASES → PROFILES & PRODUCTS
+ALTER TABLE public.purchases
+ADD CONSTRAINT fk_purchase_profile
+FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+ALTER TABLE public.purchases
+ADD CONSTRAINT fk_purchase_product
+FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE SET NULL;
+
+-- INVOICES → PROFILES
+ALTER TABLE public.invoices
+ADD CONSTRAINT fk_invoice_profile
+FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+-- PAYOUTS → PROFILES
+ALTER TABLE public.payouts
+ADD CONSTRAINT fk_payout_profile
+FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+-- TRANSACTIONS → PROFILES
+ALTER TABLE public.transactions
+ADD CONSTRAINT fk_transaction_profile
+FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+-- HISTORY → PROFILES & CHALLENGES
+ALTER TABLE public.history
+ADD CONSTRAINT fk_history_profile
+FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+ALTER TABLE public.history
+ADD CONSTRAINT fk_history_challenge
+FOREIGN KEY (challenge_id) REFERENCES public.challenges(id) ON DELETE SET NULL;

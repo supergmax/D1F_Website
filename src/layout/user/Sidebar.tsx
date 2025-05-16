@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSidebar } from "../context/SidebarContext";
+import { useSidebar } from "../../context/SidebarContext";
 import {
   CheckCircleIcon,
   GridIcon,
@@ -20,7 +20,7 @@ import {
   //TaskIcon,
   //ListIcon,
   //TableIcon,
-} from "../icons/index";
+} from "../../icons/index";
 
 type NavItem = {
   name: string;
@@ -44,7 +44,7 @@ const navItems: NavItem[] = [
 ];
 
 
-const AppSidebar: React.FC = () => {
+const Sidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
 
@@ -112,4 +112,4 @@ const AppSidebar: React.FC = () => {
   );
 };
 
-export default AppSidebar;
+export default Sidebar;
