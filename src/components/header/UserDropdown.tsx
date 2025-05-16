@@ -7,9 +7,9 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import SupportModal from "@/components/example/ModalExample/SupportModal"
 
   // Simulé ici - à remplacer par fetch ou Supabase plus tard
-  const userEmail = "user1@d1f.test";
-  const userName = "USER 1";
-  const userBalance = 120.5;
+  const userEmail = "Settings";
+  const userName = "Teddy";
+  //const userBalance = 120.5;
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +39,7 @@ export default function UserDropdown() {
         {/* Email + Balance */}
         <div className="flex items-center space-x-2">
           <span className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-md">
-            {userBalance} WT
+            {/*{userBalance} WT*/}
           </span>
 
           <span className="font-medium text-theme-sm text-gray-700 dark:text-gray-300 truncate max-w-[130px]">
@@ -78,7 +78,7 @@ export default function UserDropdown() {
               {userName}
             </span>
             <span className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-md">
-              {userBalance} WT
+              {/*{userBalance} WT*/}
             </span>
           </div>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">

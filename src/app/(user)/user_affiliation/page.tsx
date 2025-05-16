@@ -84,7 +84,7 @@ export default function Ecommerce() {
   <div className="w-1/3 px-2">
         <MetricCard
           icon={<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />}
-          label="Affiliés niveau 1"
+          label="Total Amount Users Affiliate "
           value={lvl1.toString()}
           trend="+1"
           trendType="up"
@@ -93,7 +93,7 @@ export default function Ecommerce() {
       <div className="w-1/3 px-2">
         <MetricCard
           icon={<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />}
-          label="Affiliés niveau 2"
+          label="Total Amount Challenges"
           value={lvl2.toString()}
           trend="+2"
           trendType="up"
@@ -102,7 +102,7 @@ export default function Ecommerce() {
       <div className="w-1/3 px-2">
         <CopyCard icon={<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />}
           id="XB132347"
-          label="ID Utilisateur"
+          label="User ID"
         />
       </div>
     </div>
