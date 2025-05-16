@@ -1,13 +1,11 @@
-interface HistoryRow {
-  id?: string; // si besoin pour plus tard
+interface MonthlyRow {
   month: string;
-  total_gain: number;
-  total_loss: number;
-  token_balance_snapshot: number;
+  total_invoices: number;
+  total_payouts: number;
 }
 
 interface InvoiceProps {
-  data: HistoryRow[];
+  data: MonthlyRow[];
   loading: boolean;
 }
 
@@ -19,39 +17,37 @@ export default function SaasInvoiceTable({ data, loading }: InvoiceProps) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="px-6 py-4">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Historique mensuel
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Historique mensuel</h3>
       </div>
       <div className="custom-scrollbar overflow-x-auto">
         <table className="min-w-full">
           <thead>
             <tr className="bg-gray-50 dark:bg-gray-900">
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Mois</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Gain total</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Perte totale</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Solde tokens</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Statut</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Factures (€)</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Retraits (tokens)</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Bilan</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
             {data.map((row, index) => {
-              const net = row.total_gain - row.total_loss;
+              const net = row.total_invoices - row.total_payouts;
               const status =
-                net > 0 ? "Gain" : net < 0 ? "Perte" : "Stable";
+                net > 0 ? "Recharge" : net < 0 ? "Retrait" : "Équilibre";
 
               return (
                 <tr key={index}>
                   <td className="px-6 py-4">{row.month}</td>
-                  <td className="px-6 py-4 text-green-600">{row.total_gain.toFixed(2)} €</td>
-                  <td className="px-6 py-4 text-red-600">{row.total_loss.toFixed(2)} €</td>
-                  <td className="px-6 py-4 font-medium">{row.token_balance_snapshot}</td>
+                  <td className="px-6 py-4 text-green-600">
+                    {(row.total_invoices / 100).toFixed(2)} €
+                  </td>
+                  <td className="px-6 py-4 text-red-600">{row.total_payouts} Tokens</td>
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                        status === "Gain"
+                        status === "Recharge"
                           ? "bg-green-100 text-green-800"
-                          : status === "Perte"
+                          : status === "Retrait"
                           ? "bg-red-100 text-red-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
