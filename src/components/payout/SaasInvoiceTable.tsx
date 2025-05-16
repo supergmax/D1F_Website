@@ -44,10 +44,7 @@ export default function SaasInvoiceTable({
               const montant = Number(txn.amount_tokens);
               const montantFormaté =
                 !isNaN(montant)
-                  ? montant.toLocaleString("fr-FR", {
-                      style: "currency",
-                      currency: "EUR",
-                    })
+                  ? `${montant.toLocaleString("fr-FR")} WT`
                   : "–";
 
               return (
