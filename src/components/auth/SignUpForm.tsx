@@ -27,7 +27,6 @@ export default function SignUpForm() {
     phone: '',
     password: '',
     id_phone: '',
-    phone: '',
     // address: '',
     // billing_address: '',
     country: '',
