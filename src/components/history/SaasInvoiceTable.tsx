@@ -33,7 +33,7 @@ export default function SaasInvoiceTable({ data, loading }: InvoiceProps) {
             {data.map((row, index) => {
               const net = row.total_invoices - row.total_payouts;
               const status =
-                net > 0 ? "Gain" : net < 0 ? "Perte" : "Équilibre";
+                net > 0 ? "Recharge" : net < 0 ? "Retrait" : "Équilibre";
 
               return (
                 <tr key={index}>
@@ -45,9 +45,9 @@ export default function SaasInvoiceTable({ data, loading }: InvoiceProps) {
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                        status === "Gain"
+                        status === "Recharge"
                           ? "bg-green-100 text-green-800"
-                          : status === "Perte"
+                          : status === "Retrait"
                           ? "bg-red-100 text-red-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
