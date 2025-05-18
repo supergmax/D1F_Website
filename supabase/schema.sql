@@ -4,30 +4,6 @@
 -- Description : Tables, ENUMs, Champs, Contraintes, Commentaires
 -- =====================================================
 
-
-
--- =====================================================
--- ACCES : auth
--- =====================================================
-
--- Donne accès au schéma auth
-GRANT USAGE ON SCHEMA auth TO authenticated;
-
--- Accès lecture uniquement
-GRANT SELECT ON auth.users TO authenticated;
-
--- =====================================================
--- ACCES : public
--- =====================================================
-
--- Donne accès au schéma public
-GRANT USAGE ON SCHEMA public TO anon;
-GRANT USAGE ON SCHEMA public TO authenticated;
-
--- Donne accès aux tables
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO anon;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
-
 -- =====================================================
 
 -- Extensions nécessaires
@@ -40,7 +16,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TYPE role_enum AS ENUM ('user', 'admin', 'superadmin', 'support');
 COMMENT ON TYPE role_enum IS 'Rôle de l’utilisateur dans le système.';
 
-CREATE TYPE challenge_status_enum AS ENUM ('open', 'pending', 'active', 'failed', 'completed');
+CREATE TYPE challenge_status_enum AS ENUM ('open', 'pending', 'active', 'close', 'issue');
 COMMENT ON TYPE challenge_status_enum IS 'Statut d’un challenge (suivi du process).';
 
 CREATE TYPE invoice_status_enum AS ENUM ('pending', 'open', 'paid', 'failed');
@@ -80,14 +56,18 @@ CREATE TABLE public.profiles (
   affiliate_id VARCHAR(6) UNIQUE NOT NULL,
   godfather_id VARCHAR(6),
   token_balance INTEGER DEFAULT 0 NOT NULL CHECK (token_balance >= 0),
+  dollar_balance INTEGER DEFAULT 0 NOT NULL CHECK (dollar_balance >= 0),
   role role_enum DEFAULT 'user' NOT NULL,
   photo_url TEXT,
+  broker_id TEXT NOT NULL, 
+  broker_pwd VARCHAR(8) NOT NULL, 
   corp_id UUID,
   error_location error_source_enum,
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT now() NOT NULL,
-  updated_at TIMESTAMP DEFAULT now() NOT NULL
+  updated_at TIMESTAMP DEFAULT now() NOT NULL,
+  CONSTRAINT unique_broker_credentials_per_user UNIQUE (broker_id, broker_pwd)
 );
 
 COMMENT ON TABLE public.profiles IS 'Contient les données personnelles et les rôles des utilisateurs (liés à auth.users).';
@@ -105,8 +85,11 @@ COMMENT ON COLUMN public.profiles.language IS 'Langue d’affichage (par défaut
 COMMENT ON COLUMN public.profiles.affiliate_id IS 'Code unique généré automatiquement à la création du compte.';
 COMMENT ON COLUMN public.profiles.godfather_id IS 'Code du parrain (affiliate_id d’un autre utilisateur).';
 COMMENT ON COLUMN public.profiles.token_balance IS 'Solde de tokens de l’utilisateur.';
+COMMENT ON COLUMN public.profiles.dollar_balance IS 'Solde de dollars de l’utilisateur.';
 COMMENT ON COLUMN public.profiles.role IS 'Rôle du profil (user, admin, etc.)';
 COMMENT ON COLUMN public.profiles.photo_url IS 'Lien vers la photo de profil.';
+COMMENT ON COLUMN public.profiles.broker_id IS 'Id du compte broker de l’utilisateur.';
+COMMENT ON COLUMN public.profiles.broker_pwd IS 'Mot de passe du compte broker de l’utilisateur.';
 COMMENT ON COLUMN public.profiles.corp_id IS 'ID d’une société liée (corporation).';
 COMMENT ON COLUMN public.profiles.error_location IS 'Source de l’erreur associée à ce profil, le cas échéant.';
 COMMENT ON COLUMN public.profiles.note IS 'Note interne ou commentaire sur l’utilisateur.';
@@ -239,7 +222,7 @@ CREATE TABLE public.products (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
   description TEXT,
-  price_in_tokens INTEGER NOT NULL CHECK (price_in_tokens >= 0),
+  price INTEGER NOT NULL CHECK (price >= 0),
   available BOOLEAN DEFAULT true,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
@@ -251,7 +234,7 @@ COMMENT ON TABLE public.products IS 'Liste des produits disponibles à l’achat
 COMMENT ON COLUMN public.products.id IS 'Identifiant unique du produit.';
 COMMENT ON COLUMN public.products.name IS 'Nom du produit (affiché dans la boutique).';
 COMMENT ON COLUMN public.products.description IS 'Description détaillée du produit.';
-COMMENT ON COLUMN public.products.price_in_tokens IS 'Prix du produit en nombre de tokens.';
+COMMENT ON COLUMN public.products.price IS 'Prix du produit.';
 COMMENT ON COLUMN public.products.available IS 'Indique si le produit est actuellement disponible à l’achat.';
 COMMENT ON COLUMN public.products.label IS 'Niveau de priorité, de visibilité ou de traitement du produit.';
 COMMENT ON COLUMN public.products.created_at IS 'Date de création de l’enregistrement.';
@@ -265,7 +248,7 @@ CREATE TABLE public.purchases (
   profile_id UUID NOT NULL,
   product_id UUID NOT NULL,
   quantity INTEGER NOT NULL CHECK (quantity > 0),
-  total_tokens INTEGER NOT NULL CHECK (total_tokens >= 0),
+  amount INTEGER NOT NULL CHECK (amount >= 0),
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
@@ -278,7 +261,7 @@ COMMENT ON COLUMN public.purchases.id IS 'Identifiant unique de l’achat.';
 COMMENT ON COLUMN public.purchases.profile_id IS 'Utilisateur ayant réalisé l’achat.';
 COMMENT ON COLUMN public.purchases.product_id IS 'Produit acheté par l’utilisateur.';
 COMMENT ON COLUMN public.purchases.quantity IS 'Quantité de produit achetée.';
-COMMENT ON COLUMN public.purchases.total_tokens IS 'Coût total en tokens pour cette ligne d’achat.';
+COMMENT ON COLUMN public.purchases.amount IS 'Coût total pour cette ligne d’achat.';
 COMMENT ON COLUMN public.purchases.note IS 'Note administrative ou commentaire interne.';
 COMMENT ON COLUMN public.purchases.label IS 'Étiquette de suivi ou d’alerte (support, fraude, etc.).';
 COMMENT ON COLUMN public.purchases.created_at IS 'Date de création de l’enregistrement.';
@@ -315,7 +298,7 @@ COMMENT ON COLUMN public.invoices.updated_at IS 'Dernière mise à jour de la fa
 CREATE TABLE public.payouts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   profile_id UUID NOT NULL,
-  amount_tokens INTEGER NOT NULL CHECK (amount_tokens > 0),
+  amount INTEGER NOT NULL CHECK (amount > 0),
   status payout_status_enum DEFAULT 'requested',
   requested_at TIMESTAMP DEFAULT NOW() NOT NULL,
   processed_at TIMESTAMP,
@@ -329,7 +312,7 @@ COMMENT ON TABLE public.payouts IS 'Demandes de retrait de tokens faites par les
 
 COMMENT ON COLUMN public.payouts.id IS 'Identifiant unique de la demande de retrait.';
 COMMENT ON COLUMN public.payouts.profile_id IS 'Utilisateur ayant demandé le retrait.';
-COMMENT ON COLUMN public.payouts.amount_tokens IS 'Montant de tokens demandé pour le retrait.';
+COMMENT ON COLUMN public.payouts.amount IS 'Montant demandé pour le retrait.';
 COMMENT ON COLUMN public.payouts.status IS 'Statut de la demande (en attente, validée, refusée, etc.).';
 COMMENT ON COLUMN public.payouts.requested_at IS 'Date de soumission de la demande.';
 COMMENT ON COLUMN public.payouts.processed_at IS 'Date à laquelle la demande a été traitée.';
@@ -473,3 +456,25 @@ FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
 ALTER TABLE public.history
 ADD CONSTRAINT fk_history_challenge
 FOREIGN KEY (challenge_id) REFERENCES public.challenges(id) ON DELETE SET NULL;
+
+-- =====================================================
+-- ACCES : auth
+-- =====================================================
+
+-- Donne accès au schéma auth
+GRANT USAGE ON SCHEMA auth TO authenticated;
+
+-- Accès lecture uniquement
+GRANT SELECT ON auth.users TO authenticated;
+
+-- =====================================================
+-- ACCES : public
+-- =====================================================
+
+-- Donne accès au schéma public
+GRANT USAGE ON SCHEMA public TO anon;
+GRANT USAGE ON SCHEMA public TO authenticated;
+
+-- Donne accès aux tables
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
