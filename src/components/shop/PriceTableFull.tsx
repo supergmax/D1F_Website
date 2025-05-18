@@ -179,7 +179,7 @@ export default function PriceTableWithBackend() {
       <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 dark:bg-black/40 backdrop-blur-md">
           <span className="text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
-            🧊 Bientôt disponible — restez à l'écoute !
+            🧊 Bientôt disponible — restez actifs !
           </span>
         </div>
         <div className="pointer-events-none opacity-60">
