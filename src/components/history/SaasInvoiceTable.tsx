@@ -17,16 +17,16 @@ export default function SaasInvoiceTable({ data, loading }: InvoiceProps) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="px-6 py-4">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Historique mensuel</h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Historique</h3>
       </div>
       <div className="custom-scrollbar overflow-x-auto">
         <table className="min-w-full">
           <thead>
             <tr className="bg-gray-50 dark:bg-gray-900">
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Mois</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Factures (€)</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Retraits (tokens)</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Bilan</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">In / out</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Montant</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-800">

@@ -32,6 +32,7 @@ const navItems: NavItem[] = [
   { name: "Dashboard®", icon: <GridIcon />, path: "/user_dashboard" },
   { name: "Mon compte", icon: <UserCircleIcon />, path: "/user_profile" },
   { name: "Mes Challenges", icon: <ShootingStarIcon />, path: "/user_challenge" },
+  { name: "Performances", icon: <ListIcon />, path: "/coming-soon" },
   { name: "Affiliation", icon: <PlusIcon />, path: "/user_affiliation" },
   { name: "Shop", icon: <PlusIcon />, path: "/user_shop" },
   { name: "Historique des paiements", icon: <ListIcon />, path: "/user_history" },

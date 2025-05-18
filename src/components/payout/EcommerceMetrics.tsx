@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Badge from "../ui/badge/Badge";
 import { ArrowDownIcon, ArrowUpIcon, BoxIconLine, GroupIcon } from "@/icons";
 
@@ -15,17 +15,11 @@ export const EcommerceMetrics = ({
   growthRate = 0,
 }: EcommerceMetricsProps) => {
   const hasGrowth = typeof growthRate === "number";
-  const [isBlurred, setIsBlurred] = useState(true);
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
       {/* Paiements totaux */}
-      <div
-        className={`rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 transition-all duration-300 cursor-pointer ${
-          isBlurred ? "blur-sm" : ""
-        }`}
-        onClick={() => setIsBlurred(false)}
-      >
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 transition-all duration-300">
         <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
           <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
         </div>
@@ -33,7 +27,7 @@ export const EcommerceMetrics = ({
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">Total payé</span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              {/*{totalPaid.toLocaleString()}*/} 8 892 €
+              {totalPaid.toLocaleString()}
             </h4>
           </div>
           {hasGrowth && (

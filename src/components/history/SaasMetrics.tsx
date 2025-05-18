@@ -26,23 +26,23 @@ export default function SaasMetrics({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
         {/* Gain Total */}
         <div className="border-b sm:border-b-0 sm:border-r border-gray-200 px-6 py-5 dark:border-gray-800">
-          <span className="text-sm text-gray-500 dark:text-gray-400">Gain Total</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">Ajout de fonds Total</span>
           <h4 className="mt-2 text-title-xs font-bold text-gray-800 dark:text-white/90">
-            {safeRevenue.toLocaleString("fr-FR")} €
+            {safeRevenue.toLocaleString("fr-FR")} $
           </h4>
         </div>
 
         {/* Profit Moyen */}
         <div className="border-b lg:border-b-0 lg:border-r border-gray-200 px-6 py-5 dark:border-gray-800">
-          <span className="text-sm text-gray-500 dark:text-gray-400">Profit Moyen (net)</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">Nombre de Challenge Acheté</span>
           <h4 className="mt-2 text-title-xs font-bold text-gray-800 dark:text-white/90">
-            {safeAverage.toLocaleString("fr-FR")} €
+            {safeAverage.toLocaleString("fr-FR")} $
           </h4>
         </div>
 
         {/* Utilisateurs Actifs */}
         <div className="px-6 py-5">
-          <span className="text-sm text-gray-500 dark:text-gray-400">Utilisateurs Actifs</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">Nombre de Transaction</span>
           <h4 className="mt-2 text-title-xs font-bold text-gray-800 dark:text-white/90">
             {safeUsers.toLocaleString("fr-FR")}
           </h4>
