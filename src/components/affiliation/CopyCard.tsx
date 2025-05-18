@@ -1,27 +1,50 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CheckIcon, CopyIcon } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
 
 export function CopyCard({
   icon,
-  id,
   label,
 }: {
   icon: React.ReactNode;
-  id: string;
   label: string;
 }) {
+  const [affiliateId, setAffiliateId] = useState<string>("—");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(id);
+      await navigator.clipboard.writeText(affiliateId);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Erreur lors de la copie dans le presse-papiers", err);
     }
   };
+
+  useEffect(() => {
+    const fetchAffiliateId = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const user = session?.user;
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("affiliate_id")
+        .eq("id", user.id)
+        .single();
+
+      if (!error && data?.affiliate_id) {
+        setAffiliateId(data.affiliate_id);
+      }
+    };
+
+    fetchAffiliateId();
+  }, []);
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 w-full h-full">
@@ -44,7 +67,7 @@ export function CopyCard({
           ) : (
             <>
               <CopyIcon className="w-4 h-4 mr-1" />
-              Copier l'ID
+              Copier l&apos;ID
             </>
           )}
         </button>
@@ -54,9 +77,9 @@ export function CopyCard({
 
       <div
         className="text-lg font-bold text-gray-800 dark:text-white truncate max-w-full"
-        title={id} // info-bulle complète si on survole
+        title={affiliateId}
       >
-        {id}
+        {affiliateId}
       </div>
     </div>
   );

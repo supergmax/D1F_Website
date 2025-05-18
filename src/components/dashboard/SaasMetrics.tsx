@@ -21,26 +21,26 @@ export default function SaasMetrics({
           <span className="text-sm text-gray-500 dark:text-gray-400">Total Profit</span>
           <div className="mt-2 flex items-end gap-3">
             <h4 className="text-title-xs font-bold text-gray-800 dark:text-white/90">
-              {/*{totalRevenue}*/} 50 892 WT
+              {totalRevenue}
             </h4>
           </div>
         </div>
         <div className="border-b border-gray-200 px-6 py-5 xl:border-r xl:border-b-0 dark:border-gray-800">
           <span className="text-sm text-gray-500 dark:text-gray-400">Active Challenges</span>
           <h4 className="mt-2 text-title-xs font-bold text-gray-800 dark:text-white/90">
-            {/*{activeChallenges}*/} 14
+            {activeChallenges}
           </h4>
         </div>
         <div className="border-b border-gray-200 px-6 py-5 sm:border-r sm:border-b-0 dark:border-gray-800">
           <span className="text-sm text-gray-500 dark:text-gray-400">Total Challenges</span>
           <h4 className="mt-2 text-title-xs font-bold text-gray-800 dark:text-white/90">
-            {/*{totalChallenges}*/} 14
+            {totalChallenges}
           </h4>
         </div>
         <div className="px-6 py-5">
           <span className="text-sm text-gray-500 dark:text-gray-400">Avg. Profit per Challenge</span>
           <h4 className="mt-2 text-title-xs font-bold text-gray-800 dark:text-white/90">
-            {/*{typeof averageProfit === 'number' ? averageProfit : 'N/A'}*/} 3635.14 WT
+            {typeof averageProfit === 'number' ? averageProfit : 'N/A'}
           </h4>
         </div>
       </div>
