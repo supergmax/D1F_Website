@@ -1,15 +1,19 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+//import React, { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import SupportModal from "@/components/example/ModalExample/SupportModal"
+import { supabase } from "@/lib/supabaseClient";
+import React, { useEffect, useRef, useState } from "react";
 
   // Simulé ici - à remplacer par fetch ou Supabase plus tard
-  const userEmail = "Settings";
-  const userName = "Teddy";
-  //const userBalance = 120.5;
+  const userBalance = 120.5;
+
+
+
+
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +25,39 @@ export default function UserDropdown() {
   function closeDropdown() {
     setIsOpen(false);
   }
+  const [userData, setUserData] = useState<{
+      first_name: string;
+      last_name: string;
+      email: string;
+      token_balance: number;
+    } | null>(null);
+
+  useEffect(() => {
+      const fetchProfile = async () => {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+  
+        const user = session?.user;
+        if (!user) return;
+  
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("first_name, last_name, token_balance")
+          .eq("id", user.id)
+          .single();
+  
+        if (!error && data) {
+          setUserData({
+            ...data,
+            email: user.email ?? "—",
+          });
+        }
+      };
+  
+      fetchProfile();
+    }, []);
+
   return (
     <div className="relative">
       <button
@@ -35,16 +72,31 @@ export default function UserDropdown() {
             alt="User"
           />
         </span>
+        
 
         {/* Email + Balance */}
         <div className="flex items-center space-x-2">
+          {userData ? (
+              <>
           <span className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-md">
-            {/*{userBalance} WT*/}
+            <strong>{userData.token_balance}</strong> WT <br />
+            {userBalance} $
           </span>
-
+          </>
+            ) : (
+              <span>Chargement...</span>
+            )}
+          
+          {userData ? (
+              <>
           <span className="font-medium text-theme-sm text-gray-700 dark:text-gray-300 truncate max-w-[130px]">
-            {userEmail}
+            {userData.first_name} {userData.last_name}
           </span>
+          </>
+            ) : (
+              <span>Chargement...</span>
+            )}
+
         </div>
 
         <svg
@@ -73,17 +125,29 @@ export default function UserDropdown() {
         className="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
       >
         <div className="mb-2">
+          
+
+          {userData ? (
+              <>
           <div className="flex items-center justify-between">
             <span className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-              {userName}
+              {userData.first_name} {userData.last_name}
             </span>
             <span className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-md">
-              {/*{userBalance} WT*/}
+              <strong>{userData.token_balance}</strong> WT <br />
+              {userBalance} $
             </span>
           </div>
+
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {userEmail}
+            {userData.email}
           </span>
+          </>
+            ) : (
+              <span>Chargement...</span>
+            )}
+
+
         </div>
 
         <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
