@@ -11,7 +11,7 @@
         "init": "npm install && npm run db:start",
         "reset": "npm run db:reset && npm run clean && npm install && npm run dev",
         "softreset": "npm run clean && npm install && npm run dev",
-        "softbuild": "npm run clean && npm install && npm run build",
+        "softbuild": "npm run clean && npm install && npm run build && npm start",
         "clean": "node cleanup.js",
         "db:init": "./init-db.sh",
         "db:studio": "supabase studio",

@@ -9,7 +9,7 @@ import Checkbox from "@/components/form/input/Checkbox";
 import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
-import CGUModal from "@/components/auth/CGUModal"; // Tu peux adapter le nom selon ton projet
+import CGUModal from "@/components/auth/CGUModal";
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -27,8 +27,6 @@ export default function SignUpForm() {
     phone: '',
     password: '',
     id_phone: '',
-    // address: '',
-    // billing_address: '',
     country: '',
     language: 'fr',
     affiliate_code: '',
@@ -48,6 +46,11 @@ export default function SignUpForm() {
     return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
   };
 
+  const generateBrokerPassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    return Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -60,7 +63,6 @@ export default function SignUpForm() {
     const affiliate_id = generateAffiliateId();
     let corpId: string | null = null;
 
-    // Vérifie code de parrainage
     const { data: godfather, error: godfatherErr } = await supabase
       .from("profiles")
       .select("affiliate_id")
@@ -73,10 +75,29 @@ export default function SignUpForm() {
     }
 
     if (showCorporation && form.corp_name.trim() !== "") {
-      corpId = uuidv4(); // on génère l'ID dès maintenant
+      corpId = uuidv4();
     }
 
-    // Création utilisateur
+    // Génère un broker_id unique
+    const { data: brokerData, error: brokerError } = await supabase
+      .from("profiles")
+      .select("broker_id")
+      .like("broker_id", "WUF-%");
+
+    if (brokerError) {
+      setError("Erreur lors de la génération du broker_id.");
+      return;
+    }
+
+    const maxNum = brokerData
+      ?.map((d) => parseInt(d.broker_id?.split("-")[1] || "0"))
+      .filter((n) => !isNaN(n))
+      .sort((a, b) => b - a)[0] || 0;
+
+    const newBrokerId = `WUF-${(maxNum + 1).toString().padStart(6, '0')}`;
+    const newBrokerPwd = generateBrokerPassword();
+
+    // Création compte Supabase
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -96,7 +117,7 @@ export default function SignUpForm() {
 
     const userId = signUpData.user.id;
 
-    // Insertion dans profiles
+    // Insertion dans `profiles`
     const { error: profileErr } = await supabase.from("profiles").insert({
       id: userId,
       first_name: form.first_name,
@@ -104,22 +125,25 @@ export default function SignUpForm() {
       email: form.email,
       id_phone: form.id_phone,
       phone: form.phone,
-      // address: form.address || null,
-      // billing_address: form.billing_address || null,
       country: form.country || null,
       language: form.language,
       affiliate_id,
       godfather_id: form.affiliate_code,
       role: "user",
-      corp_id: corpId // peut être null
+      corp_id: corpId,
+      broker_id: newBrokerId,
+      broker_pwd: newBrokerPwd,
+      token_balance: 0,        
+      dollar_balance: 0        
     });
+
 
     if (profileErr) {
       setError("Erreur lors de l'insertion dans les profils.");
       return;
     }
 
-    // Si société à créer
+    // Création société
     if (showCorporation && corpId) {
       const { error: corpErr } = await supabase.from("corporations").insert({
         id: corpId,
@@ -187,12 +211,6 @@ export default function SignUpForm() {
               {showPassword ? <EyeIcon /> : <EyeCloseIcon />}
             </span>
           </div>
-
-          {/* <Label>Address</Label>
-          <Input name="address" value={form.address} onChange={handleChange} />
-
-          <Label>Billing Address</Label>
-          <Input name="billing_address" value={form.billing_address} onChange={handleChange} /> */}
 
           <Label>Country</Label>
           <Input name="country" value={form.country} onChange={handleChange} />
