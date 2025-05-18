@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PriceTableFull from "@/components/shop/PriceTableFull";
+import PriceTable from "@/components/shop/PriceTable";
 
 import React from "react";
 
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function Ecommerce() {
   return (
     <div >
-      <PriceTableFull></PriceTableFull>
+      <PriceTable></PriceTable>
     </div>
   );
 }
