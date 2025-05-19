@@ -9,6 +9,7 @@ import UserMetaCard from '@/components/profile/UserMetaCard';
 import SaasMetrics from '@/components/profile/SaasMetrics';
 
 interface UserProfile {
+  role: string;
   id: string;
   first_name: string;
   last_name: string;
@@ -118,6 +119,7 @@ export default function Profile() {
         </h3>
         <div className="space-y-6">
           <UserMetaCard
+            role={profile.role}
             id={profile.id}
             first_name={profile.first_name}
             last_name={profile.last_name}

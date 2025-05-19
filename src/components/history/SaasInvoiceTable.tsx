@@ -1,66 +1,195 @@
-interface MonthlyRow {
-  month: string;
-  total_invoices: number;
-  total_payouts: number;
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+
+interface TransactionRow {
+  type: "invoice" | "payout" | "purchase";
+  direction: "in" | "out";
+  amount: number;
+  created_at: string;
+  status: string;
 }
 
-interface InvoiceProps {
-  data: MonthlyRow[];
-  loading: boolean;
-}
+// 🔔 Inline Alert Component (copié depuis ton template)
+const InlineAlert = ({
+  variant,
+  title,
+  message,
+}: {
+  variant: "success" | "error" | "warning" | "info";
+  title: string;
+  message: string;
+}) => {
+  const variantClasses = {
+    success: {
+      container: "border-green-500 bg-green-50 dark:border-green-500/30 dark:bg-green-500/15",
+      icon: "text-green-500",
+    },
+    error: {
+      container: "border-red-500 bg-red-50 dark:border-red-500/30 dark:bg-red-500/15",
+      icon: "text-red-500",
+    },
+    warning: {
+      container: "border-yellow-500 bg-yellow-50 dark:border-yellow-500/30 dark:bg-yellow-500/15",
+      icon: "text-yellow-500",
+    },
+    info: {
+      container: "border-blue-500 bg-blue-50 dark:border-blue-500/30 dark:bg-blue-500/15",
+      icon: "text-blue-500",
+    },
+  };
 
-export default function SaasInvoiceTable({ data, loading }: InvoiceProps) {
-  if (loading) {
-    return <p className="p-4 text-gray-600">Chargement de l’historique...</p>;
-  }
+  const icon = {
+    success: "✅",
+    error: "❌",
+    warning: "⚠️",
+    info: "ℹ️",
+  }[variant];
+
+  return (
+    <div className={`rounded-xl border p-4 ${variantClasses[variant].container}`}>
+      <div className="flex items-start gap-3">
+        <div className={`text-lg ${variantClasses[variant].icon}`}>{icon}</div>
+        <div>
+          <h4 className="mb-1 text-sm font-semibold text-gray-800 dark:text-white/90">
+            {title}
+          </h4>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{message}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default function SaasInvoiceTable() {
+  const [data, setData] = useState<TransactionRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setLoading(true);
+      setError(null);
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const user = session?.user;
+      if (!user) {
+        setError("Utilisateur non connecté.");
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("view_latest_transactions")
+        .select("type, amount, status, created_at, direction")
+        .eq("profile_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        setError("Erreur lors du chargement : " + error.message);
+      } else if (!data || data.length === 0) {
+        setError("Aucune transaction trouvée.");
+      } else {
+        setData(data);
+      }
+
+      setLoading(false);
+    };
+
+    fetchTransactions();
+  }, []);
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="px-6 py-4">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Historique</h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+          Historique
+        </h3>
       </div>
-      <div className="custom-scrollbar overflow-x-auto">
-        <table className="min-w-full">
-          <thead>
-            <tr className="bg-gray-50 dark:bg-gray-900">
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Mois</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">In / out</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Montant</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-            {data.map((row, index) => {
-              const net = row.total_invoices - row.total_payouts;
-              const status =
-                net > 0 ? "Recharge" : net < 0 ? "Retrait" : "Équilibre";
 
-              return (
-                <tr key={index}>
-                  <td className="px-6 py-4">{row.month}</td>
-                  <td className="px-6 py-4 text-green-600">
-                    {(row.total_invoices / 100).toFixed(2)} €
-                  </td>
-                  <td className="px-6 py-4 text-red-600">{row.total_payouts} WT</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                        status === "Recharge"
-                          ? "bg-green-100 text-green-800"
-                          : status === "Retrait"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {status}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="px-6 py-4">
+        {loading && (
+          <InlineAlert
+            variant="info"
+            title="Chargement en cours"
+            message="Nous récupérons vos transactions..."
+          />
+        )}
+
+        {!loading && error && (
+          <InlineAlert
+            variant="error"
+            title="Erreur"
+            message={error}
+          />
+        )}
       </div>
+
+      {!loading && !error && (
+        <div className="custom-scrollbar overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-900">
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
+                  Date
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
+                  Type
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
+                  Montant
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
+                  Statut
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+              {data.map((row, index) => {
+                const isIn = row.direction === "in";
+                const currency = row.type === "invoice" ? "$" : "WT";
+
+                return (
+                  <tr key={index}>
+                    <td className="px-6 py-4">
+                      {new Date(row.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={isIn ? "text-green-600" : "text-red-600"}>
+                        {isIn ? "In" : "Out"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={isIn ? "text-green-600" : "text-red-600"}>
+                        {row.amount} {currency}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                          row.status === "completed"
+                            ? "bg-green-100 text-green-800"
+                            : row.status === "pending"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : row.status === "failed"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {row.status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

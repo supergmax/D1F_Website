@@ -4,7 +4,6 @@ interface MetricsProps {
   activeChallenges: number;
   averageProfit: number;
   totalGainFromResults: number;
-  totalLossFromResults: number;
   netResultFromResults: number;
 }
 
@@ -14,7 +13,6 @@ export default function SaasMetrics({
   activeChallenges,
   averageProfit,
   totalGainFromResults,
-  totalLossFromResults,
   netResultFromResults,
 }: MetricsProps) {
   const formatCurrency = (value: number) =>
@@ -44,10 +42,11 @@ export default function SaasMetrics({
             {activeChallenges}
           </h4>
         </div>
-
-        <div className="p-4 border rounded-lg">
-          <span className="text-sm text-gray-500 dark:text-gray-400">Pertes cumulées (journalières)</span>
-          <h4 className="mt-2 font-bold text-red-600 dark:text-red-400">{formatCurrency(totalLossFromResults)}</h4>
+        <div className="border-b border-gray-200 px-6 py-5 xl:border-r xl:border-b-0 dark:border-gray-800 xl:border-r">
+          <span className="text-sm text-gray-500 dark:text-gray-400">Total Challenges</span>
+          <h4 className="mt-2 text-title-xs font-bold text-gray-800 dark:text-white/90">
+            {totalChallenges}
+          </h4>
         </div>
         <div className="px-6 py-5">
           <span className="text-sm text-gray-500 dark:text-gray-400">Avg. Profit per Challenge</span>
