@@ -7,6 +7,7 @@ import { GridIcon, ListIcon, UserCircleIcon } from "@/icons";
 
 const adminNav = [
   { name: "Admin Dashboard", icon: <GridIcon />, path: "/admin" },
+  { name: "User Dashboard", icon: <GridIcon />, path: "/" },
   { name: "Gestion Invoices", icon: <ListIcon />, path: "/admin/invoices" },
   { name: "Gestion Purchases", icon: <ListIcon />, path: "/admin/purchases" },
   { name: "Gestion Challenges", icon: <ListIcon />, path: "/admin/challenges" },
