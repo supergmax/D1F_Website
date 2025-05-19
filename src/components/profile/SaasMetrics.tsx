@@ -14,12 +14,12 @@ export default function SaasMetrics({
   tokenBalance,
 }: MetricsProps) {
   const formatTokens = (value: number) =>
-    new Intl.NumberFormat('fr-FR').format(value) + ' WT';
+    new Intl.NumberFormat('fr-FR').format(value) + ' WUT';
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Vue d'ensemble du compte</h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Vue d&apos;ensemble du compte</h3>
       </div>
       <div className="grid rounded-2xl border border-gray-200 bg-white sm:grid-cols-2 xl:grid-cols-4 dark:border-gray-800 dark:bg-gray-900">
         <div className="border-b border-gray-200 px-6 py-5 sm:border-r xl:border-b-0 dark:border-gray-800">
