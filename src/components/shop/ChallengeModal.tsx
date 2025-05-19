@@ -6,6 +6,7 @@ import Button from "@/components/ui/button/Button";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import { supabase } from "@/lib/supabaseClient";
+import RefillAlert from "./RefillAlert";
 
 interface Props {
   isOpen: boolean;
@@ -13,8 +14,6 @@ interface Props {
   userId: string | null;
   tokenBalance: number;
   dollarBalance: number;
-  onSuccess: (msg: string) => void;
-  onError: (msg: string) => void;
 }
 
 export default function ChallengeModal({
@@ -23,19 +22,21 @@ export default function ChallengeModal({
   userId,
   tokenBalance,
   dollarBalance,
-  onSuccess,
-  onError,
 }: Props) {
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<{ success: string; error: string }>({ success: "", error: "" });
+
   const unitPrice = 3000;
   const subTotal = unitPrice * quantity;
   const totalBalance = (tokenBalance ?? 0) + (dollarBalance ?? 0);
 
   const handleValidate = async () => {
     if (!userId || quantity < 1 || subTotal > totalBalance) {
-      onError("Montant invalide ou solde insuffisant pour acheter les challenges.");
-      onClose();
+      setMessage({
+        success: "",
+        error: "Montant invalide ou solde insuffisant pour acheter les challenges.",
+      });
       return;
     }
 
@@ -49,7 +50,10 @@ export default function ChallengeModal({
       .single();
 
     if (productError || !product) {
-      onError("Produit 'Challenge' introuvable ou indisponible.");
+      setMessage({
+        success: "",
+        error: "Produit 'Challenge' introuvable ou indisponible.",
+      });
       setIsLoading(false);
       return;
     }
@@ -62,18 +66,22 @@ export default function ChallengeModal({
     });
 
     if (insertError) {
-      onError("Erreur lors de l'achat : " + insertError.message);
+      setMessage({ success: "", error: "Erreur lors de l'achat : " + insertError.message });
     } else {
-      onSuccess("Challenge(s) acheté(s) avec succès !");
+      setMessage({ success: "Challenge(s) acheté(s) avec succès !", error: "" });
       setQuantity(1);
-      onClose();
     }
 
     setIsLoading(false);
   };
 
+  const handleClose = () => {
+    setMessage({ success: "", error: "" });
+    onClose();
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-5">
+    <Modal isOpen={isOpen} onClose={handleClose} className="max-w-md p-5">
       <h4 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
         Acheter des Challenges
       </h4>
@@ -99,13 +107,21 @@ export default function ChallengeModal({
         Balance actuelle : <strong>{tokenBalance} WT</strong> + <strong>{dollarBalance} $</strong> = <strong>{totalBalance}</strong>
       </div>
 
-      <div className="flex justify-end gap-3">
+      {(message.success || message.error) && (
+        <RefillAlert
+          variant={message.success ? "success" : "error"}
+          title={message.success ? "Succès" : "Erreur"}
+          message={message.success || message.error}
+        />
+      )}
+
+      <div className="flex justify-end gap-3 mt-4">
         <Button
           type="button"
-          onClick={onClose}
+          onClick={handleClose}
           className="!bg-red-600 !text-white hover:!bg-red-700 font-semibold px-4 py-2"
         >
-          Annuler
+          Fermer
         </Button>
         <Button
           onClick={handleValidate}

@@ -106,8 +106,14 @@ export default function PriceTable() {
             Acheter un challenge
           </button>
 
-          {challengeMsg.success && <p className="text-green-600 mt-3 text-sm">{challengeMsg.success}</p>}
-          {challengeMsg.error && <p className="text-red-600 mt-3 text-sm">{challengeMsg.error}</p>}
+          <ChallengeModal
+            isOpen={showChallengeModal}
+            onClose={() => setShowChallengeModal(false)}
+            userId={userId}
+            tokenBalance={tokenBalance ?? 0}
+            dollarBalance={dollarBalance ?? 0}
+          />
+
 
           <ChallengeModal
             isOpen={showChallengeModal}
