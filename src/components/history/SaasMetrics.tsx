@@ -33,7 +33,7 @@ export default function SaasMetrics() {
           .from("invoices")
           .select("amount")
           .eq("profile_id", user.id)
-          .eq("status", "paid");
+          .eq("status", "accepted");
 
         if (invoiceError) throw new Error(invoiceError.message);
         const revenueSum = invoices?.reduce((sum, inv) => sum + inv.amount, 0) ?? 0;
@@ -48,12 +48,12 @@ export default function SaasMetrics() {
         if (challengeError) throw new Error(challengeError.message);
         setTotalChallenges(challengeCount ?? 0);
 
-        // 3. Total Transactions avec filtre `status = completed`
+        // 3. Total Transactions avec filtre `status = accepted`
         const { count: transactionCount, error: transactionError } = await supabase
           .from("transactions")
           .select("*", { count: "exact", head: true })
           .eq("profile_id", user.id)
-          .eq("status", "completed");
+          .eq("status", "accepted");
 
         if (transactionError) throw new Error(transactionError.message);
         setTotalTransactions(transactionCount ?? 0);

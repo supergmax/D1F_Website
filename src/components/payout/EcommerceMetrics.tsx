@@ -4,13 +4,13 @@ import Badge from "../ui/badge/Badge";
 import { ArrowDownIcon, ArrowUpIcon, BoxIconLine, GroupIcon } from "@/icons";
 
 interface EcommerceMetricsProps {
-  totalPaid: number;
+  totalaccepted: number;
   payoutCount: number;
   growthRate?: number; // optionnel : évolution en %
 }
 
 export const EcommerceMetrics = ({
-  totalPaid,
+  totalaccepted,
   payoutCount,
   growthRate = 0,
 }: EcommerceMetricsProps) => {
@@ -27,7 +27,7 @@ export const EcommerceMetrics = ({
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">Total payé</span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              {totalPaid.toLocaleString()}
+              {totalaccepted.toLocaleString()}
             </h4>
           </div>
           {hasGrowth && (

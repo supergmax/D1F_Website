@@ -3,7 +3,7 @@
 import React from 'react';
 import Badge from '../ui/badge/Badge';
 
-type TransactionStatus = 'Complete' | 'Pending' | 'Cancelled';
+type TransactionStatus = 'accepted' | 'pending' | 'cancelled';
 
 interface Transaction {
   id: string;
@@ -65,9 +65,9 @@ export default function SaasInvoiceTable({ transactions }: Props) {
                   <Badge
                     size="sm"
                     color={
-                      transaction.status === 'Complete'
+                      transaction.status === 'accepted'
                         ? 'success'
-                        : transaction.status === 'Pending'
+                        : transaction.status === 'pending'
                         ? 'warning'
                         : 'error'
                     }

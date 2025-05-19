@@ -8,7 +8,7 @@ import SaasInvoiceTable from '@/components/payout/SaasInvoiceTable';
 interface Payout {
   id: string;
   amount_tokens: number;
-  status: 'requested' | 'approved' | 'declined' | 'paid';
+  status: 'pending' | 'accepted' | 'canceled' | 'accepted';
   created_at: string;
 }
 
@@ -44,14 +44,14 @@ export default function UserPayout() {
     fetchPayouts();
   }, []);
 
-  const totalPaid = payouts
-    .filter((p) => p.status === 'paid')
+  const totalaccepted = payouts
+    .filter((p) => p.status === 'accepted')
     .reduce((acc, p) => acc + Number(p.amount_tokens || 0), 0);
     
 
   return (
     <div className="flex flex-col w-full min-h-screen px-4 py-6 space-y-6">
-      <EcommerceMetrics totalPaid={totalPaid} payoutCount={payouts.length} />
+      <EcommerceMetrics totalaccepted={totalaccepted} payoutCount={payouts.length} />
       <SaasInvoiceTable data={payouts} loading={loading} />
     </div>
   );
