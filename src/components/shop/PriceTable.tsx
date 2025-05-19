@@ -123,7 +123,6 @@ export default function PriceTable() {
             isOpen={showModal}
             onClose={() => setShowModal(false)}
             userId={userId}
-            setDollarBalance={setDollarBalance}
             setResult={setRefillResult}
           />
         </div>
