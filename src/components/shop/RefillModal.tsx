@@ -11,7 +11,6 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   userId: string | null;
-  setDollarBalance: (val: number) => void;
   setResult: (res: { success: string; error: string }) => void;
 }
 
@@ -19,7 +18,6 @@ export default function RefillModal({
   isOpen,
   onClose,
   userId,
-  setDollarBalance,
   setResult,
 }: Props) {
   const [amount, setAmount] = useState<number | "">("");
@@ -36,16 +34,16 @@ export default function RefillModal({
 
     setIsLoading(true);
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({ dollar_balance: parsedAmount })
-      .eq("id", userId);
+    const { error } = await supabase.from("invoices").insert({
+      profile_id: userId,
+      amount,
+      status: "pending",
+    });
 
     if (error) {
       setResult({ success: "", error: error.message });
     } else {
-      setDollarBalance(parsedAmount);
-      setResult({ success: "Compte rechargé avec succès !", error: "" });
+      setResult({ success: "Rechargement enregistré !", error: "" });
       setAmount("");
       onClose();
     }
