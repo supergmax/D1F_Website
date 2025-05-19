@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-type PurchaseStatus = 'requested' | 'approved' | 'declined' | 'paid';
+type PurchaseStatus = 'pending' | 'open' | 'accepted' | 'canceled';
 type ActionStatus = 'approved' | 'declined' | 'paid';
 
 type Purchase = {

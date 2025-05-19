@@ -3,15 +3,23 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import SaasMetrics from '@/components/challenges/SaasMetrics';
+import ChallengeDetailsTable from '@/components/challenges/ChallengeDetailsTable';
 import ChallengeResultsTable from '@/components/challenges/ChallengeResultsTable';
 
 interface Challenge {
   id: string;
+  profile_id: string;
   name: string;
+  challenge_num: number;
   status: string;
-  profit: number;
-  initial_balance: number;
   start_date: string | null;
+  end_date: string | null;
+  initial_balance: number;
+  profit: number;
+  note?: string | null;
+  label: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface ChallengeResult {
@@ -20,64 +28,96 @@ interface ChallengeResult {
   date: string;
   daily_gain: number;
   daily_loss: number;
+  note?: string | null;
+  label: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export default function UserChallengesPage() {
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
-  const [results, setResults] = useState<ChallengeResult[]>([]);
+export default function UserChallenge() {
+  const [metrics, setMetrics] = useState({
+    totalRevenue: 0,
+    totalChallenges: 0,
+    activeChallenges: 0,
+    averageProfit: 0,
+    totalGainFromResults: 0,
+    totalLossFromResults: 0,
+    netResultFromResults: 0,
+  });
+
+  const [challengeData, setChallengeData] = useState<Challenge[]>([]);
+  const [challengeResults, setChallengeResults] = useState<ChallengeResult[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
 
-      const { data: auth } = await supabase.auth.getUser();
-      const user = auth?.user;
-      if (!user) return;
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-      const { data: challengesData } = await supabase
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      const { data: challenges, error: challengeError } = await supabase
         .from('challenges')
-        .select('id, name, profit, status, initial_balance, start_date')
+        .select('*')
         .eq('profile_id', user.id);
 
-      const challengeIds = challengesData?.map((c) => c.id) || [];
+      if (challengeError || !challenges) {
+        console.error('Erreur récupération challenges:', challengeError?.message);
+        setLoading(false);
+        return;
+      }
 
-      const { data: resultsData } = await supabase
+      const { data: results, error: resultError } = await supabase
         .from('challenge_results')
-        .select('id, challenge_id, date, daily_gain, daily_loss')
-        .in('challenge_id', challengeIds);
+        .select('*')
+        .in('challenge_id', challenges.map((c) => c.id));
 
-      setChallenges(challengesData || []);
-      setResults(resultsData || []);
+      if (resultError || !results) {
+        console.error('Erreur récupération résultats:', resultError?.message);
+        setLoading(false);
+        return;
+      }
+
+      // Metrics
+      const totalRevenue = challenges.reduce((acc, c) => acc + (c.profit || 0), 0);
+      const totalChallenges = challenges.length;
+      const activeChallenges = challenges.filter((c) => c.status === 'active').length;
+      const averageProfit = totalChallenges > 0 ? totalRevenue / totalChallenges : 0;
+      const totalGainFromResults = results.reduce((acc, r) => acc + (r.daily_gain || 0), 0);
+      const totalLossFromResults = results.reduce((acc, r) => acc + (r.daily_loss || 0), 0);
+      const netResultFromResults = totalGainFromResults - totalLossFromResults;
+
+      setMetrics({
+        totalRevenue,
+        totalChallenges,
+        activeChallenges,
+        averageProfit,
+        totalGainFromResults,
+        totalLossFromResults,
+        netResultFromResults,
+      });
+
+      setChallengeData(challenges);
+      setChallengeResults(results);
       setLoading(false);
     };
 
     fetchData();
   }, []);
 
-  if (loading) return <p className="text-center py-10">Chargement...</p>;
-
-  const totalChallenges = challenges.length;
-  const activeChallenges = challenges.filter(c => c.status === 'active').length;
-  const totalRevenue = challenges.reduce((acc, c) => acc + (c.profit || 0), 0);
-  const averageProfit = totalChallenges > 0 ? totalRevenue / totalChallenges : 0;
-
-  const totalGain = results.reduce((sum, r) => sum + (r.daily_gain || 0), 0);
-  const totalLoss = results.reduce((sum, r) => sum + (r.daily_loss || 0), 0);
-  const netResult = totalGain - totalLoss;
+  if (loading) return <p className="text-center py-10">Chargement des données...</p>;
 
   return (
     <div className="space-y-6 w-full">
-      <SaasMetrics
-        totalRevenue={totalRevenue}
-        totalChallenges={totalChallenges}
-        activeChallenges={activeChallenges}
-        averageProfit={averageProfit}
-        totalGainFromResults={totalGain}
-        totalLossFromResults={totalLoss}
-        netResultFromResults={netResult}
-      />
-      <ChallengeResultsTable challenges={challenges} results={results} />
+      <SaasMetrics {...metrics} />
+      <ChallengeDetailsTable challenges={challengeData} />
+      <ChallengeResultsTable results={challengeResults} />
     </div>
   );
 }

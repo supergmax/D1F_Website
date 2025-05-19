@@ -1,4 +1,6 @@
-"use client";
+// components/affiliation/CopyCard.tsx
+'use client';
+
 import React, { useEffect, useState } from "react";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
@@ -25,11 +27,8 @@ export function CopyCard({
 
   useEffect(() => {
     const fetchAffiliateId = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      const user = session?.user;
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData.session?.user;
       if (!user) return;
 
       const { data, error } = await supabase
@@ -48,7 +47,6 @@ export function CopyCard({
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 w-full h-full">
-      {/* Icone à gauche + bouton à droite */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
           {icon}
@@ -67,7 +65,7 @@ export function CopyCard({
           ) : (
             <>
               <CopyIcon className="w-4 h-4 mr-1" />
-              Copier l&apos;ID
+              Copier
             </>
           )}
         </button>

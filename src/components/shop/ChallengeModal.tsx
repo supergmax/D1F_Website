@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import Label from "@/components/form/Label";
@@ -14,6 +14,8 @@ interface Props {
   userId: string | null;
   tokenBalance: number;
   dollarBalance: number;
+  onSuccess?: (msg: string) => void;
+  onError?: (msg: string) => void;
 }
 
 export default function ChallengeModal({
@@ -22,6 +24,8 @@ export default function ChallengeModal({
   userId,
   tokenBalance,
   dollarBalance,
+  onSuccess,
+  onError,
 }: Props) {
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,14 +33,15 @@ export default function ChallengeModal({
 
   const unitPrice = 3000;
   const subTotal = unitPrice * quantity;
-  const totalBalance = (tokenBalance ?? 0) + (dollarBalance ?? 0);
+  const totalBalance = tokenBalance + dollarBalance;
 
   const handleValidate = async () => {
+    setMessage({ success: "", error: "" });
+
     if (!userId || quantity < 1 || subTotal > totalBalance) {
-      setMessage({
-        success: "",
-        error: "Montant invalide ou solde insuffisant pour acheter les challenges.",
-      });
+      const error = "Montant invalide ou solde insuffisant pour acheter les challenges.";
+      setMessage({ success: "", error });
+      onError?.(error);
       return;
     }
 
@@ -44,17 +49,16 @@ export default function ChallengeModal({
 
     const { data: product, error: productError } = await supabase
       .from("products")
-      .select("id, price")
+      .select("id")
       .eq("name", "Challenge")
       .eq("available", true)
       .single();
 
     if (productError || !product) {
-      setMessage({
-        success: "",
-        error: "Produit 'Challenge' introuvable ou indisponible.",
-      });
+      const error = "Produit 'Challenge' introuvable ou indisponible.";
+      setMessage({ success: "", error });
       setIsLoading(false);
+      onError?.(error);
       return;
     }
 
@@ -63,13 +67,19 @@ export default function ChallengeModal({
       product_id: product.id,
       quantity,
       amount: subTotal,
+      status: "pending",
     });
 
     if (insertError) {
-      setMessage({ success: "", error: "Erreur lors de l'achat : " + insertError.message });
+      const error = "Erreur lors de l'achat : " + insertError.message;
+      setMessage({ success: "", error });
+      onError?.(error);
     } else {
-      setMessage({ success: "Challenge(s) acheté(s) avec succès !", error: "" });
+      const success = "Challenge(s) acheté(s) avec succès !";
+      setMessage({ success, error: "" });
+      onSuccess?.(success);
       setQuantity(1);
+      onClose(); // Ferme uniquement en cas de succès
     }
 
     setIsLoading(false);
@@ -104,7 +114,8 @@ export default function ChallengeModal({
         Sous-total : <strong>{subTotal} WT</strong>
       </div>
       <div className="mb-4 text-sm text-gray-600 dark:text-gray-300">
-        Balance actuelle : <strong>{tokenBalance} WT</strong> + <strong>{dollarBalance} $</strong> = <strong>{totalBalance}</strong>
+        Balance actuelle : <strong>{tokenBalance} WT</strong> + <strong>{dollarBalance} $</strong> ={" "}
+        <strong>{totalBalance}</strong>
       </div>
 
       {(message.success || message.error) && (

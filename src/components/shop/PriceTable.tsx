@@ -7,11 +7,13 @@ import RefillModal from "./RefillModal";
 import RefillAlert from "./RefillAlert";
 import ChallengeModal from "./ChallengeModal";
 
+// ...imports
+
 export default function PriceTable() {
   const [tokenBalance, setTokenBalance] = useState<number | null>(null);
   const [dollarBalance, setDollarBalance] = useState<number | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [refillResult, setRefillResult] = useState<{ success: string; error: string }>({ success: "", error: "" });
+  const [refillResult, setRefillResult] = useState({ success: "", error: "" });
   const [challengeMsg, setChallengeMsg] = useState({ success: "", error: "" });
   const [showModal, setShowModal] = useState(false);
   const [showChallengeModal, setShowChallengeModal] = useState(false);
@@ -26,13 +28,13 @@ export default function PriceTable() {
 
       setUserId(user.id);
 
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("profiles")
         .select("token_balance, dollar_balance")
         .eq("id", user.id)
         .single();
 
-      if (!error && data) {
+      if (data) {
         setTokenBalance(data.token_balance);
         setDollarBalance(data.dollar_balance);
       }
@@ -43,9 +45,9 @@ export default function PriceTable() {
 
   return (
     <div className="flex flex-col gap-5 xl:gap-6">
-      {/* Zone Rechargement + Challenge */}
       <div className="flex flex-col lg:flex-row gap-5 xl:gap-6">
-        {/* Rechargement dollar_balance via modal */}
+
+        {/* Zone de recharge */}
         <div className="w-full lg:w-1/2 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
           <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-3">Rechargement du compte</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Token balance : {tokenBalance ?? "…"}</p>
@@ -85,7 +87,7 @@ export default function PriceTable() {
           />
         </div>
 
-        {/* Achat de challenges */}
+        {/* Zone achat de challenge */}
         <div className="w-full lg:w-1/2 rounded-2xl border-2 border-brand-500 bg-white p-6 dark:border-brand-500 dark:bg-white/[0.03]">
           <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-3">Challenge US 3k</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">3000 WT — Débloquez un nouveau challenge</p>
@@ -106,14 +108,15 @@ export default function PriceTable() {
             Acheter un challenge
           </button>
 
-          <ChallengeModal
-            isOpen={showChallengeModal}
-            onClose={() => setShowChallengeModal(false)}
-            userId={userId}
-            tokenBalance={tokenBalance ?? 0}
-            dollarBalance={dollarBalance ?? 0}
-          />
-
+          {(challengeMsg.success || challengeMsg.error) && (
+            <div className="mt-4">
+              <RefillAlert
+                variant={challengeMsg.success ? "success" : "error"}
+                title={challengeMsg.success ? "Succès" : "Erreur"}
+                message={challengeMsg.success || challengeMsg.error}
+              />
+            </div>
+          )}
 
           <ChallengeModal
             isOpen={showChallengeModal}
@@ -122,11 +125,10 @@ export default function PriceTable() {
             tokenBalance={tokenBalance ?? 0}
             dollarBalance={dollarBalance ?? 0}
             onSuccess={(msg) => {
-              setShowChallengeModal(false);
               setChallengeMsg({ success: msg, error: "" });
+              setShowChallengeModal(false); // ✅ ferme seulement en cas de succès
             }}
             onError={(msg) => {
-              setShowChallengeModal(false);
               setChallengeMsg({ success: "", error: msg });
             }}
           />

@@ -137,11 +137,12 @@ export default function SignUpForm() {
       dollar_balance: 0        
     });
 
-
     if (profileErr) {
+      console.error("Erreur SQL Supabase : ", profileErr); // ← Affiche l’erreur réelle
       setError("Erreur lors de l'insertion dans les profils.");
       return;
     }
+
 
     // Création société
     if (showCorporation && corpId) {
