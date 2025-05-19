@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Dropdown } from "../ui/dropdown/Dropdown";
@@ -6,8 +7,6 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import SupportModal from "@/components/example/ModalExample/SupportModal";
 import { supabase } from "@/lib/supabaseClient";
 import React, { useEffect, useState } from "react";
-
-const userBalance = 1205;
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +19,7 @@ export default function UserDropdown() {
     last_name: string;
     email: string;
     token_balance: number;
+    dollar_balance: number;
   } | null>(null);
 
   function toggleDropdown() {
@@ -51,7 +51,7 @@ export default function UserDropdown() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("first_name, last_name, token_balance, affiliate_id, role")
+        .select("first_name, last_name, token_balance, dollar_balance, affiliate_id, role")
         .eq("id", user.id)
         .single();
 
@@ -60,6 +60,7 @@ export default function UserDropdown() {
           first_name: data.first_name,
           last_name: data.last_name,
           token_balance: data.token_balance,
+          dollar_balance: data.dollar_balance,
           email: user.email ?? "—",
         });
         setAffiliateId(data.affiliate_id ?? "—");
@@ -90,7 +91,7 @@ export default function UserDropdown() {
             <>
               <span className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-md">
                 <strong>{userData.token_balance}</strong> WT <br />
-                <strong>{userBalance} $</strong>
+                <strong>{userData.dollar_balance}</strong> $
               </span>
             </>
           ) : (
@@ -142,7 +143,7 @@ export default function UserDropdown() {
                 </span>
                 <span className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-md">
                   <strong>{userData.token_balance}</strong> WT <br />
-                  <strong>{userBalance} $</strong>
+                  <strong>{userData.dollar_balance}</strong> $
                 </span>
               </div>
 
@@ -177,8 +178,6 @@ export default function UserDropdown() {
             </DropdownItem>
           </li>
 
-          
-
           <li>
             <DropdownItem
               tag="a"
@@ -196,15 +195,15 @@ export default function UserDropdown() {
           Sign out
         </Link>
         {isAdmin && (
-              <DropdownItem
-                onItemClick={closeDropdown}
-                tag="a"
-                href="/admin"
-                className="flex items-center gap-3 px-3 py-2 font-medium text-blue-600 rounded-lg group text-theme-sm hover:bg-blue-100 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-800/10 dark:hover:text-blue-300"
-              >
-              Admin Panel
-              </DropdownItem>
-          )}
+          <DropdownItem
+            onItemClick={closeDropdown}
+            tag="a"
+            href="/admin"
+            className="flex items-center gap-3 px-3 py-2 font-medium text-blue-600 rounded-lg group text-theme-sm hover:bg-blue-100 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-800/10 dark:hover:text-blue-300"
+          >
+            Admin Panel
+          </DropdownItem>
+        )}
       </Dropdown>
     </div>
   );

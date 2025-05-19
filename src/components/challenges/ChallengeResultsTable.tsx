@@ -22,6 +22,7 @@ export default function ChallengeResultsTable({ results }: ChallengeResultsTable
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Date</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Gain</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">DrawDown</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
