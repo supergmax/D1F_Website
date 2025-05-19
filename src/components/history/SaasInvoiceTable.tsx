@@ -5,13 +5,12 @@ import { supabase } from "@/lib/supabaseClient";
 
 interface TransactionRow {
   type: "invoice" | "payout" | "purchase";
-  direction: "in" | "out";
   amount: number;
   created_at: string;
   status: string;
 }
 
-// 🔔 Inline Alert Component (copié depuis ton template)
+// 🔔 Inline Alert Component
 const InlineAlert = ({
   variant,
   title,
@@ -85,7 +84,7 @@ export default function SaasInvoiceTable() {
 
       const { data, error } = await supabase
         .from("view_latest_transactions")
-        .select("type, amount, status, created_at, direction")
+        .select("type, amount, status, created_at")
         .eq("profile_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -134,24 +133,16 @@ export default function SaasInvoiceTable() {
           <table className="min-w-full">
             <thead>
               <tr className="bg-gray-50 dark:bg-gray-900">
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
-                  Date
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
-                  Type
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
-                  Montant
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
-                  Statut
-                </th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Date</th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Type</th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Montant</th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Statut</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
               {data.map((row, index) => {
-                const isIn = row.direction === "in";
-                const currency = row.type === "invoice" ? "$" : "WT";
+                const isOut = row.type === "purchase" || row.type === "payout";
+                const currency = row.type === "payout" ? "WT" : "$";
 
                 return (
                   <tr key={index}>
@@ -159,12 +150,12 @@ export default function SaasInvoiceTable() {
                       {new Date(row.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={isIn ? "text-green-600" : "text-red-600"}>
-                        {isIn ? "In" : "Out"}
+                      <span className={isOut ? "text-red-600" : "text-green-600"}>
+                        {isOut ? "Out" : "In"}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={isIn ? "text-green-600" : "text-red-600"}>
+                      <span className={isOut ? "text-red-600" : "text-green-600"}>
                         {row.amount} {currency}
                       </span>
                     </td>
