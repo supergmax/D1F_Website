@@ -26,8 +26,11 @@ export default function RefillModal({
   const [isLoading, setIsLoading] = useState(false);
 
   const handleValidate = async () => {
-    if (!userId || amount === "" || amount < 50) {
+    const parsedAmount = Number(amount);
+
+    if (!userId || isNaN(parsedAmount) || parsedAmount < 50) {
       setResult({ success: "", error: "Montant invalide (minimum 50$)" });
+      onClose(); // on ferme même si erreur
       return;
     }
 
@@ -35,13 +38,13 @@ export default function RefillModal({
 
     const { error } = await supabase
       .from("profiles")
-      .update({ dollar_balance: amount })
+      .update({ dollar_balance: parsedAmount })
       .eq("id", userId);
 
     if (error) {
       setResult({ success: "", error: error.message });
     } else {
-      setDollarBalance(amount); // on met à jour avec la nouvelle valeur
+      setDollarBalance(parsedAmount);
       setResult({ success: "Compte rechargé avec succès !", error: "" });
       setAmount("");
       onClose();
@@ -70,15 +73,19 @@ export default function RefillModal({
       </div>
 
       <div className="flex justify-end gap-3">
-        <Button variant="outline" onClick={onClose} className="bg-red-600 text-white">
-          Cancel
+        <Button
+          type="button"
+          onClick={onClose}
+          className="!bg-red-600 !text-white hover:!bg-red-700 font-semibold px-4 py-2"
+        >
+          Annuler
         </Button>
         <Button
           onClick={handleValidate}
           disabled={isLoading}
           className="bg-green-600 text-white"
         >
-          {isLoading ? "Chargement..." : "Validate"}
+          {isLoading ? "Chargement..." : "Valider"}
         </Button>
       </div>
     </Modal>
