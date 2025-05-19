@@ -5,7 +5,7 @@ interface MonthlyRow {
 }
 
 interface InvoiceProps {
-  data: MonthlyRow[];
+  data: MonthlyRow[]; 
   loading: boolean;
 }
 
@@ -34,14 +34,22 @@ export default function SaasInvoiceTable({ data, loading }: InvoiceProps) {
               const net = row.total_invoices - row.total_payouts;
               const status =
                 net > 0 ? "Recharge" : net < 0 ? "Retrait" : "Équilibre";
+              const isPositive = net > 0;
+              const isNegative = net < 0;
 
               return (
                 <tr key={index}>
                   <td className="px-6 py-4">{row.month}</td>
-                  <td className="px-6 py-4 text-green-600">
-                    {(row.total_invoices / 100).toFixed(2)} €
+                  <td className="px-6 py-4">
+                    <span className={isPositive ? "text-green-600" : isNegative ? "text-red-600" : "text-gray-500"}>
+                      {isPositive ? "In" : isNegative ? "Out" : "—"}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 text-red-600">{row.total_payouts} WT</td>
+                  <td className="px-6 py-4">
+                    <span className={isPositive ? "text-green-600" : isNegative ? "text-red-600" : "text-gray-600"}>
+                      {Math.abs(net)} {isPositive ? "$" : "WT"}
+                    </span>
+                  </td>
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${

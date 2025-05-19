@@ -108,6 +108,9 @@ export default function Ecommerce() {
     </div>
 
       <div className="col-span-12">
+        <div className="py-3 ">
+          <MonthlySalesChart monthlyCounts={monthlyCounts} />
+        </div>
         <div className="py-3">
           <MonthlySalesChart monthlyCounts={monthlyCounts} />
         </div>
