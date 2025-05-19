@@ -252,7 +252,7 @@ CREATE TABLE public.purchases (
   product_id UUID NOT NULL,
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   amount INTEGER NOT NULL CHECK (amount >= 0),
-  status purchase_status_enum DEFAULT 'requested',
+  status purchase_status_enum DEFAULT 'pending',
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
@@ -304,7 +304,7 @@ CREATE TABLE public.payouts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   profile_id UUID NOT NULL,
   amount INTEGER NOT NULL CHECK (amount > 0),
-  status payout_status_enum DEFAULT 'requested',
+  status payout_status_enum DEFAULT 'pending',
   requested_at TIMESTAMP DEFAULT NOW() NOT NULL,
   processed_at TIMESTAMP,
   note TEXT,
@@ -334,6 +334,9 @@ CREATE TABLE public.transactions (
   profile_id UUID NOT NULL,
   type transaction_type_enum NOT NULL,
   ref_id UUID NOT NULL,
+  token_debit INTEGER DEFAULT 0 NOT NULL CHECK (token_debit >= 0),   
+  dollar_debit INTEGER DEFAULT 0 NOT NULL CHECK (dollar_debit >= 0), 
+  refunded BOOLEAN DEFAULT FALSE NOT NULL,                           
   status transaction_status_enum DEFAULT 'pending',
   note TEXT,
   label label_enum DEFAULT 'none',
@@ -347,6 +350,9 @@ COMMENT ON COLUMN public.transactions.id IS 'Identifiant unique de la transactio
 COMMENT ON COLUMN public.transactions.profile_id IS 'Utilisateur concerné par la transaction.';
 COMMENT ON COLUMN public.transactions.type IS 'Type de la transaction (achat, retrait, facture).';
 COMMENT ON COLUMN public.transactions.ref_id IS 'Référence à l’élément lié (ex: invoice_id, payout_id).';
+COMMENT ON COLUMN public.transactions.token_debit IS 'Montant exact débité du solde de tokens (token_balance).';
+COMMENT ON COLUMN public.transactions.dollar_debit IS 'Montant exact débité du solde en dollars (dollar_balance).';
+COMMENT ON COLUMN public.transactions.refunded IS 'Indique si cette transaction a déjà été remboursée (true = remboursé).';
 COMMENT ON COLUMN public.transactions.status IS 'Statut actuel de la transaction.';
 COMMENT ON COLUMN public.transactions.note IS 'Note interne ou commentaire.';
 COMMENT ON COLUMN public.transactions.label IS 'Étiquette de priorité ou suivi.';
