@@ -14,7 +14,7 @@ export default function SaasMetrics({
   tokenBalance,
 }: MetricsProps) {
   const formatTokens = (value: number) =>
-    new Intl.NumberFormat('fr-FR').format(value) + ' WT';
+    new Intl.NumberFormat('fr-FR').format(value) + ' WUT';
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">

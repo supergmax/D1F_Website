@@ -90,7 +90,7 @@ export default function UserDropdown() {
           {userData ? (
             <>
               <span className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-md">
-                <strong>{userData.token_balance}</strong> WT <br />
+                <strong>{userData.token_balance}</strong> WUT <br />
                 <strong>{userData.dollar_balance}</strong> $
               </span>
             </>
@@ -142,7 +142,7 @@ export default function UserDropdown() {
                   {userData.first_name} {userData.last_name}
                 </span>
                 <span className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-md">
-                  <strong>{userData.token_balance}</strong> WT <br />
+                  <strong>{userData.token_balance}</strong> WUT <br />
                   <strong>{userData.dollar_balance}</strong> $
                 </span>
               </div>

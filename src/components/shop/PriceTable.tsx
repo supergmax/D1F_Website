@@ -90,7 +90,7 @@ export default function PriceTable() {
         {/* Zone achat de challenge */}
         <div className="w-full lg:w-1/2 rounded-2xl border-2 border-brand-500 bg-white p-6 dark:border-brand-500 dark:bg-white/[0.03]">
           <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-3">Challenge US 3k</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">3000 WT — Débloquez un nouveau challenge</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">3000 WUT — Débloquez un nouveau challenge</p>
 
           <ul className="mb-6 space-y-2">
             <li className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-400">
