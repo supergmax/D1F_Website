@@ -73,7 +73,14 @@ export default function SaasInvoiceTable() {
 
       const {
         data: { session },
+        error: sessionError,
       } = await supabase.auth.getSession();
+
+      if (sessionError) {
+        setError("Erreur de session Supabase.");
+        setLoading(false);
+        return;
+      }
 
       const user = session?.user;
       if (!user) {
@@ -90,10 +97,8 @@ export default function SaasInvoiceTable() {
 
       if (error) {
         setError("Erreur lors du chargement : " + error.message);
-      } else if (!data || data.length === 0) {
-        setError("Aucune transaction trouvée.");
       } else {
-        setData(data);
+        setData(data || []);
       }
 
       setLoading(false);
@@ -106,11 +111,11 @@ export default function SaasInvoiceTable() {
     <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="px-6 py-4">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Historique
+          Historique des transactions
         </h3>
       </div>
 
-      <div className="px-6 py-4">
+      <div className="px-6 pb-4">
         {loading && (
           <InlineAlert
             variant="info"
@@ -126,10 +131,18 @@ export default function SaasInvoiceTable() {
             message={error}
           />
         )}
+
+        {!loading && !error && data.length === 0 && (
+          <InlineAlert
+            variant="info"
+            title="Aucune transaction"
+            message="Aucune activité n’a été détectée pour l’instant."
+          />
+        )}
       </div>
 
-      {!loading && !error && (
-        <div className="custom-scrollbar overflow-x-auto">
+      {!loading && !error && data.length > 0 && (
+        <div className="custom-scrollbar overflow-x-auto px-6 pb-6">
           <table className="min-w-full">
             <thead>
               <tr className="bg-gray-50 dark:bg-gray-900">
@@ -146,9 +159,7 @@ export default function SaasInvoiceTable() {
 
                 return (
                   <tr key={index}>
-                    <td className="px-6 py-4">
-                      {new Date(row.created_at).toLocaleDateString()}
-                    </td>
+                    <td className="px-6 py-4">{new Date(row.created_at).toLocaleDateString()}</td>
                     <td className="px-6 py-4">
                       <span className={isOut ? "text-red-600" : "text-green-600"}>
                         {isOut ? "Out" : "In"}

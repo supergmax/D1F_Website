@@ -101,8 +101,8 @@ export default function UserHistoryPage() {
         </div>
       )}
 
-      <SaasMetrics totalRevenue={totalIn} averageProfit={netAverage} />
-      <SaasInvoiceTable data={data} loading={loading} />
+      <SaasMetrics/>
+      <SaasInvoiceTable/>
     </div>
   );
 }
