@@ -1,5 +1,5 @@
 -- =====================================================
--- schema.SQL (v10)
+-- schema.SQL (v12)
 -- Base de données D1F - DayOneFunded
 -- Description : Tables, ENUMs, Champs, Contraintes, Commentaires
 -- =====================================================
@@ -16,14 +16,17 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TYPE role_enum AS ENUM ('user', 'admin', 'superadmin', 'support');
 COMMENT ON TYPE role_enum IS 'Rôle de l’utilisateur dans le système.';
 
-CREATE TYPE challenge_status_enum AS ENUM ('open', 'pending', 'active', 'close', 'issue');
+CREATE TYPE challenge_status_enum AS ENUM ('pending', 'open', 'active', 'close', 'issue');
 COMMENT ON TYPE challenge_status_enum IS 'Statut d’un challenge (suivi du process).';
 
-CREATE TYPE invoice_status_enum AS ENUM ('pending', 'open', 'paid', 'failed');
+CREATE TYPE invoice_status_enum AS ENUM ('pending', 'open', 'paid', 'canceled');
 COMMENT ON TYPE invoice_status_enum IS 'Statut de facturation lié aux achats de tokens.';
 
 CREATE TYPE payout_status_enum AS ENUM ('requested', 'approved', 'declined', 'paid');
 COMMENT ON TYPE payout_status_enum IS 'Statut d’une demande de retrait.';
+
+CREATE TYPE purchase_status_enum AS ENUM ('requested', 'approved', 'declined', 'paid');
+COMMENT ON TYPE purchase_status_enum IS 'Statut d’un achat de produit.';
 
 CREATE TYPE transaction_type_enum AS ENUM ('purchase', 'invoice', 'payout');
 COMMENT ON TYPE transaction_type_enum IS 'Type d’une transaction enregistrée.';
@@ -249,6 +252,7 @@ CREATE TABLE public.purchases (
   product_id UUID NOT NULL,
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   amount INTEGER NOT NULL CHECK (amount >= 0),
+  status purchase_status_enum DEFAULT 'requested',
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
@@ -262,6 +266,7 @@ COMMENT ON COLUMN public.purchases.profile_id IS 'Utilisateur ayant réalisé l�
 COMMENT ON COLUMN public.purchases.product_id IS 'Produit acheté par l’utilisateur.';
 COMMENT ON COLUMN public.purchases.quantity IS 'Quantité de produit achetée.';
 COMMENT ON COLUMN public.purchases.amount IS 'Coût total pour cette ligne d’achat.';
+COMMENT ON COLUMN public.purchases.status IS 'Statut actuel de l’achat de produit (en attente, payée, etc.).';
 COMMENT ON COLUMN public.purchases.note IS 'Note administrative ou commentaire interne.';
 COMMENT ON COLUMN public.purchases.label IS 'Étiquette de suivi ou d’alerte (support, fraude, etc.).';
 COMMENT ON COLUMN public.purchases.created_at IS 'Date de création de l’enregistrement.';
