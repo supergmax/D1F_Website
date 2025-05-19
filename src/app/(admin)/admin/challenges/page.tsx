@@ -10,14 +10,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-type InvoiceStatus = 'pending' | 'open' | 'paid' | 'failed';
-type ActionStatus = 'open' | 'paid' | 'failed';
+type ChallengeStatus = 'pending' | 'open' | 'active' | 'close' | 'issue';
 
-type Invoice = {
+type Challenge = {
   id: string;
   profile_id: string;
-  amount: number;
-  status: InvoiceStatus;
+  challenge_num: number;
+  status: ChallengeStatus;
   created_at: string;
 };
 
@@ -27,8 +26,8 @@ type Profile = {
   last_name: string;
 };
 
-export default function AdminInvoicesPage() {
-  const [invoices, setInvoices] = useState<(Invoice & Profile)[]>([]);
+export default function AdminChallengesPage() {
+  const [challenges, setChallenges] = useState<(Challenge & Profile)[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
@@ -39,8 +38,8 @@ export default function AdminInvoicesPage() {
   const fetchData = async () => {
     setLoading(true);
 
-    const { data: invoiceData, error: invoiceError } = await supabase
-      .from('invoices')
+    const { data: challengeData, error: challengeError } = await supabase
+      .from('challenges')
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -48,7 +47,7 @@ export default function AdminInvoicesPage() {
       .from('profiles')
       .select('id, first_name, last_name');
 
-    if (invoiceError || profileError) {
+    if (challengeError || profileError) {
       console.error('Erreur lors du chargement des données.');
       setLoading(false);
       return;
@@ -57,28 +56,28 @@ export default function AdminInvoicesPage() {
     const profileMap = new Map<string, Profile>();
     profileData?.forEach((p) => profileMap.set(p.id, p));
 
-    const combined = invoiceData?.map((inv) => {
-      const profile = profileMap.get(inv.profile_id);
+    const combined = challengeData?.map((c) => {
+      const profile = profileMap.get(c.profile_id);
       return {
-        ...inv,
+        ...c,
         first_name: profile?.first_name ?? '',
         last_name: profile?.last_name ?? '',
       };
     });
 
-    setInvoices(combined || []);
+    setChallenges(combined || []);
     setLoading(false);
   };
 
   const updateStatus = async (
-    invoiceId: string,
-    newStatus: ActionStatus
+    challengeId: string,
+    newStatus: ChallengeStatus
   ) => {
-    setUpdatingId(invoiceId);
+    setUpdatingId(challengeId);
     const { error } = await supabase
-      .from('invoices')
+      .from('challenges')
       .update({ status: newStatus })
-      .eq('id', invoiceId);
+      .eq('id', challengeId);
 
     if (error) {
       console.error('Erreur lors de la mise à jour :', error.message);
@@ -90,7 +89,7 @@ export default function AdminInvoicesPage() {
 
   return (
     <div className="ml-[90px] lg:ml-[290px] px-6 py-8">
-      <h1 className="text-xl font-semibold mb-6">Gestion des Factures</h1>
+      <h1 className="text-xl font-semibold mb-6">Gestion des Challenges</h1>
 
       {loading ? (
         <p>Chargement...</p>
@@ -98,49 +97,53 @@ export default function AdminInvoicesPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableCell isHeader>ID Facture</TableCell>
+              <TableCell isHeader>ID Challenge</TableCell>
               <TableCell isHeader>Utilisateur</TableCell>
-              <TableCell isHeader>Montant</TableCell>
+              <TableCell isHeader>Numéro</TableCell>
               <TableCell isHeader>Statut</TableCell>
               <TableCell isHeader>Date</TableCell>
               <TableCell isHeader>Actions</TableCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {invoices.map((inv) => (
-              <TableRow key={inv.id}>
+            {challenges.map((c) => (
+              <TableRow key={c.id}>
                 <TableCell className="text-sm text-gray-800 dark:text-white">
-                  {inv.id}
+                  {c.id}
                 </TableCell>
 
                 <TableCell className="text-sm text-gray-800 dark:text-white">
                   <div className="font-semibold">
-                    {inv.last_name} {inv.first_name}
+                    {c.last_name} {c.first_name}
                   </div>
-                  <div className="text-xs text-gray-500">{inv.profile_id}</div>
+                  <div className="text-xs text-gray-500">{c.profile_id}</div>
                 </TableCell>
 
-                <TableCell>{inv.amount} $</TableCell>
+                <TableCell>#{c.challenge_num}</TableCell>
 
-                <TableCell className="capitalize">{inv.status}</TableCell>
+                <TableCell className="capitalize">{c.status}</TableCell>
 
                 <TableCell>
-                  {new Date(inv.created_at).toLocaleDateString()}
+                  {new Date(c.created_at).toLocaleDateString()}
                 </TableCell>
 
                 <TableCell>
                   <div className="flex gap-2">
-                    {(['open', 'paid', 'failed'] as const).map((status) => (
+                    {(['pending', 'open', 'active', 'close', 'issue'] as const).map((status) => (
                       <button
                         key={status}
-                        disabled={updatingId === inv.id}
-                        onClick={() => updateStatus(inv.id, status)}
+                        disabled={updatingId === c.id}
+                        onClick={() => updateStatus(c.id, status)}
                         className={`px-2 py-1 text-white text-xs rounded ${
-                          status === 'paid'
+                          status === 'active'
                             ? 'bg-green-600'
-                            : status === 'failed'
-                            ? 'bg-red-500'
-                            : 'bg-yellow-500'
+                            : status === 'close'
+                            ? 'bg-gray-600'
+                            : status === 'issue'
+                            ? 'bg-red-600'
+                            : status === 'open'
+                            ? 'bg-yellow-500'
+                            : 'bg-blue-500'
                         }`}
                       >
                         {status}
