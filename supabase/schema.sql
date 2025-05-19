@@ -1,5 +1,5 @@
 -- =====================================================
--- schema.SQL (v12)
+-- schema.SQL (v15)
 -- Base de données D1F - DayOneFunded
 -- Description : Tables, ENUMs, Champs, Contraintes, Commentaires
 -- =====================================================
@@ -19,19 +19,19 @@ COMMENT ON TYPE role_enum IS 'Rôle de l’utilisateur dans le système.';
 CREATE TYPE challenge_status_enum AS ENUM ('pending', 'open', 'active', 'close', 'issue');
 COMMENT ON TYPE challenge_status_enum IS 'Statut d’un challenge (suivi du process).';
 
-CREATE TYPE invoice_status_enum AS ENUM ('pending', 'open', 'paid', 'canceled');
+CREATE TYPE invoice_status_enum AS ENUM ('pending', 'open', 'accepted', 'canceled');
 COMMENT ON TYPE invoice_status_enum IS 'Statut de facturation lié aux achats de tokens.';
 
-CREATE TYPE payout_status_enum AS ENUM ('requested', 'approved', 'declined', 'paid');
+CREATE TYPE payout_status_enum AS ENUM ('pending', 'open', 'accepted', 'canceled');
 COMMENT ON TYPE payout_status_enum IS 'Statut d’une demande de retrait.';
 
-CREATE TYPE purchase_status_enum AS ENUM ('requested', 'approved', 'declined', 'paid');
+CREATE TYPE purchase_status_enum AS ENUM ('pending', 'open', 'accepted', 'canceled');
 COMMENT ON TYPE purchase_status_enum IS 'Statut d’un achat de produit.';
 
 CREATE TYPE transaction_type_enum AS ENUM ('purchase', 'invoice', 'payout');
 COMMENT ON TYPE transaction_type_enum IS 'Type d’une transaction enregistrée.';
 
-CREATE TYPE transaction_status_enum AS ENUM ('pending', 'completed', 'failed', 'refunded');
+CREATE TYPE transaction_status_enum AS ENUM ('pending', 'open', 'accepted', 'canceled');
 COMMENT ON TYPE transaction_status_enum IS 'Statut d’une transaction globale.';
 
 CREATE TYPE label_enum AS ENUM ('none', 'low', 'medium', 'high');

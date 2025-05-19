@@ -4,6 +4,7 @@ interface MetricsProps {
   activeChallenges: number;
   averageProfit: number;
   totalGainFromResults: number;
+  totalLossFromResults: number;
   netResultFromResults: number;
 }
 
@@ -13,6 +14,7 @@ export default function SaasMetrics({
   activeChallenges,
   averageProfit,
   totalGainFromResults,
+  totalLossFromResults,
   netResultFromResults,
 }: MetricsProps) {
   const formatCurrency = (value: number) =>
