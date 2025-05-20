@@ -35,8 +35,9 @@ export default function SaasInvoiceTable({
             <tr className="bg-gray-50 dark:bg-gray-900">
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">ID</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Date</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Montant (tokens)</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Montant ($)</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Statut</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Facture</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
