@@ -1,5 +1,5 @@
 -- =====================================================
--- schema.SQL (v15)
+-- schema.SQL (v20)
 -- Base de données D1F - DayOneFunded
 -- Description : Tables, ENUMs, Champs, Contraintes, Commentaires
 -- =====================================================
@@ -19,6 +19,9 @@ COMMENT ON TYPE role_enum IS 'Rôle de l’utilisateur dans le système.';
 CREATE TYPE challenge_status_enum AS ENUM ('pending', 'open', 'active', 'close', 'issue');
 COMMENT ON TYPE challenge_status_enum IS 'Statut d’un challenge (suivi du process).';
 
+CREATE TYPE challenge_results_status_enum AS ENUM ('pending', 'open', 'active', 'close', 'issue');
+COMMENT ON TYPE challenge_results_status_enum IS 'Statut d’un challenge dans challenge_results (suivi du process).';
+
 CREATE TYPE invoice_status_enum AS ENUM ('pending', 'open', 'accepted', 'canceled');
 COMMENT ON TYPE invoice_status_enum IS 'Statut de facturation lié aux achats de tokens.';
 
@@ -34,6 +37,9 @@ COMMENT ON TYPE transaction_type_enum IS 'Type d’une transaction enregistrée.
 CREATE TYPE transaction_status_enum AS ENUM ('pending', 'open', 'accepted', 'canceled');
 COMMENT ON TYPE transaction_status_enum IS 'Statut d’une transaction globale.';
 
+CREATE TYPE history_status_enum AS ENUM ('pending', 'open', 'active', 'close', 'issue');
+COMMENT ON TYPE history_status_enum IS 'Statut d’un challenge dans history (suivi du process).';
+
 CREATE TYPE label_enum AS ENUM ('none', 'low', 'medium', 'high');
 COMMENT ON TYPE label_enum IS 'Niveau d’alerte ou de priorité d’un problème (none = aucun problème signalé).';
 
@@ -47,6 +53,7 @@ COMMENT ON TYPE error_source_enum IS 'Table source d’une anomalie liée à un 
 -- ======================
 CREATE TABLE public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  corp_id UUID,
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   email TEXT NOT NULL, 
@@ -64,7 +71,6 @@ CREATE TABLE public.profiles (
   photo_url TEXT,
   broker_id TEXT NOT NULL, 
   broker_pwd VARCHAR(8) NOT NULL, 
-  corp_id UUID,
   error_location error_source_enum,
   note TEXT,
   label label_enum DEFAULT 'none',
@@ -160,9 +166,10 @@ COMMENT ON COLUMN public.affiliations.updated_at IS 'Date de dernière modificat
 CREATE TABLE public.challenges (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   profile_id UUID NOT NULL,
+  purchase_id UUID NOT NULL,
   name TEXT NOT NULL,
   challenge_num INTEGER NOT NULL,
-  status challenge_status_enum DEFAULT 'open' NOT NULL,
+  status challenge_status_enum DEFAULT 'pending',
   start_date DATE,
   end_date DATE,
   initial_balance INTEGER DEFAULT 0 CHECK (initial_balance >= 0),
@@ -178,6 +185,7 @@ COMMENT ON TABLE public.challenges IS 'Contient les informations liées aux chal
 
 COMMENT ON COLUMN public.challenges.id IS 'Identifiant unique du challenge.';
 COMMENT ON COLUMN public.challenges.profile_id IS 'UUID de l’utilisateur (profil) associé.';
+COMMENT ON COLUMN public.challenges.purchase_id IS 'Référence à l’achat (purchase.id) à l’origine de ce challenge.';
 COMMENT ON COLUMN public.challenges.name IS 'Nom du challenge (ex: Alpha, Bêta).';
 COMMENT ON COLUMN public.challenges.challenge_num IS 'Numéro d’ordre du challenge pour un utilisateur (1er, 2e…).';
 COMMENT ON COLUMN public.challenges.status IS 'Statut actuel du challenge (open, active, failed, etc.).';
@@ -196,6 +204,7 @@ COMMENT ON COLUMN public.challenges.updated_at IS 'Dernière date de modificatio
 CREATE TABLE public.challenge_results (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   challenge_id UUID NOT NULL,
+  status challenge_results_status_enum DEFAULT 'pending',
   date DATE NOT NULL,
   daily_gain INTEGER DEFAULT 0 CHECK (daily_gain >= 0),
   daily_loss INTEGER DEFAULT 0 CHECK (daily_loss >= 0),
@@ -210,6 +219,7 @@ COMMENT ON TABLE public.challenge_results IS 'Contient les résultats journalier
 
 COMMENT ON COLUMN public.challenge_results.id IS 'Identifiant unique de l’entrée.';
 COMMENT ON COLUMN public.challenge_results.challenge_id IS 'Référence au challenge associé.';
+COMMENT ON COLUMN public.challenge_results.status IS 'Statut actuel du challenge (open, active, failed, etc.).';
 COMMENT ON COLUMN public.challenge_results.date IS 'Jour concerné par ces résultats.';
 COMMENT ON COLUMN public.challenge_results.daily_gain IS 'Gain enregistré pour le jour (en points).';
 COMMENT ON COLUMN public.challenge_results.daily_loss IS 'Perte enregistrée pour le jour (en points).';
@@ -249,9 +259,12 @@ COMMENT ON COLUMN public.products.updated_at IS 'Dernière mise à jour.';
 CREATE TABLE public.purchases (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   profile_id UUID NOT NULL,
-  product_id UUID NOT NULL,
+  product_id UUID,
   quantity INTEGER NOT NULL CHECK (quantity > 0),
+  token_debit INTEGER DEFAULT 0 NOT NULL CHECK (token_debit >= 0),   
+  dollar_debit INTEGER DEFAULT 0 NOT NULL CHECK (dollar_debit >= 0), 
   amount INTEGER NOT NULL CHECK (amount >= 0),
+  refunded BOOLEAN DEFAULT FALSE NOT NULL,                           
   status purchase_status_enum DEFAULT 'pending',
   note TEXT,
   label label_enum DEFAULT 'none',
@@ -265,6 +278,9 @@ COMMENT ON COLUMN public.purchases.id IS 'Identifiant unique de l’achat.';
 COMMENT ON COLUMN public.purchases.profile_id IS 'Utilisateur ayant réalisé l’achat.';
 COMMENT ON COLUMN public.purchases.product_id IS 'Produit acheté par l’utilisateur.';
 COMMENT ON COLUMN public.purchases.quantity IS 'Quantité de produit achetée.';
+COMMENT ON COLUMN public.purchases.token_debit IS 'Montant exact débité du solde de tokens (token_balance).';
+COMMENT ON COLUMN public.purchases.dollar_debit IS 'Montant exact débité du solde en dollars (dollar_balance).';
+COMMENT ON COLUMN public.purchases.refunded IS 'Indique si cette purchase a déjà été remboursée (true = remboursé).';
 COMMENT ON COLUMN public.purchases.amount IS 'Coût total pour cette ligne d’achat.';
 COMMENT ON COLUMN public.purchases.status IS 'Statut actuel de l’achat de produit (en attente, payée, etc.).';
 COMMENT ON COLUMN public.purchases.note IS 'Note administrative ou commentaire interne.';
@@ -279,6 +295,7 @@ CREATE TABLE public.invoices (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   profile_id UUID NOT NULL,
   amount INTEGER NOT NULL CHECK (amount >= 0),
+  refunded BOOLEAN DEFAULT FALSE NOT NULL,                           
   status invoice_status_enum DEFAULT 'open',
   note TEXT,
   label label_enum DEFAULT 'none',
@@ -290,7 +307,8 @@ COMMENT ON TABLE public.invoices IS 'Factures liées aux achats Stripe (tokens, 
 
 COMMENT ON COLUMN public.invoices.id IS 'Identifiant unique de la facture.';
 COMMENT ON COLUMN public.invoices.profile_id IS 'Utilisateur concerné par la facture.';
-COMMENT ON COLUMN public.invoices.amount IS 'Montant total de la facture en centimes.';
+COMMENT ON COLUMN public.invoices.amount IS 'Montant total de la facture.';
+COMMENT ON COLUMN public.invoices.refunded IS 'Indique si cet invoice a déjà été remboursée (true = remboursé).';
 COMMENT ON COLUMN public.invoices.status IS 'Statut actuel de la facture (en attente, payée, etc.).';
 COMMENT ON COLUMN public.invoices.note IS 'Note administrative associée à cette facture.';
 COMMENT ON COLUMN public.invoices.label IS 'Étiquette informative ou de suivi.';
@@ -304,6 +322,7 @@ CREATE TABLE public.payouts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   profile_id UUID NOT NULL,
   amount INTEGER NOT NULL CHECK (amount > 0),
+  refunded BOOLEAN DEFAULT FALSE NOT NULL,                           
   status payout_status_enum DEFAULT 'pending',
   requested_at TIMESTAMP DEFAULT NOW() NOT NULL,
   processed_at TIMESTAMP,
@@ -318,6 +337,7 @@ COMMENT ON TABLE public.payouts IS 'Demandes de retrait de tokens faites par les
 COMMENT ON COLUMN public.payouts.id IS 'Identifiant unique de la demande de retrait.';
 COMMENT ON COLUMN public.payouts.profile_id IS 'Utilisateur ayant demandé le retrait.';
 COMMENT ON COLUMN public.payouts.amount IS 'Montant demandé pour le retrait.';
+COMMENT ON COLUMN public.payouts.refunded IS 'Indique si ce payout a déjà été remboursée (true = remboursé).';
 COMMENT ON COLUMN public.payouts.status IS 'Statut de la demande (en attente, validée, refusée, etc.).';
 COMMENT ON COLUMN public.payouts.requested_at IS 'Date de soumission de la demande.';
 COMMENT ON COLUMN public.payouts.processed_at IS 'Date à laquelle la demande a été traitée.';
@@ -334,8 +354,6 @@ CREATE TABLE public.transactions (
   profile_id UUID NOT NULL,
   type transaction_type_enum NOT NULL,
   ref_id UUID NOT NULL,
-  token_debit INTEGER DEFAULT 0 NOT NULL CHECK (token_debit >= 0),   
-  dollar_debit INTEGER DEFAULT 0 NOT NULL CHECK (dollar_debit >= 0), 
   refunded BOOLEAN DEFAULT FALSE NOT NULL,                           
   status transaction_status_enum DEFAULT 'pending',
   note TEXT,
@@ -350,8 +368,6 @@ COMMENT ON COLUMN public.transactions.id IS 'Identifiant unique de la transactio
 COMMENT ON COLUMN public.transactions.profile_id IS 'Utilisateur concerné par la transaction.';
 COMMENT ON COLUMN public.transactions.type IS 'Type de la transaction (achat, retrait, facture).';
 COMMENT ON COLUMN public.transactions.ref_id IS 'Référence à l’élément lié (ex: invoice_id, payout_id).';
-COMMENT ON COLUMN public.transactions.token_debit IS 'Montant exact débité du solde de tokens (token_balance).';
-COMMENT ON COLUMN public.transactions.dollar_debit IS 'Montant exact débité du solde en dollars (dollar_balance).';
 COMMENT ON COLUMN public.transactions.refunded IS 'Indique si cette transaction a déjà été remboursée (true = remboursé).';
 COMMENT ON COLUMN public.transactions.status IS 'Statut actuel de la transaction.';
 COMMENT ON COLUMN public.transactions.note IS 'Note interne ou commentaire.';
@@ -374,6 +390,7 @@ CREATE TABLE public.history (
   payouts INTEGER DEFAULT 0,
   invoices INTEGER DEFAULT 0,
   affiliate_count INTEGER DEFAULT 0,
+  status history_status_enum DEFAULT 'pending',
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
@@ -393,6 +410,7 @@ COMMENT ON COLUMN public.history.purchases IS 'Nombre d’achats effectués pend
 COMMENT ON COLUMN public.history.payouts IS 'Nombre de demandes de retrait effectuées.';
 COMMENT ON COLUMN public.history.invoices IS 'Nombre de factures générées.';
 COMMENT ON COLUMN public.history.affiliate_count IS 'Nombre de filleuls actifs sur le mois.';
+COMMENT ON COLUMN public.history.status IS 'Statut actuel du challenge (open, active, failed, etc.).';
 COMMENT ON COLUMN public.history.note IS 'Commentaires libres.';
 COMMENT ON COLUMN public.history.label IS 'Étiquette de priorité ou de signalement.';
 COMMENT ON COLUMN public.history.created_at IS 'Date de création de l’enregistrement.';
@@ -425,10 +443,14 @@ ALTER TABLE public.affiliations
 ADD CONSTRAINT fk_affil_affcode
 FOREIGN KEY (affiliate_id) REFERENCES public.profiles(affiliate_id) ON DELETE CASCADE;
 
--- CHALLENGES → PROFILES
+-- CHALLENGES → PROFILES & PURCHASES  
 ALTER TABLE public.challenges
 ADD CONSTRAINT fk_challenge_profile
 FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+ALTER TABLE public.challenges
+ADD CONSTRAINT fk_challenge_purchase
+FOREIGN KEY (purchase_id) REFERENCES public.purchases(id) ON DELETE SET NULL;
 
 -- CHALLENGE_RESULTS → CHALLENGES
 ALTER TABLE public.challenge_results

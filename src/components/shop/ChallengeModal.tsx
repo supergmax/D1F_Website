@@ -62,12 +62,19 @@ export default function ChallengeModal({
       return;
     }
 
+    // Calcul du débit : priorité au token_balance
+    const tokenDebit = Math.min(tokenBalance, subTotal);
+    const dollarDebit = subTotal - tokenDebit;
+
     const { error: insertError } = await supabase.from("purchases").insert({
       profile_id: userId,
       product_id: product.id,
       quantity,
+      token_debit: tokenDebit,
+      dollar_debit: dollarDebit,
       amount: subTotal,
-      status: "pending",
+      refunded: false,
+      status: "pending", // sera géré par admin ou trigger plus tard
     });
 
     if (insertError) {
@@ -79,7 +86,7 @@ export default function ChallengeModal({
       setMessage({ success, error: "" });
       onSuccess?.(success);
       setQuantity(1);
-      onClose(); // Ferme uniquement en cas de succès
+      onClose();
     }
 
     setIsLoading(false);
