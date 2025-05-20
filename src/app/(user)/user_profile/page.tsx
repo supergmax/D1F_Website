@@ -7,6 +7,7 @@ import UserAddressCard from '@/components/profile/UserAddressCard';
 import UserInfoCard from '@/components/profile/UserInfoCard';
 import UserMetaCard from '@/components/profile/UserMetaCard';
 import SaasMetrics from '@/components/profile/SaasMetrics';
+import BrokerInfoCard from '@/components/profile/BrokerInfoCard';
 
 interface UserProfile {
   role: string;
@@ -20,12 +21,16 @@ interface UserProfile {
   x_url: string | null;
   linkedin_url: string | null;
   instagram_url: string | null;
-  country: string | null;
+  
   address: string | null;
-  affiliate_id: string;
-  godfather_id: string | null;
   created_at: string;
   token_balance: number;
+
+  country: string | null;
+  affiliate_id: string;
+  godfather_id: string | null;
+  broker_id: string;
+  broker_pwd: string;
 }
 
 export default function Profile() {
@@ -129,6 +134,7 @@ export default function Profile() {
             linkedin_url={profile.linkedin_url ?? ''}
             instagram_url={profile.instagram_url ?? ''}
           />
+          <BrokerInfoCard broker_id={profile.broker_id} broker_pwd={profile.broker_pwd} />
           <UserInfoCard
             id={profile.id}
             first_name={profile.first_name}
