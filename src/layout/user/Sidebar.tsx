@@ -35,7 +35,7 @@ const navItems: NavItem[] = [
   { name: "Historique des paiements", icon: <ListIcon />, path: "/user_history" },
   { name: "Formulaire de retrait", icon: <ListIcon />, path: "/user_payout" },
   { name: "Support", icon: <PaperPlaneIcon />, path: "#", action: "openSupportModal" },
-  { name: "Factures", icon: <DocsIcon />, path: "/coming-soon" },
+  { name: "Factures", icon: <DocsIcon />, path: "/user_invoices" },
   { name: "legal", icon: <CheckCircleIcon />, path: "https://withusfunded.com/privacy-policy" },
 ];
 
