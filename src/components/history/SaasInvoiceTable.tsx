@@ -156,7 +156,7 @@ export default function SaasInvoiceTable() {
             <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
               {data.map((row, index) => {
                 const isOut = row.type === "purchase" || row.type === "payout";
-                const currency = row.type === "payout" ? "WUT" : "$";
+                const currency = row.type === "payout" ? "$" : "WUT";
 
                 return (
                   <tr key={index}>
