@@ -1,3 +1,4 @@
+//shop page
 import type { Metadata } from "next";
 import PriceTable from "@/components/shop/PriceTable";
 

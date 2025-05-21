@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import RefillModal from "./RefillModal";
 import RefillAlert from "./RefillAlert";
 import ChallengeModal from "./ChallengeModal";
-import PayoutModal from "./PayoutModal"; // ✅ ajouté
+
 
 export default function PriceTable() {
   const [tokenBalance, setTokenBalance] = useState<number | null>(null);
@@ -14,10 +14,10 @@ export default function PriceTable() {
   const [userId, setUserId] = useState<string | null>(null);
   const [refillResult, setRefillResult] = useState({ success: "", error: "" });
   const [challengeMsg, setChallengeMsg] = useState({ success: "", error: "" });
-  const [payoutResult, setPayoutResult] = useState({ success: "", error: "" });
+  
   const [showModal, setShowModal] = useState(false);
   const [showChallengeModal, setShowChallengeModal] = useState(false);
-  const [showPayoutModal, setShowPayoutModal] = useState(false);
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -136,50 +136,7 @@ export default function PriceTable() {
         </div>
       </div>
 
-      {/* Zone retrait de fonds */}
-      <div className="w-full rounded-2xl border border-red-300 bg-white p-6 dark:border-red-800 dark:bg-white/[0.03]">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-3">Demande de retrait</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-          Disponible : <strong>{dollarBalance ?? "…"}</strong> $
-        </p>
 
-        <ul className="mb-6 space-y-2">
-          <li className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-400">
-            <CheckLineIcon className="text-success-500" /> Minimum 50$
-          </li>
-          <li className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-400">
-            <CheckLineIcon className="text-success-500" /> Reversé sous 48h après validation
-          </li>
-        </ul>
-
-        <button
-          onClick={() => {
-            setPayoutResult({ success: "", error: "" });
-            setShowPayoutModal(true);
-          }}
-          className="w-full rounded-lg bg-red-500 hover:bg-red-600 text-white py-2 text-sm"
-        >
-          Retirer mes fonds
-        </button>
-
-        {(payoutResult.success || payoutResult.error) && (
-          <div className="mt-4">
-            <RefillAlert
-              variant={payoutResult.success ? "success" : "error"}
-              title={payoutResult.success ? "Succès" : "Erreur"}
-              message={payoutResult.success || payoutResult.error}
-            />
-          </div>
-        )}
-
-        <PayoutModal
-          isOpen={showPayoutModal}
-          onClose={() => setShowPayoutModal(false)}
-          userId={userId}
-          dollarBalance={dollarBalance ?? 0}
-          setResult={setPayoutResult}
-        />
-      </div>
     </div>
   );
 }
