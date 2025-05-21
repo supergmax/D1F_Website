@@ -65,8 +65,8 @@ CREATE TABLE public.profiles (
   language TEXT DEFAULT 'fr',
   affiliate_id VARCHAR(6) UNIQUE NOT NULL,
   godfather_id VARCHAR(6),
-  token_balance INTEGER DEFAULT 0 NOT NULL CHECK (token_balance >= 0),
-  dollar_balance INTEGER DEFAULT 0 NOT NULL CHECK (dollar_balance >= 0),
+  token_balance INTEGER DEFAULT 0 NOT NULL,
+  dollar_balance INTEGER DEFAULT 0 NOT NULL,
   role role_enum DEFAULT 'user' NOT NULL,
   photo_url TEXT,
   broker_id TEXT NOT NULL, 
@@ -170,9 +170,10 @@ CREATE TABLE public.challenges (
   name TEXT NOT NULL,
   challenge_num INTEGER NOT NULL,
   status challenge_status_enum DEFAULT 'pending',
+  rebilled BOOLEAN DEFAULT FALSE NOT NULL,
   start_date DATE,
   end_date DATE,
-  initial_balance INTEGER DEFAULT 0 CHECK (initial_balance >= 0),
+  initial_balance INTEGER DEFAULT 0 ,
   profit INTEGER DEFAULT 0,
   note TEXT,
   label label_enum DEFAULT 'none',
@@ -189,6 +190,7 @@ COMMENT ON COLUMN public.challenges.purchase_id IS 'Référence à l’achat (pu
 COMMENT ON COLUMN public.challenges.name IS 'Nom du challenge (ex: Alpha, Bêta).';
 COMMENT ON COLUMN public.challenges.challenge_num IS 'Numéro d’ordre du challenge pour un utilisateur (1er, 2e…).';
 COMMENT ON COLUMN public.challenges.status IS 'Statut actuel du challenge (open, active, failed, etc.).';
+COMMENT ON COLUMN public.challenges.rebilled IS 'Challenge re facturé ou pas (true = re-facturé).';
 COMMENT ON COLUMN public.challenges.start_date IS 'Date de début officielle du challenge.';
 COMMENT ON COLUMN public.challenges.end_date IS 'Date de fin du challenge (le cas échéant).';
 COMMENT ON COLUMN public.challenges.initial_balance IS 'Capital initial attribué au challenge.';
