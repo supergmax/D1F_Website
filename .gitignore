@@ -47,6 +47,8 @@ next-env.d.ts
 .env
 .env.keys
 .env.*.local
+.env.local
+
 
 /D1F_dashboard
 

@@ -10,6 +10,10 @@ import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
 import CGUModal from "@/components/auth/CGUModal";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import { GeoapifyContext, GeoapifyGeocoderAutocomplete } from '@geoapify/react-geocoder-autocomplete';
+import '@geoapify/geocoder-autocomplete/styles/minimal.css';
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -33,7 +37,9 @@ export default function SignUpForm() {
     corp_name: '',
     corp_address: '',
     corp_vat: '',
-    corp_country: ''
+    corp_country: '',
+    address: '',
+    billing_address: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -78,7 +84,6 @@ export default function SignUpForm() {
       corpId = uuidv4();
     }
 
-    // Génère un broker_id unique
     const { data: brokerData, error: brokerError } = await supabase
       .from("profiles")
       .select("broker_id")
@@ -97,7 +102,6 @@ export default function SignUpForm() {
     const newBrokerId = `WUF-${(maxNum + 1).toString().padStart(6, '0')}`;
     const newBrokerPwd = generateBrokerPassword();
 
-    // Création compte Supabase
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -117,7 +121,6 @@ export default function SignUpForm() {
 
     const userId = signUpData.user.id;
 
-    // Insertion dans `profiles`
     const { error: profileErr } = await supabase.from("profiles").insert({
       id: userId,
       first_name: form.first_name,
@@ -133,18 +136,18 @@ export default function SignUpForm() {
       corp_id: corpId,
       broker_id: newBrokerId,
       broker_pwd: newBrokerPwd,
-      token_balance: 0,        
-      dollar_balance: 0        
+      token_balance: 0,
+      dollar_balance: 0,
+      address: form.address,
+      billing_address: form.billing_address,
     });
 
     if (profileErr) {
-      console.error("Erreur SQL Supabase : ", profileErr); // ← Affiche l’erreur réelle
+      console.error("Erreur SQL Supabase : ", profileErr);
       setError("Erreur lors de l'insertion dans les profils.");
       return;
     }
 
-
-    // Création société
     if (showCorporation && corpId) {
       const { error: corpErr } = await supabase.from("corporations").insert({
         id: corpId,
@@ -165,128 +168,94 @@ export default function SignUpForm() {
   };
 
   return (
-    <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
-      <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
-        <div className="mb-8">
-          <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-            Création de compte
-          </h1>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <Label>First Name*</Label>
-              <Input name="first_name" required value={form.first_name} onChange={handleChange} />
+    <GeoapifyContext apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY!}>
+      <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
+        <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
+          <h1 className="mb-8 font-semibold text-gray-800 dark:text-white text-xl">Création de compte</h1>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-2 gap-5">
+              <div><Label>First Name*</Label><Input name="first_name" required value={form.first_name} onChange={handleChange} /></div>
+              <div><Label>Last Name*</Label><Input name="last_name" required value={form.last_name} onChange={handleChange} /></div>
             </div>
-            <div>
-              <Label>Last Name*</Label>
-              <Input name="last_name" required value={form.last_name} onChange={handleChange} />
-            </div>
-          </div>
-
-          <Label>Email*</Label>
-          <Input type="email" name="email" required value={form.email} onChange={handleChange} />
-
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <Label>Phone ID*</Label>
-              <Input name="id_phone" required placeholder="+33" value={form.id_phone} onChange={handleChange} />
-            </div>
-            <div>
-              <Label>Phone*</Label>
-              <Input name="phone" required value={form.phone} onChange={handleChange} />
-            </div>
-          </div>
-
-          <Label>Password*</Label>
-          <div className="relative">
-            <Input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              required
-              value={form.password}
-              onChange={handleChange}
+            <Label>Email*</Label>
+            <Input type="email" name="email" required value={form.email} onChange={handleChange} />
+            <Label>Phone*</Label>
+            <PhoneInput
+              country={'fr'}
+              value={form.phone}
+              inputProps={{ required: true }}
+              onChange={(value, data: { dialCode: string }) => {
+                setForm(prev => ({
+                  ...prev,
+                  phone: value,
+                  id_phone: `+${data?.dialCode || ''}`,
+                }));
+              }}
             />
-            <span onClick={() => setShowPassword(!showPassword)} className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer">
-              {showPassword ? <EyeIcon /> : <EyeCloseIcon />}
-            </span>
-          </div>
-
-          <Label>Country</Label>
-          <Input name="country" value={form.country} onChange={handleChange} />
-
-          <Label>Language*</Label>
-          <select name="language" className="w-full border rounded-lg p-2" value={form.language} onChange={handleChange}>
-            <option value="fr">Français</option>
-            <option value="en">English</option>
-          </select>
-
-          <div className="mt-4">
-            <Checkbox checked={showCorporation} onChange={() => setShowCorporation(!showCorporation)} />
-            <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Add a corporation?</span>
-          </div>
-
-          {showCorporation && (
-            <div className="space-y-4 border-t pt-5 mt-4">
-              <Label>Corporation Name*</Label>
-              <Input name="corp_name" required value={form.corp_name} onChange={handleChange} />
-
-              <Label>Corporation Address</Label>
-              <Input name="corp_address" value={form.corp_address} onChange={handleChange} />
-
-              <Label>VAT Number</Label>
-              <Input name="corp_vat" value={form.corp_vat} onChange={handleChange} />
-
-              <Label>Corporation Country</Label>
-              <Input name="corp_country" value={form.corp_country} onChange={handleChange} />
+            <Label>Password*</Label>
+            <div className="relative">
+              <Input type={showPassword ? "text" : "password"} name="password" required value={form.password} onChange={handleChange} />
+              <span onClick={() => setShowPassword(!showPassword)} className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer">
+                {showPassword ? <EyeIcon /> : <EyeCloseIcon />}
+              </span>
             </div>
-          )}
-
-          <Label>Affiliate Code*</Label>
-          <Input name="affiliate_code" required value={form.affiliate_code} onChange={handleChange} />
-
-          <div className="flex items-start gap-3">
-            <Checkbox checked={acceptedCGU} onChange={setAcceptedCGU} />
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              I accept the{" "}
-              <button
-                type="button"
-                className="text-brand-500 underline hover:text-brand-600 dark:text-brand-400"
-                onClick={() => setShowCGUModal(true)}
-              >
-                read the CGU
-              </button>
+            <Label>Country</Label>
+            <Input name="country" value={form.country} onChange={handleChange} />
+            <Label>Language*</Label>
+            <select name="language" className="w-full border rounded-lg p-2" value={form.language} onChange={handleChange}>
+              <option value="fr">Français</option>
+              <option value="en">English</option>
+            </select>
+            <Label>Address</Label>
+            <GeoapifyGeocoderAutocomplete
+              placeholder="Adresse principale"
+              placeSelect={(place) => setForm(prev => ({ ...prev, address: place.properties.formatted }))}
+            />
+            <Label>Billing Address</Label>
+            <GeoapifyGeocoderAutocomplete
+              placeholder="Adresse de facturation"
+              placeSelect={(place) => setForm(prev => ({ ...prev, billing_address: place.properties.formatted }))}
+            />
+            <div className="mt-4">
+              <Checkbox checked={showCorporation} onChange={() => setShowCorporation(!showCorporation)} />
+              <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Add a corporation?</span>
+            </div>
+            {showCorporation && (
+              <div className="space-y-4 border-t pt-5 mt-4">
+                <Label>Corporation Name*</Label>
+                <Input name="corp_name" required value={form.corp_name} onChange={handleChange} />
+                <Label>Corporation Address</Label>
+                <Input name="corp_address" value={form.corp_address} onChange={handleChange} />
+                <Label>VAT Number</Label>
+                <Input name="corp_vat" value={form.corp_vat} onChange={handleChange} />
+                <Label>Corporation Country</Label>
+                <Input name="corp_country" value={form.corp_country} onChange={handleChange} />
+              </div>
+            )}
+            <Label>Affiliate Code*</Label>
+            <Input name="affiliate_code" required value={form.affiliate_code} onChange={handleChange} />
+            <div className="flex items-start gap-3">
+              <Checkbox checked={acceptedCGU} onChange={setAcceptedCGU} />
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                I accept the{" "}
+                <button type="button" className="text-brand-500 underline hover:text-brand-600 dark:text-brand-400" onClick={() => setShowCGUModal(true)}>
+                  read the CGU
+                </button>
+              </p>
+            </div>
+            {!acceptedCGU && <p className="text-sm text-red-500">You must accept the CGU to create an account.</p>}
+            {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+            <button type="submit" className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-lg">Sign Up</button>
+          </form>
+          <div className="mt-5 text-center">
+            <p className="text-sm text-gray-700 dark:text-gray-400">
+              Already have an account ?{" "}
+              <Link href="/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign In</Link>
             </p>
           </div>
-
-          {!acceptedCGU && (
-            <p className="text-sm text-red-500">
-              You must accept the CGU to create an account.
-            </p>
-          )}
-
-          {error && <p className="text-sm text-red-600 text-center">{error}</p>}
-
-          <button
-            type="submit"
-            className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-lg"
-          >
-            Sign Up
-          </button>
-        </form>
-
-        <div className="mt-5 text-center">
-          <p className="text-sm text-gray-700 dark:text-gray-400">
-            Already have an account ?{" "}
-            <Link href="/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">
-              Sign In
-            </Link>
-          </p>
+          <CGUModal isOpen={showCGUModal} onClose={() => setShowCGUModal(false)} />
         </div>
-
-        <CGUModal isOpen={showCGUModal} onClose={() => setShowCGUModal(false)} />
       </div>
-    </div>
+    </GeoapifyContext>
   );
 }
