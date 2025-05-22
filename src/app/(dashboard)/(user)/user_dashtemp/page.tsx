@@ -8,6 +8,7 @@ import SaasMetrics from "@/components/saas/SaasMetrics";
 import AnalyticsBarChart from "@/components/dashtemp/AnalyticsBarChart";
 import { Metadata } from "next";
 import React from "react";
+import EstimatedRevenue from "@/components/dashtemp/EstimatedRevenue";
 
 export const metadata: Metadata = {
   title:
@@ -20,10 +21,14 @@ export default function SaaS() {
   return (
     <div className="space-y-6">
       <SaasMetrics />
-      
-      <div className="col-span-12">
+    <div className="grid grid-cols-12 gap-4 md:gap-6">
+      <div className="col-span-12 xl:col-span-8">
         <AnalyticsBarChart />
       </div>
+      <div className="col-span-12 xl:col-span-4">
+        <EstimatedRevenue />
+      </div>
+    </div>
       <div className="py-3">
         {/* Table */}
         <SaasInvoiceTable />
