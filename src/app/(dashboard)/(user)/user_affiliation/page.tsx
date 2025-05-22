@@ -94,9 +94,11 @@ export default function UserAffiliationPage() {
       <div className="col-span-12">
         <div className="py-3">
           <MonthlySalesChart monthlyCounts={monthlyCounts} />
+          
         </div>
         <div className="py-3">
-          <StatisticsChart data={dailyData} />
+          <MonthlySalesChart monthlyCounts={monthlyCounts} />
+          {/* <StatisticsChart data={dailyData} /> */}
         </div>
       </div>
     </div>

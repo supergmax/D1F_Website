@@ -78,7 +78,7 @@ export default function UserPayout() {
       <EcommerceMetrics totalaccepted={totalaccepted} payoutCount={payouts.length} />
 
       {/* Zone retrait de fonds */}
-      <div className="w-full rounded-2xl border border-red-300 bg-white p-6 dark:border-blue-800 dark:bg-white/[0.03]">
+      <div className="w-full rounded-2xl border border-blue-300 bg-white p-6 dark:border-blue-800 dark:bg-white/[0.03]">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-3">Demande de retrait</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
           Disponible : <strong>{dollarBalance ?? "…"}</strong> $
