@@ -44,12 +44,12 @@ export default function ChallengeDetailsTable({ challenges }: Props) {
           <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
             {challenges.map((ch) => (
               <tr key={ch.id}>
-                <td className="px-6 py-4">{ch.name}</td>
-                <td className="px-6 py-4">{ch.challenge_num}</td>
-                <td className="px-6 py-4 capitalize">{ch.status}</td>
+                <td className="px-6 py-4 dark:text-gray-200">{ch.name}</td>
+                <td className="px-6 py-4 dark:text-gray-200">{ch.challenge_num}</td>
+                <td className="px-6 py-4 capitalize dark:text-gray-200">{ch.status}</td>
                 <td className="px-6 py-4 text-green-600 font-medium">{ch.profit} $</td>
-                <td className="px-6 py-4">{ch.start_date || '—'}</td>
-                <td className="px-6 py-4">{ch.end_date || '—'}</td>
+                <td className="px-6 py-4 dark:text-gray-200">{ch.start_date || '—'}</td>
+                <td className="px-6 py-4 dark:text-gray-200">{ch.end_date || '—'}</td>
               </tr>
             ))}
           </tbody>
