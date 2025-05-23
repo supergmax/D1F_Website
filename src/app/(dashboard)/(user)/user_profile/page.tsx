@@ -8,6 +8,8 @@ import UserInfoCard from '@/components/profile/UserInfoCard';
 import UserMetaCard from '@/components/profile/UserMetaCard';
 import SaasMetrics from '@/components/profile/SaasMetrics';
 import BrokerInfoCard from '@/components/profile/BrokerInfoCard';
+import ChangePasswordModal from '@/components/profile/ChangePasswordModal';
+import Button from '@/components/ui/button/Button';
 
 interface UserProfile {
   role: string;
@@ -34,6 +36,7 @@ interface UserProfile {
 }
 
 export default function Profile() {
+  const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalChallenges, setTotalChallenges] = useState(0);
@@ -143,6 +146,13 @@ export default function Profile() {
           />
           <UserAddressCard id={profile.id} country={profile.country ?? ''} />
         </div>
+        <Button
+          onClick={() => setPasswordModalOpen(true)}
+          className="mt-6 rounded-full bg-blue-600 text-white px-5 py-2 shadow hover:bg-blue-700"
+        >
+          🔐 Change Password
+        </Button>
+        <ChangePasswordModal isOpen={isPasswordModalOpen} onClose={() => setPasswordModalOpen(false)} />
       </div>
     </div>
   );

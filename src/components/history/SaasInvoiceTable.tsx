@@ -160,7 +160,7 @@ export default function SaasInvoiceTable() {
 
                 return (
                   <tr key={index}>
-                    <td className="px-6 py-4">{new Date(row.created_at).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 dark:text-gray-200">{new Date(row.created_at).toLocaleDateString()}</td>
                     <td className="px-6 py-4">
                       <span className={isOut ? "text-red-600" : "text-green-600"}>
                         {isOut ? "Out" : "In"}
