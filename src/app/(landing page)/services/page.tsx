@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Header from "@/components/header"
-import { Footer } from "@/components/footer"
-import { PageHeader } from "@/components/page-header"
-import { WhyChooseUsSection } from "@/components/why-choose-us-section"
-import { Button } from "@/components/ui/button"
+import Header from "@/components/landing/header"
+import { Footer } from "@/components/landing/footer"
+import { PageHeader } from "@/components/landing/page-header"
+import { WhyChooseUsSection } from "@/components/landing/why-choose-us-section"
+import { Button } from "@/components/ui/landing/button"
 
 export const metadata: Metadata = {
   title: "Services | With Us Associates",

@@ -1,11 +1,11 @@
-import Hero from "@/components/hero"
-import Header from "@/components/header"
-import { CommitmentsSection } from "@/components/commitments-section"
-import { ProcessSection } from "@/components/process-section"
-import { StatsSection } from "@/components/stats-section"
-import { FaqSection } from "@/components/faq-section"
-import { WhyChooseUsSection } from "@/components/why-choose-us-section"
-import { Footer } from "@/components/footer"
+import Hero from "@/components/landing/hero"
+import Header from "@/components/landing/header"
+import { CommitmentsSection } from "@/components/landing/commitments-section"
+import { ProcessSection } from "@/components/landing/process-section"
+import { StatsSection } from "@/components/landing/stats-section"
+import { FaqSection } from "@/components/landing/faq-section"
+import { WhyChooseUsSection } from "@/components/landing/why-choose-us-section"
+import { Footer } from "@/components/landing/footer"
 
 export default function Home() {
   return (

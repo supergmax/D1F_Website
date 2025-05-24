@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import Header from "@/components/header"
-import { Footer } from "@/components/footer"
-import { PageHeader } from "@/components/page-header"
-import { ProcessSection } from "@/components/process-section"
-import { CommitmentsSection } from "@/components/commitments-section"
-import { Button } from "@/components/ui/button"
+import Header from "@/components/landing/header"
+import { Footer } from "@/components/landing/footer"
+import { PageHeader } from "@/components/landing/page-header"
+import { ProcessSection } from "@/components/landing/process-section"
+import { CommitmentsSection } from "@/components/landing/commitments-section"
+import { Button } from "@/components/ui/landing/button"
 
 export const metadata: Metadata = {
   title: "Our Process | With Us Associates",

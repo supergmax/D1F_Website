@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Header from "@/components/header"
-import { Footer } from "@/components/footer"
-import { PageHeader } from "@/components/page-header"
-import { StatsSection } from "@/components/stats-section"
+import Header from "@/components/landing/header"
+import { Footer } from "@/components/landing/footer"
+import { PageHeader } from "@/components/landing/page-header"
+import { StatsSection } from "@/components/landing/stats-section"
 import { Users, Award, TrendingUp, Clock } from "lucide-react"
 
 export const metadata: Metadata = {

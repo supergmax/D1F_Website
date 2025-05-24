@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import Header from "@/components/header"
-import { Footer } from "@/components/footer"
-import { PageHeader } from "@/components/page-header"
+import Header from "@/components/landing/header"
+import { Footer } from "@/components/landing/footer"
+import { PageHeader } from "@/components/landing/page-header"
 
 export const metadata: Metadata = {
   title: "Terms of Service | With Us Associates",

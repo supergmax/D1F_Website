@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import Header from "@/components/header"
-import { Footer } from "@/components/footer"
-import { PageHeader } from "@/components/page-header"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import Header from "@/components/landing/header"
+import { Footer } from "@/components/landing/footer"
+import { PageHeader } from "@/components/landing/page-header"
+import { Button } from "@/components/ui/landing/button";
+import { Input } from "@/components/ui/landing/input";
+import { Textarea } from "@/components/ui/landing/textarea";
 import { Mail, Phone, MapPin, Clock } from "lucide-react"
 
 export const metadata: Metadata = {

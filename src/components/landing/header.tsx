@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Menu, X, Sun, Moon } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/landing/button"
 import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 

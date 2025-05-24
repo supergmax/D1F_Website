@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
-import Header from "@/components/header"
-import { Footer } from "@/components/footer"
-import { PageHeader } from "@/components/page-header"
-import { FaqSection } from "@/components/faq-section"
-import { Button } from "@/components/ui/button"
+import Header from "@/components/landing/header"
+import { Footer } from "@/components/landing/footer"
+import { PageHeader } from "@/components/landing/page-header"
+import { FaqSection } from "@/components/landing/faq-section"
+import { Button } from "@/components/ui/landing/button"
 import Link from "next/link"
 
 export const metadata: Metadata = {
