@@ -46,7 +46,7 @@ const steps: ProcessStep[] = [
 
 export function ProcessSection() {
   return (
-    <section id="process" className="py-20 bg-background dark:bg-background w-full">
+    <section id="process" className="py-20 bg-white w-full">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
           <motion.h2
@@ -54,7 +54,7 @@ export function ProcessSection() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-extrabold mb-6 text-primary dark:text-primary"
+            className="text-4xl md:text-5xl font-extrabold mb-6 text-[#4E463F]"
           >
             How It Works
           </motion.h2>
@@ -63,7 +63,7 @@ export function ProcessSection() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="text-lg text-gray-600 dark:text-muted-foreground max-w-3xl mx-auto"
+            className="text-lg text-gray-600 max-w-3xl mx-auto"
           >
             Our straightforward 5-step process to get you from registration to a funded trading account.
           </motion.p>
@@ -76,7 +76,7 @@ export function ProcessSection() {
             whileInView={{ scaleX: 1 }}
             transition={{ duration: 0.8, delay: steps.length * 0.2 }}
             viewport={{ once: true }}
-            className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gray-200 dark:bg-border origin-left z-0"
+            className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gray-200 origin-left z-0"
           />
 
           {/* Steps */}
@@ -88,24 +88,24 @@ export function ProcessSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.2 }}
                 viewport={{ once: true }}
-                className="flex flex-col items-center text-center bg-background dark:bg-card border dark:border-border rounded-xl shadow-md p-6 w-full max-w-[220px] min-h-[340px] justify-between"
+                className="flex flex-col items-center text-center bg-white border border-gray-200 rounded-xl shadow-md p-6 w-full max-w-[220px] min-h-[340px] justify-between"
               >
                 <div className="flex flex-col items-center">
                   {/* Step number */}
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-muted text-primary dark:text-primary text-base font-bold mb-4">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-[#4E463F] text-base font-bold mb-4">
                     {step.id}
                   </div>
 
                   {/* Icon */}
-                  <div className="flex items-center justify-center w-12 h-12 bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary rounded-full mb-4">
+                  <div className="flex items-center justify-center w-12 h-12 bg-[#4E463F]/10 text-[#4E463F] rounded-full mb-4">
                     <step.icon size={28} />
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-semibold mb-2 text-primary dark:text-primary">{step.title}</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-[#4E463F]">{step.title}</h3>
 
                   {/* Description */}
-                  <p className="text-sm text-gray-600 dark:text-muted-foreground">{step.description}</p>
+                  <p className="text-sm text-gray-600">{step.description}</p>
                 </div>
               </motion.div>
             ))}

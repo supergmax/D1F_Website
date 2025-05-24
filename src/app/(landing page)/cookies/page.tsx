@@ -15,10 +15,10 @@ export default function CookiesPage() {
 
       <PageHeader title="Cookie Policy" description="Last updated: May 12, 2025" />
 
-      <section className="py-16 bg-background dark:bg-background">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto prose prose-lg dark:text-gray-300">
-            <h2 className="text-primary dark:text-primary">What Are Cookies</h2>
+          <div className="max-w-4xl mx-auto prose prose-lg">
+            <h2 className="text-[#4E463F]">What Are Cookies</h2>
             <p>
               Cookies are small pieces of text sent by your web browser by a website you visit. A cookie file is stored
               in your web browser and allows the website or a third-party to recognize you and make your next visit
@@ -30,7 +30,7 @@ export default function CookiesPage() {
               functionalities.
             </p>
 
-            <h2 className="text-primary dark:text-primary">How We Use Cookies</h2>
+            <h2 className="text-[#4E463F]">How We Use Cookies</h2>
             <p>
               When you use and access our website, we may place a number of cookies files in your web browser. We use
               cookies for the following purposes:
@@ -66,13 +66,13 @@ export default function CookiesPage() {
               </li>
             </ul>
 
-            <h2 className="text-primary dark:text-primary">Third-Party Cookies</h2>
+            <h2 className="text-[#4E463F]">Third-Party Cookies</h2>
             <p>
               In addition to our own cookies, we may also use various third-party cookies to report usage statistics of
               the website, deliver advertisements on and through the website, and so on.
             </p>
 
-            <h2 className="text-primary dark:text-primary">What Are Your Choices Regarding Cookies</h2>
+            <h2 className="text-[#4E463F]">What Are Your Choices Regarding Cookies</h2>
             <p>
               If you'd like to delete cookies or instruct your web browser to delete or refuse cookies, please visit the
               help pages of your web browser.
@@ -83,24 +83,24 @@ export default function CookiesPage() {
               not display properly.
             </p>
 
-            <h2 className="text-primary dark:text-primary">Where Can You Find More Information About Cookies</h2>
+            <h2 className="text-[#4E463F]">Where Can You Find More Information About Cookies</h2>
             <p>You can learn more about cookies and the following third-party websites:</p>
             <ul>
               <li>
                 AllAboutCookies:{" "}
-                <a href="http://www.allaboutcookies.org/" className="text-primary hover:text-secondary dark:text-primary dark:hover:text-secondary">
+                <a href="http://www.allaboutcookies.org/" className="text-[#4E463F] hover:text-[#CABA9F]">
                   http://www.allaboutcookies.org/
                 </a>
               </li>
               <li>
                 Network Advertising Initiative:{" "}
-                <a href="http://www.networkadvertising.org/" className="text-primary hover:text-secondary dark:text-primary dark:hover:text-secondary">
+                <a href="http://www.networkadvertising.org/" className="text-[#4E463F] hover:text-[#CABA9F]">
                   http://www.networkadvertising.org/
                 </a>
               </li>
             </ul>
 
-            <h2 className="text-primary dark:text-primary">Contact Us</h2>
+            <h2 className="text-[#4E463F]">Contact Us</h2>
             <p>If you have questions or comments about this Cookie Policy, please contact us at:</p>
             <p>
               With Us Associates

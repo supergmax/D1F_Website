@@ -49,11 +49,11 @@ export function FaqSection() {
   }
 
   return (
-    <section id="faq" className="py-20 bg-gray-50 dark:bg-background">
+    <section id="faq" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary dark:text-primary">Frequently Asked Questions</h2>
-          <p className="text-lg text-gray-600 dark:text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#4E463F]">Frequently Asked Questions</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Get answers to the most common questions about our trading challenges
           </p>
         </div>
@@ -61,9 +61,9 @@ export function FaqSection() {
         <div className="max-w-3xl mx-auto">
           {faqItems.map((item, index) => (
             <div key={index} className="mb-4">
-              <div className={`border dark:border-border rounded-lg overflow-hidden bg-background dark:bg-card`}>
+              <div className={`border rounded-lg overflow-hidden bg-white`}>
                 <button
-                  className="flex justify-between items-center w-full p-4 text-left text-lg font-medium text-primary dark:text-primary"
+                  className="flex justify-between items-center w-full p-4 text-left text-lg font-medium text-[#4E463F]"
                   onClick={() => toggleFaq(index)}
                 >
                   {item.question}
@@ -77,7 +77,7 @@ export function FaqSection() {
                     openIndex === index ? "max-h-96 p-4 pt-0" : "max-h-0"
                   }`}
                 >
-                  <p className="text-gray-600 dark:text-muted-foreground pt-2">{item.answer}</p>
+                  <p className="text-gray-600 pt-2">{item.answer}</p>
                 </div>
               </div>
             </div>
