@@ -9,7 +9,7 @@ import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
 const Header: React.FC = () => {
-  const [isApplicationMenupending, setApplicationMenupending] = useState(false);
+  const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
   const [userData, setUserData] = useState<{
     first_name: string;
     last_name: string;
@@ -17,7 +17,7 @@ const Header: React.FC = () => {
     token_balance: number;
   } | null>(null);
 
-  const { isMobilepending, toggleSidebar, toggleMobileSidebar } = useSidebar();
+  const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
 
   const handleToggle = () => {
     if (window.innerWidth >= 1024) {
@@ -54,7 +54,7 @@ const Header: React.FC = () => {
   }, []);
 
   const toggleApplicationMenu = () => {
-    setApplicationMenupending(!isApplicationMenupending);
+    setApplicationMenuOpen(!isApplicationMenuOpen);
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -80,7 +80,7 @@ const Header: React.FC = () => {
             onClick={handleToggle}
             aria-label="Toggle Sidebar"
           >
-            {isMobilepending ? (
+            {isMobileOpen ? (
               <svg
                 width="24"
                 height="24"
@@ -153,7 +153,7 @@ const Header: React.FC = () => {
 
         <div
           className={`${
-            isApplicationMenupending ? "flex" : "hidden"
+            isApplicationMenuOpen ? "flex" : "hidden"
           } items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}
         >
           <div className="flex flex-col items-end gap-1 text-sm text-gray-700 dark:text-white mr-4">

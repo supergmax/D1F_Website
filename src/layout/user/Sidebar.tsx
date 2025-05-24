@@ -22,7 +22,7 @@ type NavItem = {
   name: string;
   icon: React.ReactNode;
   path: string;
-  action?: "pendingSupportModal";
+  action?: "OpenSupportModal";
 };
 
 const navItems: NavItem[] = [
@@ -34,22 +34,22 @@ const navItems: NavItem[] = [
   { name: "Shop", icon: <PlusIcon />, path: "/user_shop" },
   { name: "Historique des paiements", icon: <ListIcon />, path: "/user_history" },
   { name: "Formulaire de retrait", icon: <ListIcon />, path: "/user_payout" },
-  { name: "Support", icon: <PaperPlaneIcon />, path: "#", action: "pendingSupportModal" },
+  { name: "Support", icon: <PaperPlaneIcon />, path: "#", action: "OpenSupportModal" },
   { name: "Contract", icon: <DocsIcon />, path: "/user_contact" },
   { name: "legal", icon: <CheckCircleIcon />, path: "https://withusfunded.com/privacy-policy" },
 ];
 
 const Sidebar: React.FC = () => {
-  const { isExpanded, isMobilepending, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
-  const [isSupportModalpending, setIsSupportModalpending] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
 
   const isActive = (path: string) => path === pathname;
 
   const handleNavClick = (nav: NavItem, e: React.MouseEvent) => {
-    if (nav.action === "pendingSupportModal") {
+    if (nav.action === "OpenSupportModal") {
       e.preventDefault();
-      setIsSupportModalpending(true);
+      setIsSupportModalOpen(true);
     }
   };
 
@@ -58,13 +58,13 @@ const Sidebar: React.FC = () => {
       <aside
         className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-full transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${
-          isExpanded || isMobilepending
+          isExpanded || isMobileOpen
             ? "w-[290px]"
             : isHovered
             ? "w-[290px]"
             : "w-[90px]"
         }
-        ${isMobilepending ? "translate-x-0" : "-translate-x-full"}
+        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
         onMouseEnter={() => !isExpanded && setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -72,7 +72,7 @@ const Sidebar: React.FC = () => {
         {/* Logo */}
         <div className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
           <Link href="/">
-            {isExpanded || isHovered || isMobilepending ? (
+            {isExpanded || isHovered || isMobileOpen ? (
               <>
                 <Image className="dark:hidden" src="/images/logo/logo.svg" alt="Logo" width={150} height={40} />
                 <Image className="hidden dark:block" src="/images/logo/logo-dark.svg" alt="Logo" width={150} height={40} />
@@ -89,7 +89,7 @@ const Sidebar: React.FC = () => {
             <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
               !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
             }`}>
-              {isExpanded || isHovered || isMobilepending ? "Menu" : ""}
+              {isExpanded || isHovered || isMobileOpen ? "Menu" : ""}
             </h2>
             <ul className="flex flex-col gap-4">
               {navItems.map((nav) => (
@@ -104,7 +104,7 @@ const Sidebar: React.FC = () => {
                     <span className={`${isActive(nav.path) ? "menu-item-icon-active" : "menu-item-icon-inactive"}`}>
                       {nav.icon}
                     </span>
-                    {(isExpanded || isHovered || isMobilepending) && (
+                    {(isExpanded || isHovered || isMobileOpen) && (
                       <span className="menu-item-text">{nav.name}</span>
                     )}
                   </Link>
@@ -116,7 +116,7 @@ const Sidebar: React.FC = () => {
       </aside>
 
       {/* Support Modal */}
-      <SupportModal isOpen={isSupportModalpending} onClose={() => setIsSupportModalpending(false)} />
+      <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} />
     </>
   );
 };

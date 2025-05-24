@@ -16,7 +16,7 @@ const adminNav = [
 ];
 
 export default function Sidebar() {
-  const { isExpanded, isHovered, isMobilepending, setIsHovered } = useSidebar();
+  const { isExpanded, isHovered, isMobileOpen, setIsHovered } = useSidebar();
   const pathname = usePathname();
 
   const isActive = (path: string) => pathname === path;
@@ -24,12 +24,12 @@ export default function Sidebar() {
   return (
     <aside
       className={`fixed mt-16 flex flex-col top-0 px-5 left-0 bg-white dark:bg-gray-900 text-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 z-50 ${
-        isExpanded || isMobilepending
+        isExpanded || isMobileOpen
           ? "w-[290px]"
           : isHovered
           ? "w-[290px]"
           : "w-[90px]"
-      } ${isMobilepending ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+      } ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -52,7 +52,7 @@ export default function Sidebar() {
                 }`}
               >
                 {item.icon}
-                {(isExpanded || isHovered || isMobilepending) && (
+                {(isExpanded || isHovered || isMobileOpen) && (
                   <span>{item.name}</span>
                 )}
               </Link>
