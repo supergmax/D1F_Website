@@ -15,10 +15,10 @@ export default function TermsPage() {
 
       <PageHeader title="Terms of Service" description="Last updated: May 12, 2025" />
 
-      <section className="py-16 bg-background dark:bg-background">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto prose prose-lg dark:text-gray-300">
-            <h2 className="text-primary dark:text-primary">Agreement to Terms</h2>
+          <div className="max-w-4xl mx-auto prose prose-lg">
+            <h2 className="text-[#4E463F]">Agreement to Terms</h2>
             <p>
               These Terms of Service constitute a legally binding agreement made between you and With Us Associates
               ("we," "us," or "our"), concerning your access to and use of our website and services.
@@ -29,7 +29,7 @@ export default function TermsPage() {
               expressly prohibited from using the website and/or services and you must discontinue use immediately.
             </p>
 
-            <h2 className="text-primary dark:text-primary">Intellectual Property Rights</h2>
+            <h2 className="text-[#4E463F]">Intellectual Property Rights</h2>
             <p>
               Unless otherwise indicated, the website and services are our proprietary property and all source code,
               databases, functionality, software, website designs, audio, video, text, photographs, and graphics on the
@@ -45,7 +45,7 @@ export default function TermsPage() {
               purpose whatsoever, without our express prior written permission.
             </p>
 
-            <h2 className="text-primary dark:text-primary">User Representations</h2>
+            <h2 className="text-[#4E463F]">User Representations</h2>
             <p>By using the website and/or services, you represent and warrant that:</p>
             <ol>
               <li>All registration information you submit will be true, accurate, current, and complete.</li>
@@ -60,10 +60,10 @@ export default function TermsPage() {
                 script, or otherwise.
               </li>
               <li>You will not use the website or services for any illegal or unauthorized purpose.</li>
-              <li>Your use of volunte or services will not violate any applicable law or regulation.</li>
+              <li>Your use of the website or services will not violate any applicable law or regulation.</li>
             </ol>
 
-            <h2 className="text-primary dark:text-primary">Prohibited Activities</h2>
+            <h2 className="text-[#4E463F]">Prohibited Activities</h2>
             <p>
               You may not access or use the website or services for any purpose other than that for which we make them
               available. The website and services may not be used in connection with any commercial endeavors except
@@ -110,7 +110,7 @@ export default function TermsPage() {
               </li>
             </ol>
 
-            <h2 className="text-primary dark:text-primary">Contact Us</h2>
+            <h2 className="text-[#4E463F]">Contact Us</h2>
             <p>If you have questions or comments about these Terms of Service, please contact us at:</p>
             <p>
               With Us Associates
