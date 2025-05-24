@@ -10,8 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-type PayoutStatus = 'pending' | 'open' | 'accepted' | 'canceled';
-type ActionStatus = 'open' | 'accepted' | 'canceled';
+type PayoutStatus = 'requested' | 'pending' | 'done' | 'failed';
+type ActionStatus = 'pending' | 'done' | 'failed';
 
 type Payout = {
   id: string;
@@ -130,15 +130,15 @@ export default function AdminPayoutsPage() {
 
                 <TableCell>
                   <div className="flex gap-2">
-                    {(['open', 'accepted', 'canceled'] as const).map((status) => (
+                    {(['pending', 'done', 'failed'] as const).map((status) => (
                       <button
                         key={status}
                         disabled={updatingId === payout.id}
                         onClick={() => updateStatus(payout.id, status)}
                         className={`px-2 py-1 text-white text-xs rounded ${
-                          status === 'accepted'
+                          status === 'done'
                             ? 'bg-green-600'
-                            : status === 'canceled'
+                            : status === 'failed'
                             ? 'bg-red-500'
                             : 'bg-yellow-500'
                         }`}

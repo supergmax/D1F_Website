@@ -12,7 +12,7 @@ import { CheckLineIcon } from '@/icons'; // ✅ à adapter selon ton chemin exac
 interface Payout {
   id: string;
   amount_tokens: number;
-  status: 'pending' | 'accepted' | 'canceled';
+  status: 'requested' | 'done' | 'failed';
   created_at: string;
 }
 
@@ -69,13 +69,13 @@ export default function UserPayout() {
     fetchData();
   }, []);
 
-  const totalaccepted = payouts
-    .filter((p) => p.status === 'accepted')
+  const totaldone = payouts
+    .filter((p) => p.status === 'done')
     .reduce((acc, p) => acc + Number(p.amount_tokens || 0), 0);
 
   return (
     <div className="flex flex-col w-full min-h-screen px-4 py-6 space-y-6">
-      <EcommerceMetrics totalaccepted={totalaccepted} payoutCount={payouts.length} />
+      <EcommerceMetrics totaldone={totaldone} payoutCount={payouts.length} />
 
       {/* Zone retrait de fonds */}
       <div className="w-full rounded-2xl border border-blue-300 bg-white p-6 dark:border-blue-800 dark:bg-white/[0.03]">
@@ -114,8 +114,8 @@ export default function UserPayout() {
         )}
 
         <PayoutModal
-          isOpen={showPayoutModal}
-          onClose={() => setShowPayoutModal(false)}
+          ispending={showPayoutModal}
+          onfailed={() => setShowPayoutModal(false)}
           userId={userId}
           dollarBalance={dollarBalance}
           setResult={setPayoutResult}

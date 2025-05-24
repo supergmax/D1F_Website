@@ -24,7 +24,7 @@ interface Transaction {
   date: string;
   user: string;
   amount: string;
-  status: 'accepted' | 'pending' | 'cancelled';
+  status: 'done' | 'requested' | 'cancelled';
 }
 
 export default function UserDashboard() {
@@ -91,10 +91,10 @@ export default function UserDashboard() {
         user: `${profile?.first_name || 'Utilisateur'} ${profile?.last_name || ''}`,
         amount: `${(inv.amount / 100).toFixed(2)} €`,
         status:
-          inv.status === 'accepted'
-            ? 'accepted'
-            : inv.status === 'pending'
-            ? 'pending'
+          inv.status === 'done'
+            ? 'done'
+            : inv.status === 'requested'
+            ? 'requested'
             : 'cancelled',
       }));
 

@@ -57,7 +57,7 @@ const tableData: Order[] = [
       images: ["/images/user/user-25.jpg", "/images/user/user-26.jpg"],
     },
     budget: "24.9K",
-    status: "Pending",
+    status: "requested",
   },
   {
     id: 3,
@@ -203,7 +203,7 @@ export default function BasicTableOne() {
                     color={
                       order.status === "Active"
                         ? "success"
-                        : order.status === "Pending"
+                        : order.status === "requested"
                         ? "warning"
                         : "error"
                     }

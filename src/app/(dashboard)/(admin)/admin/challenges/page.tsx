@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-type ChallengeStatus = 'pending' | 'open' | 'active' | 'close' | 'issue';
+type ChallengeStatus = 'requested' | 'pending' | 'active' | 'failed' | 'issue';
 
 type Challenge = {
   id: string;
@@ -129,7 +129,7 @@ export default function AdminChallengesPage() {
 
                 <TableCell>
                   <div className="flex gap-2">
-                    {(['pending', 'open', 'active', 'close', 'issue'] as const).map((status) => (
+                    {(['requested', 'pending', 'active', 'failed', 'issue'] as const).map((status) => (
                       <button
                         key={status}
                         disabled={updatingId === c.id}
@@ -137,11 +137,11 @@ export default function AdminChallengesPage() {
                         className={`px-2 py-1 text-white text-xs rounded ${
                           status === 'active'
                             ? 'bg-green-600'
-                            : status === 'close'
+                            : status === 'failed'
                             ? 'bg-gray-600'
                             : status === 'issue'
                             ? 'bg-red-600'
-                            : status === 'open'
+                            : status === 'pending'
                             ? 'bg-yellow-500'
                             : 'bg-blue-500'
                         }`}

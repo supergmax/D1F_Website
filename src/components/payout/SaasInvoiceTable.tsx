@@ -2,7 +2,7 @@ interface Payout {
   id: string;
   created_at: string;
   amount_tokens: number | string;
-  status: 'pending' | 'open' | 'accepted' | 'canceled';
+  status: 'requested' | 'pending' | 'done' | 'failed';
 }
 
 interface InvoiceProps {
@@ -46,17 +46,17 @@ export default function SaasInvoiceTable({
               const montantFormate = !isNaN(montant) ? `${montant.toLocaleString('fr-FR')} WT` : '–';
 
               const statutLibelle = {
-                accepted: 'Payé',
-                pending: 'En attente',
-                open: 'Approuvé',
-                canceled: 'Refusé',
+                done: 'Payé',
+                requested: 'En attente',
+                pending: 'Approuvé',
+                failed: 'Refusé',
               }[txn.status];
 
               const statutCouleur = {
-                accepted: 'bg-green-100 text-green-800',
-                pending: 'bg-yellow-100 text-yellow-800',
-                open: 'bg-blue-100 text-blue-800',
-                canceled: 'bg-red-100 text-red-800',
+                done: 'bg-green-100 text-green-800',
+                requested: 'bg-yellow-100 text-yellow-800',
+                pending: 'bg-blue-100 text-blue-800',
+                failed: 'bg-red-100 text-red-800',
               }[txn.status];
 
               return (

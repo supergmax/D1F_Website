@@ -14,7 +14,7 @@ interface MonthlySalesChartProps {
 }
 
 export default function MonthlySalesChart({ monthlyCounts }: MonthlySalesChartProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [ispending, setIspending] = useState(false);
 
   const options: ApexOptions = {
     colors: ["#465fff"],
@@ -56,8 +56,8 @@ export default function MonthlySalesChart({ monthlyCounts }: MonthlySalesChartPr
     },
   };
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
-  const closeDropdown = () => setIsOpen(false);
+  const toggleDropdown = () => setIspending(!ispending);
+  const failedDropdown = () => setIspending(false);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
@@ -69,9 +69,9 @@ export default function MonthlySalesChart({ monthlyCounts }: MonthlySalesChartPr
           <button onClick={toggleDropdown} className="dropdown-toggle">
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
           </button>
-          <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
-            <DropdownItem onItemClick={closeDropdown}>Voir détails</DropdownItem>
-            <DropdownItem onItemClick={closeDropdown}>Exporter</DropdownItem>
+          <Dropdown ispending={ispending} onfailed={failedDropdown} className="w-40 p-2">
+            <DropdownItem onItemClick={failedDropdown}>Voir détails</DropdownItem>
+            <DropdownItem onItemClick={failedDropdown}>Exporter</DropdownItem>
           </Dropdown>
         </div>
       </div>

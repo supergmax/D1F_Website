@@ -17,7 +17,7 @@ interface Product {
   price: string; // Price of the product (as a string with currency symbol)
   // status: string; // Status of the product
   image: string; // URL or path to the product image
-  status: "Delivered" | "Pending" | "Canceled"; // Status of the product
+  status: "Delivered" | "requested" | "failed"; // Status of the product
 }
 
 // Define the table data using the interface
@@ -37,7 +37,7 @@ const tableData: Product[] = [
     variants: "1 Variant",
     category: "Watch",
     price: "$879.00",
-    status: "Pending",
+    status: "requested",
     image: "/images/product/product-02.jpg", // Replace with actual image URL
   },
   {
@@ -55,7 +55,7 @@ const tableData: Product[] = [
     variants: "2 Variants",
     category: "Electronics",
     price: "$1699.00",
-    status: "Canceled",
+    status: "failed",
     image: "/images/product/product-04.jpg", // Replace with actual image URL
   },
   {
@@ -193,7 +193,7 @@ export default function RecentOrders() {
                     color={
                       product.status === "Delivered"
                         ? "success"
-                        : product.status === "Pending"
+                        : product.status === "requested"
                         ? "warning"
                         : "error"
                     }

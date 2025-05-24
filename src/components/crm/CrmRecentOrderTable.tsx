@@ -28,7 +28,7 @@ interface TableRowData {
   };
   status: {
     // label: string; // Status text
-    type: "Complete" | "Warning" | "Cancel" | "Pending"; // Size of the badge
+    type: "Complete" | "Warning" | "Cancel" | "requested"; // Size of the badge
   };
   actions: {
     delete: boolean; // Indicates a delete action is available
@@ -70,7 +70,7 @@ const tableRowData: TableRowData[] = [
       purchaseDate: "2024-06-18",
     },
     status: {
-      type: "Pending",
+      type: "requested",
     },
     actions: {
       delete: true,
@@ -110,7 +110,7 @@ const tableRowData: TableRowData[] = [
       purchaseDate: "2024-06-25",
     },
     status: {
-      type: "Pending",
+      type: "requested",
     },
     actions: {
       delete: true,
@@ -303,7 +303,7 @@ export default function CrmRecentOrderTable() {
                       color={
                         row.status.type === "Complete"
                           ? "success"
-                          : row.status.type === "Pending"
+                          : row.status.type === "requested"
                           ? "warning"
                           : "error"
                       }

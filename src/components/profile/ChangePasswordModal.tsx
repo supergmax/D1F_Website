@@ -6,14 +6,14 @@ import { Modal } from '@/components/ui/modal';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import Button from '@/components/ui/button/Button';
-import { EyeCloseIcon, EyeIcon } from '@/icons';
+import { EyefailedIcon, EyeIcon } from '@/icons';
 
 interface Props {
-  isOpen: boolean;
-  onClose: () => void;
+  ispending: boolean;
+  onfailed: () => void;
 }
 
-export default function ChangePasswordModal({ isOpen, onClose }: Props) {
+export default function ChangePasswordModal({ ispending, onfailed }: Props) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -48,7 +48,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: Props) {
     setMessage('✅ Mot de passe mis à jour avec succès.');
 
     setTimeout(() => {
-      onClose();
+      onfailed();
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -58,7 +58,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: Props) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md m-4">
+    <Modal ispending={ispending} onfailed={onfailed} className="max-w-md m-4">
       <div className="p-6 bg-white dark:bg-gray-900 rounded-3xl">
         <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Changer le mot de passe</h2>
 
@@ -79,7 +79,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: Props) {
                 {showCurrent ? (
                   <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
                 ) : (
-                  <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
+                  <EyefailedIcon className="fill-gray-500 dark:fill-gray-400" />
                 )}
               </span>
             </div>
@@ -101,7 +101,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: Props) {
                 {showNew ? (
                   <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
                 ) : (
-                  <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
+                  <EyefailedIcon className="fill-gray-500 dark:fill-gray-400" />
                 )}
               </span>
             </div>
@@ -123,7 +123,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: Props) {
                 {showConfirm ? (
                   <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
                 ) : (
-                  <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
+                  <EyefailedIcon className="fill-gray-500 dark:fill-gray-400" />
                 )}
               </span>
             </div>
@@ -141,7 +141,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: Props) {
         </div>
 
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose}>Annuler</Button>
+          <Button variant="outline" onClick={onfailed}>Annuler</Button>
           <Button onClick={handleSubmit}>Valider</Button>
         </div>
       </div>

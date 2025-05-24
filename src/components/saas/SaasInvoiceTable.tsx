@@ -20,7 +20,7 @@ const transactions = [
     date: "May 29, 2017",
     user: "Darlene Robertson",
     amount: "$782.01",
-    status: "Pending" as const,
+    status: "requested" as const,
   },
   {
     id: "#HRP447",
@@ -54,7 +54,7 @@ export default function SaasInvoiceTable() {
                 Serial No:
               </th>
               <th className="px-6 py-4 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
-                Close Date
+                failed Date
               </th>
               <th className="px-6 py-4 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
                 User
@@ -121,7 +121,7 @@ export default function SaasInvoiceTable() {
               </td>
               <td className="px-6 py-4 text-left text-sm whitespace-nowrap text-gray-700 dark:text-gray-400">
                 <span className="bg-warning-50 text-theme-xs text-warning-600 dark:bg-warning-500/15 dark:text-warning-500 rounded-full px-2 py-0.5 font-medium">
-                  Pending
+                  requested
                 </span>
               </td>
             </tr>
@@ -183,7 +183,7 @@ export default function SaasInvoiceTable() {
                     color={
                       transaction.status === "Complete"
                         ? "success"
-                        : transaction.status === "Pending"
+                        : transaction.status === "requested"
                         ? "warning"
                         : "error"
                     }

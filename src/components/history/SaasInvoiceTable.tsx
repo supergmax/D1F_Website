@@ -174,11 +174,11 @@ export default function SaasInvoiceTable() {
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                          row.status === "accepted"
+                          row.status === "done"
                             ? "bg-green-100 text-green-800"
-                            : row.status === "pending"
+                            : row.status === "requested"
                             ? "bg-yellow-100 text-yellow-800"
-                            : row.status === "canceled"
+                            : row.status === "failed"
                             ? "bg-red-100 text-red-800"
                             : "bg-gray-100 text-gray-800"
                         }`}

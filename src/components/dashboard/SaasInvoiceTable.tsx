@@ -3,7 +3,7 @@
 import React from 'react';
 import Badge from '../ui/badge/Badge';
 
-type TransactionStatus = 'accepted' | 'pending' | 'cancelled';
+type TransactionStatus = 'done' | 'requested' | 'cancelled';
 
 interface Transaction {
   id: string;
@@ -33,7 +33,7 @@ export default function SaasInvoiceTable({ transactions }: Props) {
                 Serial No:
               </th>
               <th className="px-6 py-4 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
-                Close Date
+                failed Date
               </th>
               <th className="px-6 py-4 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
                 User
@@ -65,9 +65,9 @@ export default function SaasInvoiceTable({ transactions }: Props) {
                   <Badge
                     size="sm"
                     color={
-                      transaction.status === 'accepted'
+                      transaction.status === 'done'
                         ? 'success'
-                        : transaction.status === 'pending'
+                        : transaction.status === 'requested'
                         ? 'warning'
                         : 'error'
                     }

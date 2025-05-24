@@ -4,7 +4,7 @@ import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
-import { EyeCloseIcon, EyeIcon } from "@/icons";
+import { EyefailedIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -99,7 +99,7 @@ export default function SignInForm() {
                   {showPassword ? (
                     <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
                   ) : (
-                    <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
+                    <EyefailedIcon className="fill-gray-500 dark:fill-gray-400" />
                   )}
                 </span>
               </div>

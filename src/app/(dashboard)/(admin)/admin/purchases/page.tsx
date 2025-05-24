@@ -10,8 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-type PurchaseStatus = 'pending' | 'open' | 'accepted' | 'canceled';
-type ActionStatus = 'open' | 'accepted' | 'canceled';
+type PurchaseStatus = 'requested' | 'pending' | 'done' | 'failed';
+type ActionStatus = 'pending' | 'done' | 'failed';
 
 type Purchase = {
   id: string;
@@ -130,15 +130,15 @@ export default function AdminPurchasesPage() {
 
                 <TableCell>
                   <div className="flex gap-2">
-                    {(['open', 'accepted', 'canceled'] as const).map((status) => (
+                    {(['pending', 'done', 'failed'] as const).map((status) => (
                       <button
                         key={status}
                         disabled={updatingId === purchase.id}
                         onClick={() => updateStatus(purchase.id, status)}
                         className={`px-2 py-1 text-white text-xs rounded ${
-                          status === 'accepted'
+                          status === 'done'
                             ? 'bg-green-600'
-                            : status === 'canceled'
+                            : status === 'failed'
                             ? 'bg-red-500'
                             : 'bg-yellow-500'
                         }`}

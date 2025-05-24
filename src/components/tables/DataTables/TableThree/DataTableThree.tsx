@@ -71,7 +71,7 @@ const tableRowData = [
     },
     position: "Integration Specialist",
     location: "Chicago",
-    status: "Pending",
+    status: "requested",
     salary: "$80,000",
   },
   {

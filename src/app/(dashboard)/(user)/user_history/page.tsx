@@ -42,13 +42,13 @@ export default function UserHistoryPage() {
         .from("invoices")
         .select("amount, created_at")
         .eq("profile_id", userId)
-        .eq("status", "accepted");
+        .eq("status", "done");
 
       const { data: payouts } = await supabase
         .from("payouts")
         .select("amount_tokens, processed_at")
         .eq("profile_id", userId)
-        .eq("status", "accepted");
+        .eq("status", "done");
 
       const monthMap: Record<string, MonthlyRow> = {};
 

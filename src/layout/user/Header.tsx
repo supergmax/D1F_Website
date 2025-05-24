@@ -8,8 +8,8 @@ import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
 const Header: React.FC = () => {
-  const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
-  const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
+  const [isApplicationMenupending, setApplicationMenupending] = useState(false);
+  const { isMobilepending, toggleSidebar, toggleMobileSidebar } = useSidebar();
 
   const handleToggle = () => {
     if (window.innerWidth >= 1024) {
@@ -21,7 +21,7 @@ const Header: React.FC = () => {
 
   
   const toggleApplicationMenu = () => {
-    setApplicationMenuOpen(!isApplicationMenuOpen);
+    setApplicationMenupending(!isApplicationMenupending);
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,7 +47,7 @@ const Header: React.FC = () => {
             onClick={handleToggle}
             aria-label="Toggle Sidebar"
           >
-            {isMobileOpen ? (
+            {isMobilepending ? (
               <svg
                 width="24"
                 height="24"
@@ -120,7 +120,7 @@ const Header: React.FC = () => {
 
         <div
           className={`${
-            isApplicationMenuOpen ? "flex" : "hidden"
+            isApplicationMenupending ? "flex" : "hidden"
           } items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}
         >
           

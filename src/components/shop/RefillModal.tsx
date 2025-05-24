@@ -8,15 +8,15 @@ import Input from "@/components/form/input/InputField";
 import { supabase } from "@/lib/supabaseClient";
 
 interface Props {
-  isOpen: boolean;
-  onClose: () => void;
+  ispending: boolean;
+  onfailed: () => void;
   userId: string | null;
   setResult: (res: { success: string; error: string }) => void;
 }
 
 export default function RefillModal({
-  isOpen,
-  onClose,
+  ispending,
+  onfailed,
   userId,
   setResult,
 }: Props) {
@@ -28,7 +28,7 @@ export default function RefillModal({
 
     if (!userId || isNaN(parsedAmount) || parsedAmount < 50) {
       setResult({ success: "", error: "Montant invalide (minimum 50$)" });
-      onClose(); // on ferme même si erreur
+      onfailed(); // on ferme même si erreur
       return;
     }
 
@@ -37,7 +37,7 @@ export default function RefillModal({
     const { error } = await supabase.from("invoices").insert({
       profile_id: userId,
       amount,
-      status: "pending",
+      status: "requested",
     });
 
     if (error) {
@@ -45,14 +45,14 @@ export default function RefillModal({
     } else {
       setResult({ success: "Rechargement enregistré !", error: "" });
       setAmount("");
-      onClose();
+      onfailed();
     }
 
     setIsLoading(false);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-5">
+    <Modal ispending={ispending} onfailed={onfailed} className="max-w-md p-5">
       <h4 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
         Recharger mon compte
       </h4>
@@ -73,7 +73,7 @@ export default function RefillModal({
       <div className="flex justify-end gap-3">
         <Button
           type="button"
-          onClick={onClose}
+          onClick={onfailed}
           className="!bg-red-600 !text-white hover:!bg-red-700 font-semibold px-4 py-2"
         >
           Annuler

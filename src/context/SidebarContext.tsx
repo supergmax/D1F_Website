@@ -3,10 +3,10 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 
 type SidebarContextType = {
   isExpanded: boolean;
-  isMobileOpen: boolean;
+  isMobilepending: boolean;
   isHovered: boolean;
   activeItem: string | null;
-  openSubmenu: string | null;
+  pendingSubmenu: string | null;
   toggleSidebar: () => void;
   toggleMobileSidebar: () => void;
   setIsHovered: (isHovered: boolean) => void;
@@ -28,18 +28,18 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isMobilepending, setIsMobilepending] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [activeItem, setActiveItem] = useState<string | null>(null);
-  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const [pendingSubmenu, setpendingSubmenu] = useState<string | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       if (!mobile) {
-        setIsMobileOpen(false);
+        setIsMobilepending(false);
       }
     };
 
@@ -56,21 +56,21 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const toggleMobileSidebar = () => {
-    setIsMobileOpen((prev) => !prev);
+    setIsMobilepending((prev) => !prev);
   };
 
   const toggleSubmenu = (item: string) => {
-    setOpenSubmenu((prev) => (prev === item ? null : item));
+    setpendingSubmenu((prev) => (prev === item ? null : item));
   };
 
   return (
     <SidebarContext.Provider
       value={{
         isExpanded: isMobile ? false : isExpanded,
-        isMobileOpen,
+        isMobilepending,
         isHovered,
         activeItem,
-        openSubmenu,
+        pendingSubmenu,
         toggleSidebar,
         toggleMobileSidebar,
         setIsHovered,

@@ -18,7 +18,7 @@ interface Transaction {
   date: string;
   amount: string;
   category: string;
-  status: "Success" | "Pending" | "Failed";
+  status: "Success" | "requested" | "Failed";
 }
 
 const transactionData: Transaction[] = [
@@ -36,7 +36,7 @@ const transactionData: Transaction[] = [
     date: "Nov 23, 01:00 PM", // Date and time of the transaction
     amount: "$2,567.88", // Transaction amount
     category: "Finance", // Category of the transaction
-    status: "Pending",
+    status: "requested",
   },
   {
     image: "/images/brand/brand-15.svg", // Path or URL for the image
@@ -76,7 +76,7 @@ const transactionData: Transaction[] = [
     date: "Nov 23, 01:00 PM", // Date and time of the transaction
     amount: "$2,567.88", // Transaction amount
     category: "Finance", // Category of the transaction
-    status: "Pending",
+    status: "requested",
   },
   {
     image: "/images/brand/brand-15.svg", // Path or URL for the image
@@ -116,7 +116,7 @@ const transactionData: Transaction[] = [
     date: "Nov 23, 01:00 PM", // Date and time of the transaction
     amount: "$2,567.88", // Transaction amount
     category: "Finance", // Category of the transaction
-    status: "Pending",
+    status: "requested",
   },
   {
     image: "/images/brand/brand-15.svg", // Path or URL for the image
@@ -275,7 +275,7 @@ export default function BasicTableThree() {
                       color={
                         item.status === "Success"
                           ? "success"
-                          : item.status === "Pending"
+                          : item.status === "requested"
                           ? "warning"
                           : "error"
                       }

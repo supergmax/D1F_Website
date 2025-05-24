@@ -9,8 +9,8 @@ import { supabase } from "@/lib/supabaseClient";
 import RefillAlert from "./RefillAlert";
 
 interface Props {
-  isOpen: boolean;
-  onClose: () => void;
+  ispending: boolean;
+  onfailed: () => void;
   userId: string | null;
   tokenBalance: number;
   dollarBalance: number;
@@ -19,8 +19,8 @@ interface Props {
 }
 
 export default function ChallengeModal({
-  isOpen,
-  onClose,
+  ispending,
+  onfailed,
   userId,
   tokenBalance,
   dollarBalance,
@@ -74,7 +74,7 @@ export default function ChallengeModal({
       dollar_debit: dollarDebit,
       amount: subTotal,
       refunded: false,
-      status: "pending", // sera géré par admin ou trigger plus tard
+      status: "requested", // sera géré par admin ou trigger plus tard
     });
 
     if (insertError) {
@@ -86,19 +86,19 @@ export default function ChallengeModal({
       setMessage({ success, error: "" });
       onSuccess?.(success);
       setQuantity(1);
-      onClose();
+      onfailed();
     }
 
     setIsLoading(false);
   };
 
-  const handleClose = () => {
+  const handlefailed = () => {
     setMessage({ success: "", error: "" });
-    onClose();
+    onfailed();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} className="max-w-md p-5">
+    <Modal ispending={ispending} onfailed={handlefailed} className="max-w-md p-5">
       <h4 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
         Acheter des Challenges
       </h4>
@@ -136,7 +136,7 @@ export default function ChallengeModal({
       <div className="flex justify-end gap-3 mt-4">
         <Button
           type="button"
-          onClick={handleClose}
+          onClick={handlefailed}
           className="!bg-red-600 !text-white hover:!bg-red-700 font-semibold px-4 py-2"
         >
           Fermer

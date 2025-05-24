@@ -23,7 +23,7 @@ const transactionData = [
     date: "Nov 23, 01:00 PM", // Date and time of the transaction
     amount: "$2,567.88", // Transaction amount
     category: "Finance", // Category of the transaction
-    status: "Pending",
+    status: "requested",
   },
   {
     image: "/images/brand/brand-15.svg", // Path or URL for the image
@@ -165,7 +165,7 @@ export default function LatestTransactions() {
                         color={
                           item.status === "Success"
                             ? "success"
-                            : item.status === "Pending"
+                            : item.status === "requested"
                             ? "warning"
                             : "error"
                         }

@@ -6,12 +6,12 @@ import Button from "@/components/ui/button/Button";
 
 interface SupportModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onfailed: () => void;
 }
 
-export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
+export default function SupportModal({ isOpen, onfailed }: SupportModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-5">
+    <Modal isOpen={isOpen} onfailed={onfailed} className="max-w-md p-5">
       <h4 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
         Contacter le support
       </h4>

@@ -36,10 +36,10 @@ export async function fetchUserInvoices(userId: string) {
     user: userId,
     amount: `${(invoice.amount / 100).toFixed(2)}€`,
     status:
-      invoice.status === "accepted"
-        ? "accepted"
-        : invoice.status === "pending"
-        ? "pending"
+      invoice.status === "done"
+        ? "done"
+        : invoice.status === "requested"
+        ? "requested"
         : "cancelled",
   }));
 }

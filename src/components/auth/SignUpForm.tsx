@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Checkbox from "@/components/form/input/Checkbox";
-import { EyeCloseIcon, EyeIcon } from "@/icons";
+import { EyefailedIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
 import CGUModal from "@/components/auth/CGUModal";
@@ -21,7 +21,7 @@ export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [showCorporation, setShowCorporation] = useState(false);
-  const [acceptedCGU, setAcceptedCGU] = useState(false);
+  const [doneCGU, setdoneCGU] = useState(false);
   const [showCGUModal, setShowCGUModal] = useState(false);
 
   const [form, setForm] = useState({
@@ -61,7 +61,7 @@ export default function SignUpForm() {
     e.preventDefault();
     setError('');
 
-    if (!acceptedCGU) {
+    if (!doneCGU) {
       setError("Veuillez accepter les CGU pour continuer.");
       return;
     }
@@ -82,6 +82,19 @@ export default function SignUpForm() {
 
     if (showCorporation && form.corp_name.trim() !== "") {
       corpId = uuidv4();
+
+      const { error: corpErr } = await supabase.from("corporations").insert({
+        id: corpId,
+        corp_name: form.corp_name,
+        address: form.corp_address || null,
+        vat_number: form.corp_vat || null,
+        country: form.corp_country || null
+      });
+
+      if (corpErr) {
+        setError("Erreur lors de la création de la société.");
+        return;
+      }
     }
 
     const { data: brokerData, error: brokerError } = await supabase
@@ -121,7 +134,7 @@ export default function SignUpForm() {
 
     const userId = signUpData.user.id;
 
-    const { error: profileErr } = await supabase.from("profiles").insert({
+    const { error: profileErr } = await supabase.from("profiles").insert([{
       id: userId,
       first_name: form.first_name,
       last_name: form.last_name,
@@ -138,30 +151,27 @@ export default function SignUpForm() {
       broker_pwd: newBrokerPwd,
       token_balance: 0,
       dollar_balance: 0,
-      address: form.address,
-      billing_address: form.billing_address,
-    });
+      address: form.address || null,
+      billing_address: form.billing_address || null
+    }]);
 
     if (profileErr) {
       console.error("Erreur SQL Supabase : ", profileErr);
-      setError("Erreur lors de l'insertion dans les profils.");
+      alert(`Erreur SQL : ${profileErr.message}`);
       return;
     }
 
-    if (showCorporation && corpId) {
-      const { error: corpErr } = await supabase.from("corporations").insert({
-        id: corpId,
-        profile_id: userId,
-        corp_name: form.corp_name,
-        address: form.corp_address || null,
-        vat_number: form.corp_vat || null,
-        country: form.corp_country || null
-      });
+    const { error: affiliationErr } = await supabase.from("affiliations").insert({
+      profile_id: userId,
+      affiliate_id,
+      godfather_id: form.affiliate_code,
+      label: 'none'
+    });
 
-      if (corpErr) {
-        setError("Profil créé, mais erreur à la création de la société.");
-        return;
-      }
+    if (affiliationErr) {
+      console.error("Erreur lors de l'insertion dans affiliations : ", affiliationErr);
+      setError("Erreur lors de l'enregistrement de l'affiliation.");
+      return;
     }
 
     router.push('/user_profile');
@@ -196,7 +206,7 @@ export default function SignUpForm() {
             <div className="relative">
               <Input type={showPassword ? "text" : "password"} name="password" required value={form.password} onChange={handleChange} />
               <span onClick={() => setShowPassword(!showPassword)} className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer">
-                {showPassword ? <EyeIcon /> : <EyeCloseIcon />}
+                {showPassword ? <EyeIcon /> : <EyefailedIcon />}
               </span>
             </div>
             <Label>Country</Label>
@@ -235,7 +245,7 @@ export default function SignUpForm() {
             <Label>Affiliate Code*</Label>
             <Input name="affiliate_code" required value={form.affiliate_code} onChange={handleChange} />
             <div className="flex items-start gap-3">
-              <Checkbox checked={acceptedCGU} onChange={setAcceptedCGU} />
+              <Checkbox checked={doneCGU} onChange={setdoneCGU} />
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 I accept the{" "}
                 <button type="button" className="text-brand-500 underline hover:text-brand-600 dark:text-brand-400" onClick={() => setShowCGUModal(true)}>
@@ -243,7 +253,7 @@ export default function SignUpForm() {
                 </button>
               </p>
             </div>
-            {!acceptedCGU && <p className="text-sm text-red-500">You must accept the CGU to create an account.</p>}
+            {!doneCGU && <p className="text-sm text-red-500">You must accept the CGU to create an account.</p>}
             {error && <p className="text-sm text-red-600 text-center">{error}</p>}
             <button type="submit" className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-lg">Sign Up</button>
           </form>
@@ -253,7 +263,7 @@ export default function SignUpForm() {
               <Link href="/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign In</Link>
             </p>
           </div>
-          <CGUModal isOpen={showCGUModal} onClose={() => setShowCGUModal(false)} />
+          <CGUModal ispending={showCGUModal} onfailed={() => setShowCGUModal(false)} />
         </div>
       </div>
     </GeoapifyContext>

@@ -52,7 +52,7 @@ const campaigns: Campaign[] = [
       name: "Make Better Ideas...",
       type: "Ads campaign",
     },
-    status: "Pending",
+    status: "requested",
   },
   {
     id: 3,
@@ -225,7 +225,7 @@ export default function BasicTableFour() {
                     color={
                       item.status === "Success"
                         ? "success"
-                        : item.status === "Pending"
+                        : item.status === "requested"
                         ? "warning"
                         : "error"
                     }
