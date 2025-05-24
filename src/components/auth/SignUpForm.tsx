@@ -152,7 +152,9 @@ export default function SignUpForm() {
       token_balance: 0,
       dollar_balance: 0,
       address: form.address || null,
-      billing_address: form.billing_address || null
+      billing_address: form.billing_address || null,
+      deal_status: false,
+      contrat_status: false
     }]);
 
     if (profileErr) {

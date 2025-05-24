@@ -1,5 +1,5 @@
 -- =====================================================
--- schema.SQL (v22)
+-- schema.SQL (v25)
 -- Base de données D1F - DayOneFunded
 -- Description : Tables, ENUMs, Champs, Contraintes, Commentaires
 -- =====================================================
@@ -16,10 +16,10 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TYPE role_enum AS ENUM ('user', 'admin', 'superadmin', 'support');
 COMMENT ON TYPE role_enum IS 'Rôle de l’utilisateur dans le système.';
 
-CREATE TYPE challenge_status_enum AS ENUM ('requested', 'pending', 'active', 'failed', 'issue');
+CREATE TYPE challenge_status_enum AS ENUM ('requested', 'pending', 'active', 'failure', 'issue');
 COMMENT ON TYPE challenge_status_enum IS 'Statut d’un challenge (suivi du process).';
 
-CREATE TYPE challenge_results_status_enum AS ENUM ('requested', 'pending', 'active', 'failed', 'issue');
+CREATE TYPE challenge_results_status_enum AS ENUM ('requested', 'pending', 'active', 'failure', 'issue');
 COMMENT ON TYPE challenge_results_status_enum IS 'Statut d’un challenge dans challenge_results (suivi du process).';
 
 CREATE TYPE invoice_status_enum AS ENUM ('requested', 'pending', 'done', 'failed');
@@ -68,6 +68,8 @@ CREATE TABLE public.profiles (
   token_balance INTEGER DEFAULT 0 NOT NULL,
   dollar_balance INTEGER DEFAULT 0 NOT NULL,
   role role_enum DEFAULT 'user' NOT NULL,
+  deal_status BOOLEAN DEFAULT FALSE NOT NULL,
+  contrat_status BOOLEAN DEFAULT FALSE NOT NULL,
   photo_url TEXT,
   broker_id TEXT NOT NULL, 
   broker_pwd VARCHAR(8) NOT NULL, 
@@ -96,6 +98,8 @@ COMMENT ON COLUMN public.profiles.godfather_id IS 'Code du parrain (affiliate_id
 COMMENT ON COLUMN public.profiles.token_balance IS 'Solde de tokens de l’utilisateur.';
 COMMENT ON COLUMN public.profiles.dollar_balance IS 'Solde de dollars de l’utilisateur.';
 COMMENT ON COLUMN public.profiles.role IS 'Rôle du profil (user, admin, etc.)';
+COMMENT ON COLUMN public.profiles.deal_status IS 'Status du deal (true, false)';
+COMMENT ON COLUMN public.profiles.contrat_status IS 'Status du contrat (true, false)';
 COMMENT ON COLUMN public.profiles.photo_url IS 'Lien vers la photo de profil.';
 COMMENT ON COLUMN public.profiles.broker_id IS 'Id du compte broker de l’utilisateur.';
 COMMENT ON COLUMN public.profiles.broker_pwd IS 'Mot de passe du compte broker de l’utilisateur.';
