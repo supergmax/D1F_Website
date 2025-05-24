@@ -81,8 +81,8 @@ export default function PriceTable() {
           )}
 
           <RefillModal
-            ispending={showModal}
-            onfailed={() => setShowModal(false)}
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
             userId={userId}
             setResult={setRefillResult}
           />
@@ -120,8 +120,8 @@ export default function PriceTable() {
           )}
 
           <ChallengeModal
-            ispending={showChallengeModal}
-            onfailed={() => setShowChallengeModal(false)}
+            isOpen={showChallengeModal}
+            onClose={() => setShowChallengeModal(false)}
             userId={userId}
             tokenBalance={tokenBalance ?? 0}
             dollarBalance={dollarBalance ?? 0}

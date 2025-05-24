@@ -31,7 +31,7 @@ export default function UserMetaCard({
   linkedin_url,
   instagram_url,
 }: UserMetaCardProps) {
-  const [ispending, setIspending] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const [fields, setFields] = useState({
     role,
@@ -71,7 +71,7 @@ export default function UserMetaCard({
       .update(fields)
       .eq("id", id);
 
-    if (!error) setIspending(false);
+    if (!error) setIsOpen(false);
     else console.error("Erreur mise à jour:", error.message);
   };
 
@@ -103,7 +103,7 @@ export default function UserMetaCard({
           </div>
 
           <button
-            onClick={() => setIspending(true)}
+            onClick={() => setIsOpen(true)}
             className="text-sm border px-3 py-1.5 mt-4 xl:mt-0 rounded-4xl hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             ✏️ Modifier
@@ -111,7 +111,7 @@ export default function UserMetaCard({
         </div>
       </div>
 
-      <Modal ispending={ispending} onfailed={() => setIspending(false)} className="max-w-xl">
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} className="max-w-xl">
         <div className="p-6">
           <h2 className="text-lg font-semibold mb-4">Modifier le profil</h2>
           <div className="grid gap-4">
@@ -145,7 +145,7 @@ export default function UserMetaCard({
             </div>
           </div>
           <div className="mt-6 flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setIspending(false)}>
+            <Button variant="outline" onClick={() => setIsOpen(false)}>
               Annuler
             </Button>
             <Button onClick={handleSave}>Enregistrer</Button>

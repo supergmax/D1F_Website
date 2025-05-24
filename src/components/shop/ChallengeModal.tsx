@@ -9,8 +9,8 @@ import { supabase } from "@/lib/supabaseClient";
 import RefillAlert from "./RefillAlert";
 
 interface Props {
-  ispending: boolean;
-  onfailed: () => void;
+  isOpen: boolean;
+  onClose: () => void;
   userId: string | null;
   tokenBalance: number;
   dollarBalance: number;
@@ -19,8 +19,8 @@ interface Props {
 }
 
 export default function ChallengeModal({
-  ispending,
-  onfailed,
+  isOpen,
+  onClose,
   userId,
   tokenBalance,
   dollarBalance,
@@ -86,7 +86,7 @@ export default function ChallengeModal({
       setMessage({ success, error: "" });
       onSuccess?.(success);
       setQuantity(1);
-      onfailed();
+      onClose();
     }
 
     setIsLoading(false);
@@ -94,11 +94,11 @@ export default function ChallengeModal({
 
   const handlefailed = () => {
     setMessage({ success: "", error: "" });
-    onfailed();
+    onClose();
   };
 
   return (
-    <Modal ispending={ispending} onfailed={handlefailed} className="max-w-md p-5">
+    <Modal isOpen={isOpen} onClose={handlefailed} className="max-w-md p-5">
       <h4 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
         Acheter des Challenges
       </h4>

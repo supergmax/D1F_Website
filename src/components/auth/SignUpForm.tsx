@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Checkbox from "@/components/form/input/Checkbox";
-import { EyefailedIcon, EyeIcon } from "@/icons";
+import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
 import CGUModal from "@/components/auth/CGUModal";
@@ -206,7 +206,7 @@ export default function SignUpForm() {
             <div className="relative">
               <Input type={showPassword ? "text" : "password"} name="password" required value={form.password} onChange={handleChange} />
               <span onClick={() => setShowPassword(!showPassword)} className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer">
-                {showPassword ? <EyeIcon /> : <EyefailedIcon />}
+                {showPassword ? <EyeIcon /> : <EyeCloseIcon />}
               </span>
             </div>
             <Label>Country</Label>
@@ -263,7 +263,7 @@ export default function SignUpForm() {
               <Link href="/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign In</Link>
             </p>
           </div>
-          <CGUModal ispending={showCGUModal} onfailed={() => setShowCGUModal(false)} />
+          <CGUModal isRequested={showCGUModal} onClose={() => setShowCGUModal(false)} />
         </div>
       </div>
     </GeoapifyContext>

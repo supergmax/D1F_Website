@@ -114,8 +114,8 @@ export default function UserPayout() {
         )}
 
         <PayoutModal
-          ispending={showPayoutModal}
-          onfailed={() => setShowPayoutModal(false)}
+          isOpen={showPayoutModal}
+          onClose={() => setShowPayoutModal(false)}
           userId={userId}
           dollarBalance={dollarBalance}
           setResult={setPayoutResult}

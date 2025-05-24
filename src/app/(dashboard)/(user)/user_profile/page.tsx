@@ -36,7 +36,7 @@ interface UserProfile {
 }
 
 export default function Profile() {
-  const [isPasswordModalpending, setPasswordModalpending] = useState(false);
+  const [isPasswordModalRequested, setPasswordModalRequested] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalChallenges, setTotalChallenges] = useState(0);
@@ -147,12 +147,12 @@ export default function Profile() {
           <UserAddressCard id={profile.id} country={profile.country ?? ''} />
         </div>
         <Button
-          onClick={() => setPasswordModalpending(true)}
+          onClick={() => setPasswordModalRequested(true)}
           className="mt-6 rounded-full bg-blue-600 text-white px-5 py-2 shadow hover:bg-blue-700"
         >
           🔐 Change Password
         </Button>
-        <ChangePasswordModal ispending={isPasswordModalpending} onfailed={() => setPasswordModalpending(false)} />
+        <ChangePasswordModal isRequested={isPasswordModalRequested} onClose={() => setPasswordModalRequested(false)} />
       </div>
     </div>
   );

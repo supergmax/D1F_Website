@@ -4,17 +4,17 @@ import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 
 interface CGUModalProps {
-  ispending: boolean;
-  onfailed: () => void;
+  isRequested: boolean;
+  onClose: () => void;
 }
 
-export default function CGUModal({ ispending, onfailed }: CGUModalProps) {
+export default function CGUModal({ isRequested, onClose }: CGUModalProps) {
   return (
     <Modal
-      ispending={ispending}
-      onfailed={onfailed}
+      isOpen={isRequested}
+      onClose={onClose}
       isFullscreen={true}
-      showfailedButton={true}
+      showCloseButton={true}
     >
       <div className="fixed top-0 left-0 flex flex-col justify-between w-full h-screen p-6 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-900 lg:p-10">
         <div>
@@ -42,7 +42,7 @@ export default function CGUModal({ ispending, onfailed }: CGUModalProps) {
         </div>
 
         <div className="flex items-center justify-end w-full gap-3 mt-8">
-          <Button size="sm" variant="outline" onClick={onfailed}>
+          <Button size="sm" variant="outline" onClick={onClose}>
             Fermer
           </Button>
         </div>

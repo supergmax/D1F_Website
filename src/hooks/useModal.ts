@@ -2,11 +2,11 @@
 import { useState, useCallback } from "react";
 
 export const useModal = (initialState: boolean = false) => {
-  const [ispending, setIspending] = useState(initialState);
+  const [isOpen, setIsOpen] = useState(initialState);
 
-  const pendingModal = useCallback(() => setIspending(true), []);
-  const failedModal = useCallback(() => setIspending(false), []);
-  const toggleModal = useCallback(() => setIspending((prev) => !prev), []);
+  const openModal = useCallback(() => setIsOpen(true), []);
+  const closeModal = useCallback(() => setIsOpen(false), []);
+  const toggleModal = useCallback(() => setIsOpen((prev) => !prev), []);
 
-  return { ispending, pendingModal, failedModal, toggleModal };
+  return { isOpen, openModal, closeModal, toggleModal };
 };

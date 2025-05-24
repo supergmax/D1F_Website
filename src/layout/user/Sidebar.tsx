@@ -116,7 +116,7 @@ const Sidebar: React.FC = () => {
       </aside>
 
       {/* Support Modal */}
-      <SupportModal ispending={isSupportModalpending} onfailed={() => setIsSupportModalpending(false)} />
+      <SupportModal isOpen={isSupportModalpending} onClose={() => setIsSupportModalpending(false)} />
     </>
   );
 };

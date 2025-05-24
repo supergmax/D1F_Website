@@ -1,5 +1,5 @@
 import PlusIcon from "./plus.svg";
-import failedIcon from "./failed.svg";
+import CloseIcon from "./close.svg";
 import BoxIcon from "./box.svg";
 import CheckCircleIcon from "./check-circle.svg";
 import AlertIcon from "./alert.svg";
@@ -24,7 +24,7 @@ import AngleUpIcon from "./angle-up.svg";
 import AngleDownIcon from "./angle-down.svg";
 import PencilIcon from "./pencil.svg";
 import CheckLineIcon from "./check-line.svg";
-import failedLineIcon from "./failed-line.svg";
+import CloseLineIcon from "./close-line.svg";
 import ChevronDownIcon from "./chevron-down.svg";
 import ChevronUpIcon from "./chevron-up.svg";
 import PaperPlaneIcon from "./paper-plane.svg";
@@ -33,7 +33,7 @@ import EnvelopeIcon from "./envelope.svg";
 import UserIcon from "./user-line.svg";
 import CalenderIcon from "./calender-line.svg";
 import EyeIcon from "./eye.svg";
-import EyefailedIcon from "./eye-failed.svg";
+import EyeCloseIcon from "./eye-close.svg";
 import TimeIcon from "./time.svg";
 import CopyIcon from "./copy.svg";
 import ChevronLeftIcon from "./chevron-left.svg";
@@ -60,7 +60,7 @@ export {
   BoltIcon,
   PlusIcon,
   BoxIcon,
-  failedIcon,
+  CloseIcon,
   CheckCircleIcon,
   AlertIcon,
   InfoIcon,
@@ -78,7 +78,7 @@ export {
   AngleDownIcon,
   PencilIcon,
   CheckLineIcon,
-  failedLineIcon,
+  CloseLineIcon,
   ChevronDownIcon,
   PaperPlaneIcon,
   EnvelopeIcon,
@@ -86,7 +86,7 @@ export {
   UserIcon,
   CalenderIcon,
   EyeIcon,
-  EyefailedIcon,
+  EyeCloseIcon,
   TimeIcon,
   CopyIcon,
   ChevronLeftIcon,
