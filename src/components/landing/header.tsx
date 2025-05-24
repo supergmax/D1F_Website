@@ -5,8 +5,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { Menu, X, Sun, Moon } from "lucide-react"
 import { Button } from "@/components/ui/landing/button"
-import { Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { usePathname } from "next/navigation"
 
 export default function Header() {
