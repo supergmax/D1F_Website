@@ -12,7 +12,6 @@ import { supabase } from "@/lib/supabaseClient";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -39,7 +38,7 @@ export default function SignInForm() {
       return;
     }
 
-    // 🔍 Récupérer le rôle depuis la table profiles
+    // Récupérer le rôle depuis la table profiles
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role")
@@ -51,7 +50,7 @@ export default function SignInForm() {
       return;
     }
 
-    // ✅ Redirection selon le rôle
+    // Redirection selon le rôle
     if (profile.role === "admin") {
       router.push("/admin");
     } else {
@@ -106,12 +105,6 @@ export default function SignInForm() {
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Checkbox checked={isChecked} onChange={setIsChecked} />
-                <span className="block font-normal text-gray-700 text-theme-sm dark:text-gray-400">
-                  Se souvenir de moi
-                </span>
-              </div>
               <Link
                 href="/reset-password"
                 className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
