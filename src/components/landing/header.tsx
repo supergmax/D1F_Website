@@ -75,7 +75,7 @@ export default function Header() {
   }
 
   const goToDashboard = () => {
-    router.push(isAdmin ? "/admin" : "/user_profile")
+    router.push(isAdmin ? "/admin" : "/profile")
   }
 
   const isActive = (path: string) => pathname === path
