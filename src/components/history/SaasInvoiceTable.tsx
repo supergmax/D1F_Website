@@ -1,14 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-
-interface TransactionRow {
-  type: "invoice" | "payout" | "purchase";
-  amount: number;
-  created_at: string;
-  status: string;
-}
+// Removed useEffect, useState, supabase
+import { TransactionRow } from "../../../services/userService"; // Adjusted path
 
 // 🔔 Inline Alert Component
 const InlineAlert = ({
@@ -61,52 +54,17 @@ const InlineAlert = ({
   );
 };
 
-export default function SaasInvoiceTable() {
-  const [data, setData] = useState<TransactionRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface SaasInvoiceTableProps {
+  transactions: TransactionRow[];
+  isLoading: boolean;
+  errorMessage: string | null;
+}
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      setLoading(true);
-      setError(null);
-
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
-
-      if (sessionError) {
-        setError("Erreur de session Supabase.");
-        setLoading(false);
-        return;
-      }
-
-      const user = session?.user;
-      if (!user) {
-        setError("Utilisateur non connecté.");
-        setLoading(false);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("view_latest_transactions")
-        .select("type, amount, status, created_at")
-        .eq("profile_id", user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        setError("Erreur lors du chargement : " + error.message);
-      } else {
-        setData(data || []);
-      }
-
-      setLoading(false);
-    };
-
-    fetchTransactions();
-  }, []);
-
+export default function SaasInvoiceTable({
+  transactions,
+  isLoading,
+  errorMessage,
+}: SaasInvoiceTableProps) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="px-6 py-4">
@@ -116,7 +74,7 @@ export default function SaasInvoiceTable() {
       </div>
 
       <div className="px-6 pb-4">
-        {loading && (
+        {isLoading && (
           <InlineAlert
             variant="info"
             title="Chargement en cours"
@@ -124,15 +82,15 @@ export default function SaasInvoiceTable() {
           />
         )}
 
-        {!loading && error && (
+        {!isLoading && errorMessage && (
           <InlineAlert
             variant="error"
             title="Erreur"
-            message={error}
+            message={errorMessage}
           />
         )}
 
-        {!loading && !error && data.length === 0 && (
+        {!isLoading && !errorMessage && transactions.length === 0 && (
           <InlineAlert
             variant="info"
             title="Aucune transaction"
@@ -141,7 +99,7 @@ export default function SaasInvoiceTable() {
         )}
       </div>
 
-      {!loading && !error && data.length > 0 && (
+      {!isLoading && !errorMessage && transactions.length > 0 && (
         <div className="custom-scrollbar overflow-x-auto px-6 pb-6">
           <table className="min-w-full">
             <thead>
@@ -150,13 +108,15 @@ export default function SaasInvoiceTable() {
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Type</th>
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Montant</th>
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Statut</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">Facture</th>
+                {/* Assuming 'Facture' column is not needed if not in TransactionRow type */}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-              {data.map((row, index) => {
-                const isOut = row.type === "purchase" || row.type === "payout";
-                const currency = row.type === "payout" ? "$" : "WUT";
+              {transactions.map((row, index) => {
+                // Ensure 'type' is a string before using .includes or other string methods
+                const typeStr = String(row.type).toLowerCase();
+                const isOut = typeStr.includes("purchase") || typeStr.includes("payout");
+                const currency = typeStr.includes("payout") ? "$" : "WUT"; // Example logic, adjust as needed
 
                 return (
                   <tr key={index}>

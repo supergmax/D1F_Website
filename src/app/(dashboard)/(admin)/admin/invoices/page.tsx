@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+// Removed useEffect, useState, supabase
 import {
   Table,
   TableBody,
@@ -9,92 +8,43 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useAdminInvoicesPage } from '../../../../hooks/useAdminInvoicesPage'; // Adjusted path
+import { InvoiceStatus } from '../../../../services/adminService'; // Adjusted path
 
-type InvoiceStatus = 'requested' | 'pending' | 'done' | 'failed';
-type ActionStatus = 'pending' | 'done' | 'failed';
-
-type Invoice = {
-  id: string;
-  profile_id: string;
-  amount: number;
-  status: InvoiceStatus;
-  created_at: string;
-};
-
-type Profile = {
-  id: string;
-  first_name: string;
-  last_name: string;
-};
+// Removed local type definitions
 
 export default function AdminInvoicesPage() {
-  const [invoices, setInvoices] = useState<(Invoice & Profile)[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const { 
+    invoices, 
+    loading, 
+    updatingId, 
+    handleUpdateInvoiceStatus, 
+    error 
+    // fetchData // Can be used for a manual refresh button if desired
+  } = useAdminInvoicesPage();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-
-    const { data: invoiceData, error: invoiceError } = await supabase
-      .from('invoices')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('id, first_name, last_name');
-
-    if (invoiceError || profileError) {
-      console.error('Erreur lors du chargement des données.');
-      setLoading(false);
-      return;
-    }
-
-    const profileMap = new Map<string, Profile>();
-    profileData?.forEach((p) => profileMap.set(p.id, p));
-
-    const combined = invoiceData?.map((inv) => {
-      const profile = profileMap.get(inv.profile_id);
-      return {
-        ...inv,
-        first_name: profile?.first_name ?? '',
-        last_name: profile?.last_name ?? '',
-      };
-    });
-
-    setInvoices(combined || []);
-    setLoading(false);
-  };
-
-  const updateStatus = async (
-    invoiceId: string,
-    newStatus: ActionStatus
-  ) => {
-    setUpdatingId(invoiceId);
-    const { error } = await supabase
-      .from('invoices')
-      .update({ status: newStatus })
-      .eq('id', invoiceId);
-
-    if (error) {
-      console.error('Erreur lors de la mise à jour :', error.message);
-    }
-
-    await fetchData();
-    setUpdatingId(null);
-  };
+  // Define the statuses available for actions, mapping to InvoiceStatus type
+  const actionStatuses: { label: string; value: InvoiceStatus }[] = [
+    { label: 'Pending Payment', value: 'pending_payment' }, // Assuming 'pending' maps to 'pending_payment'
+    { label: 'Done', value: 'done' },
+    { label: 'Failed', value: 'failed' },
+    { label: 'Cancelled', value: 'cancelled'},
+    { label: 'Requested', value: 'requested'}
+  ];
 
   return (
-    <div className="ml-[90px] lg:ml-[290px] px-6 py-8">
+    <div className="ml-[90px] lg:ml-[290px] px-6 py-8"> {/* Consider layout consistency */}
       <h1 className="text-xl font-semibold mb-6">Gestion des Factures</h1>
 
-      {loading ? (
-        <p>Chargement...</p>
-      ) : (
+      {loading && <p>Chargement des factures...</p>}
+
+      {error && !loading && (
+        <div className="p-4 my-4 text-red-700 bg-red-100 border border-red-300 rounded">
+          Erreur: {error}. Veuillez réessayer.
+        </div>
+      )}
+
+      {!loading && !error && (
         <Table>
           <TableHeader>
             <TableRow>
@@ -102,48 +52,52 @@ export default function AdminInvoicesPage() {
               <TableCell isHeader>Utilisateur</TableCell>
               <TableCell isHeader>Montant</TableCell>
               <TableCell isHeader>Statut</TableCell>
-              <TableCell isHeader>Date</TableCell>
+              <TableCell isHeader>Date Création</TableCell>
               <TableCell isHeader>Actions</TableCell>
             </TableRow>
           </TableHeader>
           <TableBody>
             {invoices.map((inv) => (
               <TableRow key={inv.id}>
-                <TableCell className="text-sm text-gray-800 dark:text-white">
+                <TableCell className="text-sm text-gray-800 dark:text-white truncate max-w-xs">
                   {inv.id}
                 </TableCell>
 
                 <TableCell className="text-sm text-gray-800 dark:text-white">
                   <div className="font-semibold">
-                    {inv.last_name} {inv.first_name}
+                    {inv.profile_last_name} {inv.profile_first_name}
                   </div>
-                  <div className="text-xs text-gray-500">{inv.profile_id}</div>
+                  <div className="text-xs text-gray-500 truncate max-w-xs">{inv.profile_id}</div>
                 </TableCell>
 
-                <TableCell>{inv.amount} $</TableCell>
+                <TableCell>
+                  {/* Assuming inv.amount is in cents */}
+                  {(inv.amount / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                </TableCell>
 
-                <TableCell className="capitalize">{inv.status}</TableCell>
+                <TableCell className="capitalize">{inv.status.replace('_', ' ')}</TableCell>
 
                 <TableCell>
                   {new Date(inv.created_at).toLocaleDateString()}
                 </TableCell>
 
                 <TableCell>
-                  <div className="flex gap-2">
-                    {(['pending', 'done', 'failed'] as const).map((status) => (
+                  <div className="flex flex-wrap gap-1">
+                    {actionStatuses.map((action) => (
                       <button
-                        key={status}
-                        disabled={updatingId === inv.id}
-                        onClick={() => updateStatus(inv.id, status)}
+                        key={action.value}
+                        disabled={updatingId === inv.id || inv.status === action.value}
+                        onClick={() => handleUpdateInvoiceStatus(inv.id, action.value)}
                         className={`px-2 py-1 text-white text-xs rounded ${
-                          status === 'done'
-                            ? 'bg-green-600'
-                            : status === 'failed'
-                            ? 'bg-red-500'
-                            : 'bg-yellow-500'
-                        }`}
+                          updatingId === inv.id ? 'bg-gray-400' :
+                          action.value === 'done' ? 'bg-green-600 hover:bg-green-700' :
+                          action.value === 'failed' ? 'bg-red-600 hover:bg-red-700' :
+                          action.value === 'cancelled' ? 'bg-orange-500 hover:bg-orange-600' :
+                          action.value === 'pending_payment' ? 'bg-yellow-500 hover:bg-yellow-600' :
+                          'bg-blue-500 hover:bg-blue-600' // Default for 'requested'
+                        } ${inv.status === action.value ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
-                        {status}
+                        {action.label}
                       </button>
                     ))}
                   </div>

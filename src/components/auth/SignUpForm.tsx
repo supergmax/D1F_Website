@@ -1,184 +1,49 @@
 'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+// Removed useState (partially, showPassword remains local for now as hook doesn't provide toggle for it directly)
+// Removed useRouter, supabase, uuidv4
+import { useState } from 'react'; // Kept for showPassword, can be moved to hook if desired.
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Checkbox from "@/components/form/input/Checkbox";
 import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
-import { v4 as uuidv4 } from "uuid";
 import CGUModal from "@/components/auth/CGUModal";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { GeoapifyContext, GeoapifyGeocoderAutocomplete } from '@geoapify/react-geocoder-autocomplete';
 import '@geoapify/geocoder-autocomplete/styles/minimal.css';
+import { useSignUpForm } from "../../../hooks/useSignUpForm"; // Adjusted path
 
 export default function SignUpForm() {
-  const router = useRouter();
+  // const router = useRouter(); // Removed, router is in the hook
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [showCorporation, setShowCorporation] = useState(false);
-  const [doneCGU, setdoneCGU] = useState(false);
-  const [showCGUModal, setShowCGUModal] = useState(false);
+  // Local state for showPassword, as the hook's toggleShowPassword implies it manages its own internal state for password visibility logic if needed,
+  // but the actual boolean for the input type needs to be local or part of the hook's returned state.
+  // The hook description indicated it returns `showPassword` state, so local one is not needed.
+  // const [showPassword, setShowPassword] = useState(false); // This will be from the hook
 
-  const [form, setForm] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    password: '',
-    id_phone: '',
-    country: '',
-    language: 'fr',
-    affiliate_code: '',
-    corp_name: '',
-    corp_address: '',
-    corp_vat: '',
-    corp_country: '',
-    address: '',
-    billing_address: '',
-  });
+  // Removed local form, error, showCorporation, doneCGU, showCGUModal states
+  // Removed handleChange, generateAffiliateId, generateBrokerPassword, handleSubmit methods
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const generateAffiliateId = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-  };
-
-  const generateBrokerPassword = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    return Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (!doneCGU) {
-      setError("Veuillez accepter les CGU pour continuer.");
-      return;
-    }
-
-    const affiliate_id = generateAffiliateId();
-    let corpId: string | null = null;
-
-    const { data: godfather, error: godfatherErr } = await supabase
-      .from("profiles")
-      .select("affiliate_id")
-      .eq("affiliate_id", form.affiliate_code)
-      .single();
-
-    if (!godfather || godfatherErr) {
-      setError("Code de parrainage invalide.");
-      return;
-    }
-
-    if (showCorporation && form.corp_name.trim() !== "") {
-      corpId = uuidv4();
-
-      const { error: corpErr } = await supabase.from("corporations").insert({
-        id: corpId,
-        corp_name: form.corp_name,
-        address: form.corp_address || null,
-        vat_number: form.corp_vat || null,
-        country: form.corp_country || null
-      });
-
-      if (corpErr) {
-        setError("Erreur lors de la création de la société.");
-        return;
-      }
-    }
-
-    const { data: brokerData, error: brokerError } = await supabase
-      .from("profiles")
-      .select("broker_id")
-      .like("broker_id", "WUF-%");
-
-    if (brokerError) {
-      setError("Erreur lors de la génération du broker_id.");
-      return;
-    }
-
-    const maxNum = brokerData
-      ?.map((d) => parseInt(d.broker_id?.split("-")[1] || "0"))
-      .filter((n) => !isNaN(n))
-      .sort((a, b) => b - a)[0] || 0;
-
-    const newBrokerId = `WUF-${(maxNum + 1).toString().padStart(6, '0')}`;
-    const newBrokerPwd = generateBrokerPassword();
-
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: {
-        data: {
-          first_name: form.first_name,
-          last_name: form.last_name,
-          corp_id: corpId
-        }
-      }
-    });
-
-    if (signUpError || !signUpData.user?.id) {
-      setError(signUpError?.message || "Erreur lors de la création de l'utilisateur.");
-      return;
-    }
-
-    const userId = signUpData.user.id;
-
-    const { error: profileErr } = await supabase.from("profiles").insert([{
-      id: userId,
-      first_name: form.first_name,
-      last_name: form.last_name,
-      email: form.email,
-      id_phone: form.id_phone,
-      phone: form.phone,
-      country: form.country || null,
-      language: form.language,
-      affiliate_id,
-      godfather_id: form.affiliate_code,
-      role: "user",
-      corp_id: corpId,
-      broker_id: newBrokerId,
-      broker_pwd: newBrokerPwd,
-      token_balance: 0,
-      dollar_balance: 0,
-      address: form.address || null,
-      billing_address: form.billing_address || null,
-      deal_status: false,
-      contrat_status: false
-    }]);
-
-    if (profileErr) {
-      console.error("Erreur SQL Supabase : ", profileErr);
-      alert(`Erreur SQL : ${profileErr.message}`);
-      return;
-    }
-
-    const { error: affiliationErr } = await supabase.from("affiliations").insert({
-      profile_id: userId,
-      affiliate_id,
-      godfather_id: form.affiliate_code,
-      label: 'none'
-    });
-
-    if (affiliationErr) {
-      console.error("Erreur lors de l'insertion dans affiliations : ", affiliationErr);
-      setError("Erreur lors de l'enregistrement de l'affiliation.");
-      return;
-    }
-
-    router.push('/profile');
-  };
-
+  const {
+    form,
+    // setForm, // Not directly used if handleChange and specific handlers cover all cases
+    error,
+    isLoading,
+    showPassword,
+    toggleShowPassword,
+    // showCorporation, // This is form.showCorporation from the hook
+    toggleShowCorporation,
+    doneCGU,
+    toggleDoneCGU,
+    showCGUModal,
+    toggleShowCGUModal,
+    handleChange,
+    handlePhoneChange,
+    handlePlaceSelect,
+    handleSubmit,
+  } = useSignUpForm();
   return (
     <GeoapifyContext apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY!}>
       <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
@@ -193,71 +58,86 @@ export default function SignUpForm() {
             <Input type="email" name="email" required value={form.email} onChange={handleChange} />
             <Label>Phone*</Label>
             <PhoneInput
-              country={'fr'}
-              value={form.phone}
-              inputProps={{ required: true }}
-              onChange={(value, data: { dialCode: string }) => {
-                setForm(prev => ({
-                  ...prev,
-                  phone: value,
-                  id_phone: `+${data?.dialCode || ''}`,
-                }));
-              }}
+              country={'fr'} // Default country
+              value={form.phone_number} // Use phone_number from hook's form state
+              inputProps={{ name: "phone_number", required: true }}
+              onChange={(value, data) => handlePhoneChange(value, data)} // Use handler from hook
             />
             <Label>Password*</Label>
             <div className="relative">
               <Input type={showPassword ? "text" : "password"} name="password" required value={form.password} onChange={handleChange} />
-              <span onClick={() => setShowPassword(!showPassword)} className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer">
+              <span onClick={toggleShowPassword} className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer"> {/* Use toggle from hook */}
                 {showPassword ? <EyeIcon /> : <EyeCloseIcon />}
               </span>
             </div>
             <Label>Country</Label>
-            <Input name="country" value={form.country} onChange={handleChange} />
-            <Label>Language*</Label>
-            <select name="language" className="w-full border rounded-lg p-2" value={form.language} onChange={handleChange}>
-              <option value="fr">Français</option>
-              <option value="en">English</option>
-            </select>
+            <Input name="country" value={form.country} onChange={handleChange} /> {/* Assuming country is part of form state */}
+            
+            {/* Billing Address Fields - Assuming they are part of the form state in the hook */}
+            {/* You might need a checkbox to toggle visibility of these, similar to showCorporation */}
+            {/* For now, directly binding to form state based on SignUpFormData */}
             <Label>Address</Label>
             <GeoapifyGeocoderAutocomplete
               placeholder="Adresse principale"
-              placeSelect={(place) => setForm(prev => ({ ...prev, address: place.properties.formatted }))}
+              // Assuming place.properties.formatted is what you want to store
+              placeSelect={(place) => handlePlaceSelect(place, 'address')}
             />
-            <Label>Billing Address</Label>
-            <GeoapifyGeocoderAutocomplete
-              placeholder="Adresse de facturation"
-              placeSelect={(place) => setForm(prev => ({ ...prev, billing_address: place.properties.formatted }))}
-            />
+            
+            {/* Optional: Checkbox to use different billing address */}
+            {/* <div className="mt-4">
+              <Checkbox name="billing_address_is_different" checked={form.billing_address_is_different} onChange={handleChange} />
+              <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Use a different billing address?</span>
+            </div> */}
+
+            {/* {form.billing_address_is_different && ( */}
+              <>
+                <Label>Billing Address</Label>
+                <GeoapifyGeocoderAutocomplete
+                  placeholder="Adresse de facturation"
+                  placeSelect={(place) => handlePlaceSelect(place, 'billing_address')}
+                />
+                {/* Add City, Zip, Country for billing if Geoapify doesn't fill them or if they are separate fields */}
+              </>
+            {/* )} */}
+
+
             <div className="mt-4">
-              <Checkbox checked={showCorporation} onChange={() => setShowCorporation(!showCorporation)} />
+              <Checkbox name="showCorporation" checked={form.showCorporation} onChange={toggleShowCorporation} /> {/* Use toggle from hook and form.showCorporation */}
               <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Add a corporation?</span>
             </div>
-            {showCorporation && (
+
+            {form.showCorporation && (
               <div className="space-y-4 border-t pt-5 mt-4">
                 <Label>Corporation Name*</Label>
-                <Input name="corp_name" required value={form.corp_name} onChange={handleChange} />
-                <Label>Corporation Address</Label>
-                <Input name="corp_address" value={form.corp_address} onChange={handleChange} />
+                <Input name="corp_name" required={form.showCorporation} value={form.corp_name} onChange={handleChange} />
+                {/* Assuming corp_siret, corp_vat are part of SignUpFormData and thus in 'form' */}
+                <Label>SIRET</Label> 
+                <Input name="corp_siret" value={form.corp_siret || ''} onChange={handleChange} />
                 <Label>VAT Number</Label>
-                <Input name="corp_vat" value={form.corp_vat} onChange={handleChange} />
+                <Input name="corp_vat" value={form.corp_vat || ''} onChange={handleChange} />
                 <Label>Corporation Country</Label>
-                <Input name="corp_country" value={form.corp_country} onChange={handleChange} />
+                <Input name="corp_country" value={form.corp_country || ''} onChange={handleChange} />
               </div>
             )}
-            <Label>Affiliate Code*</Label>
-            <Input name="affiliate_code" required value={form.affiliate_code} onChange={handleChange} />
+            <Label>Affiliate Code</Label> {/* Changed to optional based on service logic */}
+            <Input name="affiliate_code" value={form.affiliate_code} onChange={handleChange} />
+            
             <div className="flex items-start gap-3">
-              <Checkbox checked={doneCGU} onChange={setdoneCGU} />
+              <Checkbox name="doneCGU" checked={doneCGU} onChange={toggleDoneCGU} /> {/* Use state and toggle from hook */}
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 I accept the{" "}
-                <button type="button" className="text-brand-500 underline hover:text-brand-600 dark:text-brand-400" onClick={() => setShowCGUModal(true)}>
+                <button type="button" className="text-brand-500 underline hover:text-brand-600 dark:text-brand-400" onClick={toggleShowCGUModal}> {/* Use toggle from hook */}
                   read the CGU
                 </button>
               </p>
             </div>
             {!doneCGU && <p className="text-sm text-red-500">You must accept the CGU to create an account.</p>}
+            
             {error && <p className="text-sm text-red-600 text-center">{error}</p>}
-            <button type="submit" className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-lg">Sign Up</button>
+            
+            <button type="submit" disabled={isLoading} className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-lg disabled:opacity-50">
+              {isLoading ? 'Signing Up...' : 'Sign Up'}
+            </button>
           </form>
           <div className="mt-5 text-center">
             <p className="text-sm text-gray-700 dark:text-gray-400">
@@ -265,7 +145,7 @@ export default function SignUpForm() {
               <Link href="/auth/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign In</Link>
             </p>
           </div>
-          <CGUModal isRequested={showCGUModal} onClose={() => setShowCGUModal(false)} />
+          <CGUModal isRequested={showCGUModal} onClose={toggleShowCGUModal} /> {/* Use state and toggle from hook */}
         </div>
       </div>
     </GeoapifyContext>

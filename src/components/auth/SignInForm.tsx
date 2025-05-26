@@ -7,56 +7,21 @@ import Button from "@/components/ui/button/Button";
 import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+// Removed useRouter, supabase
+import { useSignInForm } from "../../../hooks/useSignInForm"; // Adjusted path
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const router = useRouter();
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage("Connexion...");
-
-    const { data: loginData, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      setMessage(`Erreur : ${error.message}`);
-      return;
-    }
-
-    const userId = loginData?.user?.id;
-
-    if (!userId) {
-      setMessage("Erreur : utilisateur introuvable.");
-      return;
-    }
-
-    // Récupérer le rôle depuis la table profiles
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userId)
-      .single();
-
-    if (profileError || !profile?.role) {
-      setMessage("Erreur lors de la récupération du rôle.");
-      return;
-    }
-
-    // Redirection selon le rôle
-    if (profile.role === "admin") {
-      router.push("/admin");
-    } else {
-      router.push("/profile");
-    }
-  };
+  // Removed email, password, message, router states and handleLogin method
+  const { 
+    email, 
+    setEmail, 
+    password, 
+    setPassword, 
+    message, 
+    isLoading, 
+    handleLogin 
+  } = useSignInForm();
 
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">

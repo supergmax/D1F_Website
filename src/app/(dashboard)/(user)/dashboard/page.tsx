@@ -1,9 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
-
 import ChurnRateChart from '@/components/dashboard/ChurnRate';
 import ChurnRateChart2 from '@/components/dashboard/ChurnRate2';
 import ChurnRateChart3 from '@/components/dashboard/ChurnRate3';
@@ -11,99 +7,10 @@ import ChurnRateChart4 from '@/components/dashboard/ChurnRate4';
 import ProductPerformanceTab from '@/components/dashboard/ProductPerformanceTab';
 import SaasInvoiceTable from '@/components/dashboard/SaasInvoiceTable';
 import SaasMetrics from '@/components/dashboard/SaasMetrics';
-
-interface Metrics {
-  totalRevenue: number;
-  totalChallenges: number;
-  activeChallenges: number;
-  averageProfit: number;
-}
-
-interface Transaction {
-  id: string;
-  date: string;
-  user: string;
-  amount: string;
-  status: 'done' | 'requested' | 'cancelled';
-}
+import { useUserDashboard } from '../../../hooks/useUserDashboard';
 
 export default function UserDashboard() {
-  const [metrics, setMetrics] = useState<Metrics>({
-    totalRevenue: 0,
-    totalChallenges: 0,
-    activeChallenges: 0,
-    averageProfit: 0,
-  });
-
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-
-      const { data: sessionData } = await supabase.auth.getSession();
-      const user = sessionData?.session?.user;
-
-      if (!user) {
-        router.push('/auth/signin');
-        return;
-      }
-
-      const profileId = user.id;
-
-      // 🔸 Fetch challenges (pour calculer les métriques)
-      const { data: challenges } = await supabase
-        .from('challenges')
-        .select('profit, status')
-        .eq('profile_id', profileId);
-
-      const totalRevenue = challenges?.reduce((acc, c) => acc + (c.profit || 0), 0) || 0;
-      const totalChallenges = challenges?.length || 0;
-      const activeChallenges = challenges?.filter(c => c.status === 'active').length || 0;
-      const averageProfit = totalChallenges > 0 ? totalRevenue / totalChallenges : 0;
-
-      setMetrics({
-        totalRevenue,
-        totalChallenges,
-        activeChallenges,
-        averageProfit,
-      });
-
-      // 🔸 Fetch invoices (pour la table)
-      const { data: invoices } = await supabase
-        .from('invoices')
-        .select('id, created_at, amount, status')
-        .eq('profile_id', profileId);
-
-      // 🔸 Fetch user profile (pour afficher le nom)
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('first_name, last_name')
-        .eq('id', profileId)
-        .single();
-
-      const formattedTx = (invoices || []).map((inv): Transaction => ({
-        id: inv.id,
-        date: new Date(inv.created_at).toLocaleDateString('fr-FR'),
-        user: `${profile?.first_name || 'Utilisateur'} ${profile?.last_name || ''}`,
-        amount: `${(inv.amount / 100).toFixed(2)} €`,
-        status:
-          inv.status === 'done'
-            ? 'done'
-            : inv.status === 'requested'
-            ? 'requested'
-            : 'cancelled',
-      }));
-
-      setTransactions(formattedTx);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [router]);
+  const { metrics, transactions, loading } = useUserDashboard();
 
   if (loading) return <div className="text-center py-10">Chargement du tableau de bord...</div>;
 

@@ -1,108 +1,44 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import SaasInvoiceTable from '@/components/history/SaasInvoiceTable';
 import SaasMetrics from '@/components/history/SaasMetrics';
-
-interface MonthlyRow {
-  month: string;
-  total_invoices: number;
-  total_payouts: number;
-}
+import { useUserHistoryPage } from '../../../hooks/useUserHistoryPage';
 
 export default function UserHistoryPage() {
-  const [data, setData] = useState<MonthlyRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { 
+    // monthlySummaryData, // Not directly used by SaasInvoiceTable which now takes latestTransactionsData
+    overallMetrics, 
+    additionalMetrics, 
+    latestTransactionsData, 
+    loading, 
+    error 
+  } = useUserHistoryPage();
 
-  useEffect(() => {
-    async function fetchData() {
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
-
-      if (sessionError) {
-        setError("Erreur de session Supabase");
-        setLoading(false);
-        return;
-      }
-
-      const user = session?.user;
-      if (!user) {
-        setError("Utilisateur non connecté");
-        setLoading(false);
-        return;
-      }
-
-      const userId = user.id;
-
-      const { data: invoices } = await supabase
-        .from("invoices")
-        .select("amount, created_at")
-        .eq("profile_id", userId)
-        .eq("status", "done");
-
-      const { data: payouts } = await supabase
-        .from("payouts")
-        .select("amount_tokens, processed_at")
-        .eq("profile_id", userId)
-        .eq("status", "done");
-
-      const monthMap: Record<string, MonthlyRow> = {};
-
-      for (const inv of invoices || []) {
-        const date = new Date(inv.created_at);
-        const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, '0')}`;
-
-        if (!monthMap[monthKey]) {
-          monthMap[monthKey] = { month: monthKey, total_invoices: 0, total_payouts: 0 };
-        }
-
-        monthMap[monthKey].total_invoices += inv.amount;
-      }
-
-      for (const po of payouts || []) {
-        const date = new Date(po.processed_at);
-        const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, '0')}`;
-
-        if (!monthMap[monthKey]) {
-          monthMap[monthKey] = { month: monthKey, total_invoices: 0, total_payouts: 0 };
-        }
-
-        monthMap[monthKey].total_payouts += po.amount_tokens;
-      }
-
-      const monthlyData = Object.values(monthMap).sort((a, b) =>
-        a.month > b.month ? -1 : 1
-      );
-
-      setData(monthlyData);
-      setLoading(false);
-    }
-
-    fetchData();
-  }, []);
-
-  const totalIn = data.reduce((acc, row) => acc + row.total_invoices, 0);
-  const totalOut = data.reduce((acc, row) => acc + row.total_payouts, 0);
-  const netAverage = data.length > 0 ? Math.round((totalIn - totalOut) / data.length) : 0;
+  // The main page loading state can be used if there's other content,
+  // or removed if SaasInvoiceTable handles its own loading state adequately.
+  // For this refactor, we'll let SaasInvoiceTable use the 'loading' prop.
+  // A general error for the page can still be useful.
 
   return (
     <div className="space-y-6 w-full">
-      {error && (
+      {/* Display general error from the hook if not specifically handled by child components */}
+      {error && !loading && ( // Only show general error if not loading and error exists
         <div className="p-4 text-red-600 bg-red-100 border border-red-300 rounded">
-          {error}
+          Erreur de chargement de la page d'historique: {error}
         </div>
       )}
 
-      <SaasMetrics/>
-      <SaasInvoiceTable/>
+      <SaasMetrics 
+        totalRevenue={overallMetrics.totalIn}
+        totalChallenges={additionalMetrics.totalUserChallenges}
+        totalTransactions={additionalMetrics.totalUserDoneTransactions}
+      />
+
+      <SaasInvoiceTable 
+        transactions={latestTransactionsData}
+        isLoading={loading}
+        errorMessage={error} // Pass the general error; table will display it if relevant
+      />
     </div>
   );
 }
