@@ -1,5 +1,8 @@
+'use client'; // Required for using client-side hooks like useTranslation
+
 import Hero from "@/components/landing/hero"
 import Header from "@/components/landing/header"
+import { useTranslation } from "@/hooks/useTranslation";
 import { CommitmentsSection } from "@/components/landing/commitments-section"
 import { ProcessSection } from "@/components/landing/process-section"
 import { StatsSection } from "@/components/landing/stats-section"
@@ -8,6 +11,8 @@ import { WhyChooseUsSection } from "@/components/landing/why-choose-us-section"
 import { Footer } from "@/components/landing/footer"
 
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <main className="min-h-screen">
       
@@ -16,10 +21,9 @@ export default function Home() {
 
       <section id="about" className="py-20 px-4 md:px-8 lg:px-16">
         <div className="container mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center text-[#4E463F]">About Us</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center text-[#4E463F]">{t('greeting', 'About Us (Fallback)')}</h2>
           <p className="text-lg text-center max-w-3xl mx-auto text-gray-600">
-            With Us Associates is dedicated to helping individuals and organizations reach their full potential. We
-            believe in challenging conventional limits and pushing boundaries to achieve extraordinary results.
+            {t('welcomeMessage', 'Default welcome message if translation is missing.')}
           </p>
         </div>
       </section>

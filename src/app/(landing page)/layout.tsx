@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/landing/theme-provider"
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 
 const inter = Inter({ subsets: ["latin"] })
@@ -30,6 +31,7 @@ export default function RootLayout({
         <Analytics></Analytics>
         <SpeedInsights></SpeedInsights>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <LanguageSwitcher />
           {children}
         </ThemeProvider>
       </body>

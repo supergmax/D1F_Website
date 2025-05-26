@@ -9,8 +9,10 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function SignInForm() {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +21,7 @@ export default function SignInForm() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("Connexion...");
+    setMessage(t('auth.signIn.loggingIn', "Logging in..."));
 
     const { data: loginData, error } = await supabase.auth.signInWithPassword({
       email,
@@ -27,14 +29,17 @@ export default function SignInForm() {
     });
 
     if (error) {
-      setMessage(`Erreur : ${error.message}`);
+      // For Supabase errors, you might want to keep error.message as is,
+      // or map known error messages to translation keys.
+      // For simplicity here, we'll keep the direct error message for now.
+      setMessage(t('auth.signIn.errorPrefix', "Error: ") + error.message);
       return;
     }
 
     const userId = loginData?.user?.id;
 
     if (!userId) {
-      setMessage("Erreur : utilisateur introuvable.");
+      setMessage(t('auth.signIn.userNotFound', "Error: User not found."));
       return;
     }
 
@@ -46,7 +51,7 @@ export default function SignInForm() {
       .single();
 
     if (profileError || !profile?.role) {
-      setMessage("Erreur lors de la récupération du rôle.");
+      setMessage(t('auth.signIn.roleFetchError', "Error fetching user role."));
       return;
     }
 
@@ -64,30 +69,30 @@ export default function SignInForm() {
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-              Connexion
+              {t('auth.signIn.title', "Sign In")}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Entrez votre email et mot de passe
+              {t('auth.signIn.subtitle', "Enter your email and password")}
             </p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <Label>Email *</Label>
+              <Label>{t('auth.signIn.emailLabel', "Email *")}</Label>
               <Input
                 type="email"
-                placeholder="info@gmail.com"
+                placeholder={t('auth.signIn.emailPlaceholder', "info@example.com")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
             <div>
-              <Label>Mot de passe *</Label>
+              <Label>{t('auth.signIn.passwordLabel', "Password *")}</Label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Entrez votre mot de passe"
+                  placeholder={t('auth.signIn.passwordPlaceholder', "Enter your password")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -109,28 +114,28 @@ export default function SignInForm() {
                 href="/auth/reset-password"
                 className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
               >
-                Mot de passe oublié ?
+                {t('auth.signIn.forgotPasswordLink', "Forgot password?")}
               </Link>
             </div>
 
             {message && (
               <p className="text-sm text-center text-gray-600 dark:text-gray-300">
-                {message}
+                {message} 
               </p>
             )}
 
             <Button type="submit" className="w-full" size="sm">
-              Se connecter
+              {t('auth.signIn.button', "Sign In")}
             </Button>
 
             <div className="mt-5 text-center">
               <p className="text-sm text-gray-700 dark:text-gray-400">
-                Pas encore inscrit ?{" "}
+                {t('auth.signIn.noAccountPrompt', "Don't have an account yet?")}{" "}
                 <Link
                   href="/auth/signup"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
                 >
-                  Créer un compte
+                  {t('auth.signIn.createAccountLink', "Create an account")}
                 </Link>
               </p>
             </div>

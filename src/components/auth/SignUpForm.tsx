@@ -14,8 +14,10 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { GeoapifyContext, GeoapifyGeocoderAutocomplete } from '@geoapify/react-geocoder-autocomplete';
 import '@geoapify/geocoder-autocomplete/styles/minimal.css';
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function SignUpForm() {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -62,7 +64,7 @@ export default function SignUpForm() {
     setError('');
 
     if (!doneCGU) {
-      setError("Veuillez accepter les CGU pour continuer.");
+      setError(t('auth.signUp.mustAcceptCGU', "You must accept the Terms and Conditions to continue."));
       return;
     }
 
@@ -76,7 +78,7 @@ export default function SignUpForm() {
       .single();
 
     if (!godfather || godfatherErr) {
-      setError("Code de parrainage invalide.");
+      setError(t('auth.signUp.errorInvalidAffiliateCode', "Invalid affiliate code."));
       return;
     }
 
@@ -92,7 +94,7 @@ export default function SignUpForm() {
       });
 
       if (corpErr) {
-        setError("Erreur lors de la création de la société.");
+        setError(t('auth.signUp.errorCreatingCorporation', "Error creating corporation."));
         return;
       }
     }
@@ -103,7 +105,7 @@ export default function SignUpForm() {
       .like("broker_id", "WUF-%");
 
     if (brokerError) {
-      setError("Erreur lors de la génération du broker_id.");
+      setError(t('auth.signUp.errorGeneratingBrokerId', "Error generating broker ID."));
       return;
     }
 
@@ -128,7 +130,7 @@ export default function SignUpForm() {
     });
 
     if (signUpError || !signUpData.user?.id) {
-      setError(signUpError?.message || "Erreur lors de la création de l'utilisateur.");
+      setError(signUpError?.message || t('auth.signUp.errorCreatingUser', "Error creating user."));
       return;
     }
 
@@ -172,7 +174,7 @@ export default function SignUpForm() {
 
     if (affiliationErr) {
       console.error("Erreur lors de l'insertion dans affiliations : ", affiliationErr);
-      setError("Erreur lors de l'enregistrement de l'affiliation.");
+      setError(t('auth.signUp.errorSavingAffiliation', "Error saving affiliation."));
       return;
     }
 
@@ -183,15 +185,15 @@ export default function SignUpForm() {
     <GeoapifyContext apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY!}>
       <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
         <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
-          <h1 className="mb-8 font-semibold text-gray-800 dark:text-white text-xl">Création de compte</h1>
+          <h1 className="mb-8 font-semibold text-gray-800 dark:text-white text-xl">{t('auth.signUp.title', "Create Account")}</h1>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-5">
-              <div><Label>First Name*</Label><Input name="first_name" required value={form.first_name} onChange={handleChange} /></div>
-              <div><Label>Last Name*</Label><Input name="last_name" required value={form.last_name} onChange={handleChange} /></div>
+              <div><Label>{t('auth.signUp.firstNameLabel', "First Name*")}</Label><Input name="first_name" required value={form.first_name} onChange={handleChange} /></div>
+              <div><Label>{t('auth.signUp.lastNameLabel', "Last Name*")}</Label><Input name="last_name" required value={form.last_name} onChange={handleChange} /></div>
             </div>
-            <Label>Email*</Label>
+            <Label>{t('auth.signUp.emailLabel', "Email*")}</Label>
             <Input type="email" name="email" required value={form.email} onChange={handleChange} />
-            <Label>Phone*</Label>
+            <Label>{t('auth.signUp.phoneLabel', "Phone*")}</Label>
             <PhoneInput
               country={'fr'}
               value={form.phone}
@@ -211,58 +213,58 @@ export default function SignUpForm() {
                 {showPassword ? <EyeIcon /> : <EyeCloseIcon />}
               </span>
             </div>
-            <Label>Country</Label>
+            <Label>{t('auth.signUp.countryLabel', "Country")}</Label>
             <Input name="country" value={form.country} onChange={handleChange} />
-            <Label>Language*</Label>
+            <Label>{t('auth.signUp.languageLabel', "Language*")}</Label>
             <select name="language" className="w-full border rounded-lg p-2" value={form.language} onChange={handleChange}>
-              <option value="fr">Français</option>
-              <option value="en">English</option>
+              <option value="fr">{t('auth.signUp.languageOptionFr', "French")}</option>
+              <option value="en">{t('auth.signUp.languageOptionEn', "English")}</option>
             </select>
-            <Label>Address</Label>
+            <Label>{t('auth.signUp.addressLabel', "Address")}</Label>
             <GeoapifyGeocoderAutocomplete
-              placeholder="Adresse principale"
+              placeholder={t('auth.signUp.addressPlaceholder', "Main Address")}
               placeSelect={(place) => setForm(prev => ({ ...prev, address: place.properties.formatted }))}
             />
-            <Label>Billing Address</Label>
+            <Label>{t('auth.signUp.billingAddressLabel', "Billing Address")}</Label>
             <GeoapifyGeocoderAutocomplete
-              placeholder="Adresse de facturation"
+              placeholder={t('auth.signUp.billingAddressPlaceholder', "Billing Address")}
               placeSelect={(place) => setForm(prev => ({ ...prev, billing_address: place.properties.formatted }))}
             />
             <div className="mt-4">
               <Checkbox checked={showCorporation} onChange={() => setShowCorporation(!showCorporation)} />
-              <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Add a corporation?</span>
+              <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">{t('auth.signUp.addCorporationPrompt', "Add a corporation?")}</span>
             </div>
             {showCorporation && (
               <div className="space-y-4 border-t pt-5 mt-4">
-                <Label>Corporation Name*</Label>
+                <Label>{t('auth.signUp.corpNameLabel', "Corporation Name*")}</Label>
                 <Input name="corp_name" required value={form.corp_name} onChange={handleChange} />
-                <Label>Corporation Address</Label>
+                <Label>{t('auth.signUp.corpAddressLabel', "Corporation Address")}</Label>
                 <Input name="corp_address" value={form.corp_address} onChange={handleChange} />
-                <Label>VAT Number</Label>
+                <Label>{t('auth.signUp.corpVatLabel', "VAT Number")}</Label>
                 <Input name="corp_vat" value={form.corp_vat} onChange={handleChange} />
-                <Label>Corporation Country</Label>
+                <Label>{t('auth.signUp.corpCountryLabel', "Corporation Country")}</Label>
                 <Input name="corp_country" value={form.corp_country} onChange={handleChange} />
               </div>
             )}
-            <Label>Affiliate Code*</Label>
+            <Label>{t('auth.signUp.affiliateCodeLabel', "Affiliate Code*")}</Label>
             <Input name="affiliate_code" required value={form.affiliate_code} onChange={handleChange} />
             <div className="flex items-start gap-3">
               <Checkbox checked={doneCGU} onChange={setdoneCGU} />
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                I accept the{" "}
+                {t('auth.signUp.iAcceptThe', "I accept the")}{" "}
                 <button type="button" className="text-brand-500 underline hover:text-brand-600 dark:text-brand-400" onClick={() => setShowCGUModal(true)}>
-                  read the CGU
+                  {t('auth.signUp.readCGU', "read the CGU")}
                 </button>
               </p>
             </div>
-            {!doneCGU && <p className="text-sm text-red-500">You must accept the CGU to create an account.</p>}
+            {!doneCGU && <p className="text-sm text-red-500">{t('auth.signUp.mustAcceptCGU', "You must accept the CGU to create an account.")}</p>}
             {error && <p className="text-sm text-red-600 text-center">{error}</p>}
-            <button type="submit" className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-lg">Sign Up</button>
+            <button type="submit" className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-lg">{t('auth.signUp.button', "Sign Up")}</button>
           </form>
           <div className="mt-5 text-center">
             <p className="text-sm text-gray-700 dark:text-gray-400">
-              Already have an account ?{" "}
-              <Link href="/auth/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign In</Link>
+              {t('auth.signUp.alreadyHaveAccountPrompt', "Already have an account ?")}{" "}
+              <Link href="/auth/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">{t('auth.signUp.signInLink', "Sign In")}</Link>
             </p>
           </div>
           <CGUModal isRequested={showCGUModal} onClose={() => setShowCGUModal(false)} />

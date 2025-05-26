@@ -1,8 +1,8 @@
-# [PROJECT_NAME_PLACEHOLDER]
+# WithUsFounded (aka D1F)
 
 ## Présentation
 
-Bienvenue sur [PROJECT_NAME_PLACEHOLDER] ! Ce projet est une plateforme conçue pour permettre aux traders d'acheter et de gérer des challenges de trading. Elle offre également des fonctionnalités pour l'affiliation et l'administration de la plateforme.
+Bienvenue sur WithUsFounded (aka D1F) ! Ce projet est une plateforme conçue pour permettre aux traders d'acheter et de gérer des challenges de trading. Elle offre également des fonctionnalités pour l'affiliation et l'administration de la plateforme.
 
 Notre public cible comprend :
 *   Les traders cherchant à tester et prouver leurs compétences.
@@ -507,7 +507,7 @@ Cette approche structurée permet une gestion centralisée des traductions et fa
 
 ### Auteur
 
-Ce projet a été développé par **[AUTEUR_NOM_PLACEHOLDER]**.
+Ce projet a été développé par **Maxence Gomes and Quentin Duflaut**.
 
 ### Stack Initiale et Inspirations
 
@@ -519,9 +519,3 @@ Le développement de ce projet a été initié en s'appuyant sur ou en s'inspira
     *   ([Lien vers Supabase examples si pertinent, par exemple : https://github.com/supabase/supabase/tree/master/examples/nextjs-with-supabase](https://github.com/supabase/supabase/tree/master/examples/nextjs-with-supabase))
 
 Nous remercions les créateurs et contributeurs de ces ressources pour leur travail qui a facilité le démarrage de ce projet.
-
-### Licence
-
-Ce projet est distribué sous la licence **[LICENCE_PLACEHOLDER]**.
-
-Veuillez consulter le fichier `LICENSE` à la racine du projet pour plus de détails (si un fichier `LICENSE` est présent). Si ce fichier n'est pas présent, la licence est telle que stipulée ici.
