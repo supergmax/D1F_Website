@@ -54,7 +54,7 @@ export default function SignInForm() {
     if (profile.role === "admin") {
       router.push("/admin");
     } else {
-      router.push("/user_profile");
+      router.push("/profile");
     }
   };
 

@@ -3,22 +3,26 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Menu, X, Sun, Moon } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/landing/button"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabaseClient"
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [hasScrolled, setHasScrolled] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+
   const pathname = usePathname()
+  const router = useRouter()
 
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 10) {
         setIsScrolled(true)
-
         if (!hasScrolled) {
           setHasScrolled(true)
           setIsVisible(true)
@@ -28,17 +32,53 @@ export default function Header() {
       }
     }
 
+    const fetchUserData = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (session?.user) {
+        setIsLoggedIn(true)
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", session.user.id)
+          .single()
+        if (!error && data?.role === "admin") {
+          setIsAdmin(true)
+        }
+      } else {
+        setIsLoggedIn(false)
+        setIsAdmin(false)
+      }
+    }
+
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      fetchUserData() // re-fetch when login/logout happens
+    })
+
+    fetchUserData()
     window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    return () => {
+      listener.subscription.unsubscribe()
+      window.removeEventListener("scroll", handleScroll)
+    }
   }, [hasScrolled])
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
-  const isActive = (path: string) => {
-    return pathname === path
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push("/")
   }
+
+  const goToDashboard = () => {
+    router.push(isAdmin ? "/admin" : "/user_profile")
+  }
+
+  const isActive = (path: string) => pathname === path
 
   return (
     <header
@@ -57,56 +97,51 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/"
-              className={`font-medium transition-colors ${isActive("/") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-            >
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className={`font-medium transition-colors ${isActive("/about") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-            >
-              About Us
-            </Link>
-            {/* <Link
-              href="/services"
-              className={`font-medium transition-colors ${isActive("/services") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-            >
-              Servicess
-            </Link> */}
-            <Link
-              href="/process"
-              className={`font-medium transition-colors ${isActive("/process") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-            >
-              Our Process
-            </Link>
-            <Link
-              href="/faq"
-              className={`font-medium transition-colors ${isActive("/faq") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-            >
-              FAQ
-            </Link>
-            <Link
-              href="/contact"
-              className={`font-medium transition-colors ${isActive("/contact") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-            >
-              Contact
-            </Link>
+            {["/", "/about", "/process", "/faq", "/contact"].map((route) => (
+              <Link
+                key={route}
+                href={route}
+                className={`font-medium transition-colors ${
+                  isActive(route) ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"
+                }`}
+              >
+                {route === "/" ? "Home" : route.slice(1).replace("-", " ").replace(/\b\w/g, l => l.toUpperCase())}
+              </Link>
+            ))}
           </nav>
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/auth/signin">
-              <Button variant="outline" className="border-[#4E463F] text-[#4E463F] hover:bg-[#4E463F] hover:text-white">
-                Login
-              </Button>
-            </Link>
-            <Link href="/auth/signup">
-              <Button className="bg-[#4E463F] text-white hover:bg-[#CABA9F]">
-                Register
-              </Button>
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={goToDashboard}
+                  className="border-[#4E463F] text-[#4E463F] hover:bg-[#4E463F] hover:text-white"
+                >
+                  Go to Dashboard
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  className="bg-[#4E463F] text-white hover:bg-[#CABA9F]"
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/signin">
+                  <Button variant="outline" className="border-[#4E463F] text-[#4E463F] hover:bg-[#4E463F] hover:text-white">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/auth/signup">
+                  <Button className="bg-[#4E463F] text-white hover:bg-[#CABA9F]">
+                    Register
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -116,68 +151,6 @@ export default function Header() {
             </button>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 py-4 bg-white rounded-lg shadow-lg">
-            <nav className="flex flex-col space-y-4 px-4">
-              <Link
-                href="/"
-                className={`font-medium transition-colors ${isActive("/") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                href="/about"
-                className={`font-medium transition-colors ${isActive("/about") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              {/* <Link
-                href="/services"
-                className={`font-medium transition-colors ${isActive("/services") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Services
-              </Link> */}
-              <Link
-                href="/process"
-                className={`font-medium transition-colors ${isActive("/process") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Process
-              </Link>
-              <Link
-                href="/faq"
-                className={`font-medium transition-colors ${isActive("/faq") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                FAQ
-              </Link>
-              <Link
-                href="/contact"
-                className={`font-medium transition-colors ${isActive("/contact") ? "text-[#CABA9F]" : "text-[#4E463F] hover:text-[#CABA9F]"}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Contact
-              </Link>
-              <div className="flex flex-col space-y-2 pt-2 border-t">
-                <Link href="/auth/signin">
-                <Button
-                  variant="outline"
-                  className="border-[#4E463F] text-[#4E463F] hover:bg-[#4E463F] hover:text-white w-full"
-                >
-                  Login
-                </Button></Link>
-                <Link href="/auth/signup">
-                <Button className="bg-[#4E463F] text-white hover:bg-[#CABA9F] w-full">Register</Button>
-                </Link>
-              </div>
-            </nav>
-          </div>
-        )}
       </div>
     </header>
   )

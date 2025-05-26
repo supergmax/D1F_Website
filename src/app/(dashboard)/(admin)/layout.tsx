@@ -12,11 +12,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     const checkAdmin = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
+      const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
+
       if (!user) return router.replace("/auth/signin");
 
       const { data, error } = await supabase

@@ -176,7 +176,7 @@ export default function SignUpForm() {
       return;
     }
 
-    router.push('/user_profile');
+    router.push('/profile');
   };
 
   return (

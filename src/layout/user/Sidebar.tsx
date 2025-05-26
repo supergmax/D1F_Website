@@ -26,16 +26,16 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { name: "Dashboard®", icon: <GridIcon />, path: "/user_dashboard" },
-  { name: "Mon compte", icon: <UserCircleIcon />, path: "/user_profile" },
-  { name: "Mes Challenges", icon: <ShootingStarIcon />, path: "/user_challenge" },
+  { name: "Dashboard®", icon: <GridIcon />, path: "/dashboard" },
+  { name: "Mon compte", icon: <UserCircleIcon />, path: "/profile" },
+  { name: "Mes Challenges", icon: <ShootingStarIcon />, path: "/challenge" },
   { name: "Performances", icon: <ListIcon />, path: "/coming-soon" },
-  { name: "Affiliation", icon: <PlusIcon />, path: "/user_affiliation" },
-  { name: "Shop", icon: <PlusIcon />, path: "/user_shop" },
-  { name: "Historique des paiements", icon: <ListIcon />, path: "/user_history" },
-  { name: "Formulaire de retrait", icon: <ListIcon />, path: "/user_payout" },
+  { name: "Affiliation", icon: <PlusIcon />, path: "/affiliation" },
+  { name: "Shop", icon: <PlusIcon />, path: "/shop" },
+  { name: "Historique des paiements", icon: <ListIcon />, path: "/history" },
+  { name: "Formulaire de retrait", icon: <ListIcon />, path: "/payout" },
   { name: "Support", icon: <PaperPlaneIcon />, path: "#", action: "OpenSupportModal" },
-  { name: "Contract", icon: <DocsIcon />, path: "/user_contact" },
+  { name: "Contract", icon: <DocsIcon />, path: "/contract" },
   { name: "legal", icon: <CheckCircleIcon />, path: "https://withusfunded.com/privacy-policy" },
 ];
 
