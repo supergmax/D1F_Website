@@ -5,7 +5,7 @@ import {
   FolderIcon,
   GridIcon,
   VideoIcon,
-} from "../../icons";
+} from "@/icons";
 import FileCard from "./FileCard";
 
 const fileData = [

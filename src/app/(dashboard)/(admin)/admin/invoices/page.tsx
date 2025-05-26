@@ -8,8 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useAdminInvoicesPage } from '../../../../hooks/useAdminInvoicesPage'; // Adjusted path
-import { InvoiceStatus } from '../../../../services/adminService'; // Adjusted path
+import { useAdminInvoicesPage } from '@/hooks/useAdminInvoicesPage'; // Adjusted path
+import { InvoiceStatus } from '@/services/adminService'; // Adjusted path
 
 // Removed local type definitions
 

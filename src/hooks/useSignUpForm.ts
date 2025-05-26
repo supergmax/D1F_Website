@@ -2,7 +2,7 @@
 
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { signUpUser, SignUpFormData } from '../services/authService'; // Adjusted path
+import { signUpUser, SignUpFormData } from '@/services/authService'; // Adjusted path
 
 const initialFormData: SignUpFormData = {
   first_name: '',

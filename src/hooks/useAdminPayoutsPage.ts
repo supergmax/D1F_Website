@@ -8,7 +8,7 @@ import {
   getAllPayouts,
   getAllProfilesLite,
   updatePayoutStatus as updatePayoutStatusService, // Renamed to avoid conflict
-} from '../services/adminService'; // Adjusted path
+} from '@/services/adminService'; // Adjusted path
 
 // Define CombinedPayout type
 export interface CombinedPayout extends AdminPayout {

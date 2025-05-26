@@ -2,7 +2,7 @@
 
 import SaasInvoiceTable from '@/components/history/SaasInvoiceTable';
 import SaasMetrics from '@/components/history/SaasMetrics';
-import { useUserHistoryPage } from '../../../hooks/useUserHistoryPage';
+import { useUserHistoryPage } from '@/hooks/useUserHistoryPage';
 
 export default function UserHistoryPage() {
   const { 

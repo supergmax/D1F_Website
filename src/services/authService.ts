@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabaseClient'; // Adjusted path
+import { supabase } from '@/lib/supabaseClient'; // Adjusted path
 
 export const signInWithEmail = async (email: string, password: string): Promise<{ user: any; profile: any; error: any }> => {
   const { data: loginData, error: authError } = await supabase.auth.signInWithPassword({

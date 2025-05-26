@@ -8,7 +8,7 @@ import {
   getAllChallenges,
   getAllProfilesLite,
   updateChallengeStatus as updateChallengeStatusService, // Renamed to avoid conflict
-} from '../services/adminService'; // Adjusted path
+} from '@/services/adminService'; // Adjusted path
 
 // Define CombinedChallenge type
 export interface CombinedChallenge extends AdminChallenge {

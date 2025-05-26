@@ -7,7 +7,7 @@ import Input from "../input/InputField";
 import Select from "../Select";
 import TextArea from "../input/TextArea";
 import Button from "../../ui/button/Button";
-import { PaperPlaneIcon } from "../../../icons";
+import { PaperPlaneIcon } from "@/icons";
 
 export default function ExampleFormOne() {
   const [message, setMessage] = useState<string>("");

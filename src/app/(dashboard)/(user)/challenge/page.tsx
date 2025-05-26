@@ -3,7 +3,7 @@
 import SaasMetrics from '@/components/challenges/SaasMetrics';
 import ChallengeDetailsTable from '@/components/challenges/ChallengeDetailsTable';
 import ChallengeResultsTable from '@/components/challenges/ChallengeResultsTable';
-import { useUserChallengesPage } from '../../../hooks/useUserChallengesPage';
+import { useUserChallengesPage } from '@/hooks/useUserChallengesPage';
 
 export default function UserChallenge() {
   const { metrics, challengeData, challengeResults, loading } = useUserChallengesPage();

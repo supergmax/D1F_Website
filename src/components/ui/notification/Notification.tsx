@@ -6,7 +6,7 @@ import {
   CloseIcon,
   ErrorIcon,
   InfoIcon,
-} from "../../../icons";
+} from "@/icons";
 
 interface NotificationProps {
   variant: "success" | "info" | "warning" | "error"; // Notification type

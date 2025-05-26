@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmail } from '../services/authService'; // Adjusted path
+import { signInWithEmail } from '@/services/authService'; // Adjusted path
 
 export const useSignInForm = () => {
   const [email, setEmail] = useState('');

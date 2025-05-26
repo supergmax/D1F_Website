@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSidebar } from "../../context/SidebarContext";
+import { useSidebar } from "@/context/SidebarContext";
 import {
   CheckCircleIcon,
   GridIcon,
@@ -15,7 +15,7 @@ import {
   PlusIcon,
   ShootingStarIcon,
   UserCircleIcon,
-} from "../../icons/index";
+} from "@/icons/index";
 import SupportModal from "./SupportModal";
 
 type NavItem = {

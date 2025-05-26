@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import {
   getUserDoneInvoices,
   getUserDonePayouts,
@@ -11,7 +11,7 @@ import {
   getUserTotalDoneTransactions,
   getLatestTransactions,
   TransactionRow, // Assuming TransactionRow is exported from userService.ts
-} from '../services/userService';
+} from '@/services/userService';
 
 export interface MonthlyRow {
   month: string; // YYYY-MM

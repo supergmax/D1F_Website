@@ -7,7 +7,7 @@ import SaasMetrics from '@/components/profile/SaasMetrics';
 import BrokerInfoCard from '@/components/profile/BrokerInfoCard';
 import ChangePasswordModal from '@/components/profile/ChangePasswordModal';
 import Button from '@/components/ui/button/Button';
-import { useUserProfile } from '../../../hooks/useUserProfile';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 export default function Profile() {
   const { profile, metrics, loading, isPasswordModalRequested, togglePasswordModal } = useUserProfile();

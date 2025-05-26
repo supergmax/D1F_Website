@@ -8,7 +8,7 @@ import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import React, { useState } from "react";
 // Removed useRouter, supabase
-import { useSignInForm } from "../../../hooks/useSignInForm"; // Adjusted path
+import { useSignInForm } from "@/hooks/useSignInForm"; // Adjusted path
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);

@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckLineIcon, CloseLineIcon } from "../../icons";
+import { CheckLineIcon, CloseLineIcon } from "@/icons";
 import TokenInModal from "../example/ModalExample/TokenInModal"
 
 const personalPack = [

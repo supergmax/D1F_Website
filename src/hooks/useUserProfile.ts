@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import {
   getFullUserProfile,
   getUserChallenges,
   UserChallenge,
   FullUserProfile as UserServiceUserProfile, // Renaming to avoid conflict if a local UserProfile is defined
-} from '../services/userService';
+} from '@/services/userService';
 
 // Define UserProfile based on expected structure for the profile page
 // This might be similar to what's in profile/page.tsx or a shared types file

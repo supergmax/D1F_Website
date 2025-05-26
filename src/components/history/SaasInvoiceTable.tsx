@@ -1,7 +1,7 @@
 "use client";
 
 // Removed useEffect, useState, supabase
-import { TransactionRow } from "../../../services/userService"; // Adjusted path
+import { TransactionRow } from "@/services/userService"; // Adjusted path
 
 // 🔔 Inline Alert Component
 const InlineAlert = ({

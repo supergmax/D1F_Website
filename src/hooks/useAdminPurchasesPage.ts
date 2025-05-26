@@ -8,7 +8,7 @@ import {
   getAllPurchases,
   getAllProfilesLite,
   updatePurchaseStatus as updatePurchaseStatusService, // Renamed to avoid conflict
-} from '../services/adminService'; // Adjusted path
+} from '@/services/adminService'; // Adjusted path
 
 // Define CombinedPurchase type
 export interface CombinedPurchase extends AdminPurchase {

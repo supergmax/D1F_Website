@@ -13,7 +13,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { GeoapifyContext, GeoapifyGeocoderAutocomplete } from '@geoapify/react-geocoder-autocomplete';
 import '@geoapify/geocoder-autocomplete/styles/minimal.css';
-import { useSignUpForm } from "../../../hooks/useSignUpForm"; // Adjusted path
+import { useSignUpForm } from "@/hooks/useSignUpForm"; // Adjusted path
 
 export default function SignUpForm() {
   // const router = useRouter(); // Removed, router is in the hook

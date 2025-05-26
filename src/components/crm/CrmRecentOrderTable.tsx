@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { TrashBinIcon } from "../../icons";
+import { TrashBinIcon } from "@/icons";
 import AvatarText from "../ui/avatar/AvatarText";
 import Checkbox from "../form/input/Checkbox";
 import Badge from "../ui/badge/Badge";

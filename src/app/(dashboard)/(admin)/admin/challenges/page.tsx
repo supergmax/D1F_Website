@@ -8,8 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useAdminChallengesPage } from '../../../../hooks/useAdminChallengesPage'; // Adjusted path
-import { ChallengeStatus } from '../../../../services/adminService'; // Adjusted path
+import { useAdminChallengesPage } from '@/hooks/useAdminChallengesPage'; // Adjusted path
+import { ChallengeStatus } from '@/services/adminService'; // Adjusted path
 
 // Removed local type definitions for ChallengeStatus, Challenge, Profile
 

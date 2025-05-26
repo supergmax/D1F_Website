@@ -7,7 +7,7 @@ import ChurnRateChart4 from '@/components/dashboard/ChurnRate4';
 import ProductPerformanceTab from '@/components/dashboard/ProductPerformanceTab';
 import SaasInvoiceTable from '@/components/dashboard/SaasInvoiceTable';
 import SaasMetrics from '@/components/dashboard/SaasMetrics';
-import { useUserDashboard } from '../../../hooks/useUserDashboard';
+import { useUserDashboard } from '@/hooks/useUserDashboard';
 
 export default function UserDashboard() {
   const { metrics, transactions, loading } = useUserDashboard();

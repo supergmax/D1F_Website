@@ -13,7 +13,7 @@ import {
   AngleUpIcon,
   PencilIcon,
   TrashBinIcon,
-} from "../../../../icons";
+} from "@/icons";
 import PaginationWithButton from "./PaginationWithButton";
 
 const tableRowData = [

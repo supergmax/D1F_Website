@@ -12,7 +12,7 @@ import {
   AngleUpIcon,
   PencilIcon,
   TrashBinIcon,
-} from "../../../../icons";
+} from "@/icons";
 import Checkbox from "../../../form/input/Checkbox";
 import Badge from "../../../ui/badge/Badge";
 import Pagination from "./Pagination";

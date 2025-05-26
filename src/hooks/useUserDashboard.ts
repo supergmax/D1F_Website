@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import {
   getUserProfile,
   getUserChallenges,
@@ -10,7 +10,7 @@ import {
   UserProfile,
   UserChallenge,
   UserInvoice,
-} from '../services/userService';
+} from '@/services/userService';
 
 interface Metrics {
   totalRevenue: number;

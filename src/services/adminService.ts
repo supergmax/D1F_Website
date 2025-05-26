@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabaseClient'; // Adjusted path assuming services is one level down from src
+import { supabase } from '@/lib/supabaseClient'; // Adjusted path assuming services is one level down from src
 
 // Define ChallengeStatus type
 // Based on typical statuses seen in the project, can be expanded

@@ -8,7 +8,7 @@ import {
   getAllInvoices,
   getAllProfilesLite,
   updateInvoiceStatus as updateInvoiceStatusService, // Renamed to avoid conflict
-} from '../services/adminService'; // Adjusted path
+} from '@/services/adminService'; // Adjusted path
 
 // Define CombinedInvoice type
 export interface CombinedInvoice extends AdminInvoice {

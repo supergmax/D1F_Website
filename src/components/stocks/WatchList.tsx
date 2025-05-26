@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { ArrowDownIcon, ArrowUpIcon } from "../../icons";
+import { ArrowDownIcon, ArrowUpIcon } from "@/icons";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { MoreDotIcon } from "@/icons";
