@@ -48,7 +48,7 @@ export default function UserDashboard() {
       const user = sessionData?.session?.user;
 
       if (!user) {
-        router.push('/signin');
+        router.push('/auth/signin');
         return;
       }
 

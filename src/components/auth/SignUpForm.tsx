@@ -262,7 +262,7 @@ export default function SignUpForm() {
           <div className="mt-5 text-center">
             <p className="text-sm text-gray-700 dark:text-gray-400">
               Already have an account ?{" "}
-              <Link href="/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign In</Link>
+              <Link href="/auth/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign In</Link>
             </p>
           </div>
           <CGUModal isRequested={showCGUModal} onClose={() => setShowCGUModal(false)} />

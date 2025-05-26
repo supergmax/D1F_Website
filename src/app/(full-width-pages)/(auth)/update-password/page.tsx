@@ -34,7 +34,7 @@ export default function UpdatePasswordPage() {
       setError(error.message)
     } else {
       setSuccess('Mot de passe mis à jour avec succès. Redirection en cours...')
-      setTimeout(() => router.push('/signin'), 2500)
+      setTimeout(() => router.push('/auth/signin'), 2500)
     }
   }
 

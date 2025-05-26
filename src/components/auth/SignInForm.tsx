@@ -106,7 +106,7 @@ export default function SignInForm() {
 
             <div className="flex items-center justify-between">
               <Link
-                href="/reset-password"
+                href="/auth/reset-password"
                 className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
               >
                 Mot de passe oublié ?
@@ -127,7 +127,7 @@ export default function SignInForm() {
               <p className="text-sm text-gray-700 dark:text-gray-400">
                 Pas encore inscrit ?{" "}
                 <Link
-                  href="/signup"
+                  href="/auth/signup"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
                 >
                   Créer un compte

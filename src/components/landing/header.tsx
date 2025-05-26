@@ -97,12 +97,12 @@ export default function Header() {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/signin">
+            <Link href="/auth/signin">
               <Button variant="outline" className="border-[#4E463F] text-[#4E463F] hover:bg-[#4E463F] hover:text-white">
                 Login
               </Button>
             </Link>
-            <Link href="/signup">
+            <Link href="/auth/signup">
               <Button className="bg-[#4E463F] text-white hover:bg-[#CABA9F]">
                 Register
               </Button>
@@ -164,14 +164,14 @@ export default function Header() {
                 Contact
               </Link>
               <div className="flex flex-col space-y-2 pt-2 border-t">
-                <Link href="/signin">
+                <Link href="/auth/signin">
                 <Button
                   variant="outline"
                   className="border-[#4E463F] text-[#4E463F] hover:bg-[#4E463F] hover:text-white w-full"
                 >
                   Login
                 </Button></Link>
-                <Link href="/signup">
+                <Link href="/auth/signup">
                 <Button className="bg-[#4E463F] text-white hover:bg-[#CABA9F] w-full">Register</Button>
                 </Link>
               </div>
