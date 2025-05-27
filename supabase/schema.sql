@@ -175,7 +175,7 @@ CREATE TABLE public.challenges (
   rebilled BOOLEAN DEFAULT FALSE NOT NULL,
   start_date DATE,
   end_date DATE,
-  initial_balance INTEGER DEFAULT 0 ,
+  initial_balance INTEGER DEFAULT 3000 ,
   profit INTEGER DEFAULT 0,
   note TEXT,
   label label_enum DEFAULT 'none',
