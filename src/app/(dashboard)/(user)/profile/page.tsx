@@ -3,11 +3,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
-import UserAddressCard from '@/components/profile/UserAddressCard';
 import UserInfoCard from '@/components/profile/UserInfoCard';
 import UserMetaCard from '@/components/profile/UserMetaCard';
 import SaasMetrics from '@/components/profile/SaasMetrics';
-import BrokerInfoCard from '@/components/profile/BrokerInfoCard';
 import ChangePasswordModal from '@/components/profile/ChangePasswordModal';
 import Button from '@/components/ui/button/Button';
 
@@ -16,23 +14,8 @@ interface UserProfile {
   id: string;
   first_name: string;
   last_name: string;
-  email: string;
-  bio: string | null;
-  avatar_url: string | null;
-  facebook_url: string | null;
-  x_url: string | null;
-  linkedin_url: string | null;
-  instagram_url: string | null;
-  
-  address: string | null;
-  created_at: string;
   token_balance: number;
-
-  country: string | null;
-  affiliate_id: string;
-  godfather_id: string | null;
-  broker_id: string;
-  broker_pwd: string;
+  dollar_balance: number;
 }
 
 export default function Profile() {
@@ -60,7 +43,7 @@ export default function Profile() {
 
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, first_name, last_name, role, token_balance, dollar_balance')
         .eq('id', userId)
         .single();
 
@@ -117,6 +100,7 @@ export default function Profile() {
           activeChallenges={activeChallenges}
           averageProfit={averageProfit}
           tokenBalance={profile.token_balance}
+          dollarBalance={profile.dollar_balance}
         />
       </div>
 
@@ -131,20 +115,13 @@ export default function Profile() {
             id={profile.id}
             first_name={profile.first_name}
             last_name={profile.last_name}
-            bio={profile.bio ?? ''}
-            facebook_url={profile.facebook_url ?? ''}
-            x_url={profile.x_url ?? ''}
-            linkedin_url={profile.linkedin_url ?? ''}
-            instagram_url={profile.instagram_url ?? ''}
+            bio=""
+            facebook_url=""
+            x_url=""
+            linkedin_url=""
+            instagram_url=""
           />
-          <BrokerInfoCard broker_id={profile.broker_id} broker_pwd={profile.broker_pwd} />
-          <UserInfoCard
-            id={profile.id}
-            first_name={profile.first_name}
-            last_name={profile.last_name}
-            bio={profile.bio ?? ''}
-          />
-          <UserAddressCard id={profile.id} country={profile.country ?? ''} />
+          <UserInfoCard id={profile.id} />
         </div>
         <Button
           onClick={() => setPasswordModalRequested(true)}
