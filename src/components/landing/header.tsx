@@ -86,7 +86,7 @@ export default function Header() {
         isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
       } ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}`}
     >
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="container mx-auto px-4 md:px-6 relative">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
