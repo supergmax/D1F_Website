@@ -8,6 +8,7 @@ import UserMetaCard from '@/components/profile/UserMetaCard';
 import SaasMetrics from '@/components/profile/SaasMetrics';
 import ChangePasswordModal from '@/components/profile/ChangePasswordModal';
 import Button from '@/components/ui/button/Button';
+import BrokerInfoCard from '@/components/profile/BrokerInfoCard';
 
 interface UserProfile {
   role: string;
@@ -16,6 +17,8 @@ interface UserProfile {
   last_name: string;
   token_balance: number;
   dollar_balance: number;
+  broker_id: string;
+  broker_pwd: string;
 }
 
 export default function Profile() {
@@ -43,7 +46,7 @@ export default function Profile() {
 
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name, role, token_balance, dollar_balance')
+        .select('id, first_name, last_name, role, token_balance, dollar_balance, broker_id, broker_pwd')
         .eq('id', userId)
         .single();
 
@@ -121,6 +124,7 @@ export default function Profile() {
             linkedin_url=""
             instagram_url=""
           />
+          <BrokerInfoCard broker_id={profile.broker_id} broker_pwd={profile.broker_pwd} />
           <UserInfoCard id={profile.id} />
         </div>
         <Button
