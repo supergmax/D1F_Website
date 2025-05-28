@@ -9,6 +9,7 @@ const adminNav = [
   { name: "Admin Dashboard", icon: <GridIcon />, path: "/admin" },
   { name: "User Dashboard", icon: <GridIcon />, path: "/dashboard" },
   { name: "Users List", icon: <GridIcon />, path: "/admin/users" },
+  { name: "Gestion Invoices", icon: <ListIcon />, path: "/admin/result" },
   { name: "Gestion Invoices", icon: <ListIcon />, path: "/admin/invoices" },
   { name: "Gestion Payouts", icon: <ListIcon />, path: "/admin/payouts" },
   { name: "Gestion Purchases", icon: <ListIcon />, path: "/admin/purchases" },
