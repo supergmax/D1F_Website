@@ -7,14 +7,13 @@ import { GridIcon, ListIcon, UserCircleIcon } from "@/icons";
 
 const adminNav = [
   { name: "Admin Dashboard", icon: <GridIcon />, path: "/admin" },
-  { name: "User Dashboard", icon: <GridIcon />, path: "/dashboard" },
+  { name: "Mon Profil", icon: <UserCircleIcon />, path: "/profile" },
   { name: "Users List", icon: <GridIcon />, path: "/admin/users" },
   { name: "Gestion result", icon: <ListIcon />, path: "/admin/result" },
   { name: "Gestion Invoices", icon: <ListIcon />, path: "/admin/invoices" },
   { name: "Gestion Payouts", icon: <ListIcon />, path: "/admin/payouts" },
   { name: "Gestion Purchases", icon: <ListIcon />, path: "/admin/purchases" },
   { name: "Gestion Challenges", icon: <ListIcon />, path: "/admin/challenges" },
-  { name: "Mon Profil", icon: <UserCircleIcon />, path: "/profile" },
 ];
 
 export default function Sidebar() {
