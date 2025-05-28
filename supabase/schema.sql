@@ -1,5 +1,5 @@
 -- =====================================================
--- schema.SQL (v25)
+-- schema.SQL (v27)
 -- Base de données D1F - DayOneFunded
 -- Description : Tables, ENUMs, Champs, Contraintes, Commentaires
 -- =====================================================
@@ -172,7 +172,6 @@ CREATE TABLE public.challenges (
   name TEXT NOT NULL,
   challenge_num INTEGER NOT NULL,
   status challenge_status_enum DEFAULT 'requested',
-  rebilled BOOLEAN DEFAULT FALSE NOT NULL,
   start_date DATE,
   end_date DATE,
   initial_balance INTEGER DEFAULT 3000 ,
@@ -192,7 +191,6 @@ COMMENT ON COLUMN public.challenges.purchase_id IS 'Référence à l’achat (pu
 COMMENT ON COLUMN public.challenges.name IS 'Nom du challenge (ex: Alpha, Bêta).';
 COMMENT ON COLUMN public.challenges.challenge_num IS 'Numéro d’ordre du challenge pour un utilisateur (1er, 2e…).';
 COMMENT ON COLUMN public.challenges.status IS 'Statut actuel du challenge (pending, active, failed, etc.).';
-COMMENT ON COLUMN public.challenges.rebilled IS 'Challenge re facturé ou pas (true = re-facturé).';
 COMMENT ON COLUMN public.challenges.start_date IS 'Date de début officielle du challenge.';
 COMMENT ON COLUMN public.challenges.end_date IS 'Date de fin du challenge (le cas échéant).';
 COMMENT ON COLUMN public.challenges.initial_balance IS 'Capital initial attribué au challenge.';
@@ -268,7 +266,6 @@ CREATE TABLE public.purchases (
   token_debit INTEGER DEFAULT 0 NOT NULL CHECK (token_debit >= 0),   
   dollar_debit INTEGER DEFAULT 0 NOT NULL CHECK (dollar_debit >= 0), 
   amount INTEGER NOT NULL CHECK (amount >= 0),
-  refunded BOOLEAN DEFAULT FALSE NOT NULL,                           
   status purchase_status_enum DEFAULT 'requested',
   note TEXT,
   label label_enum DEFAULT 'none',
@@ -284,7 +281,6 @@ COMMENT ON COLUMN public.purchases.product_id IS 'Produit acheté par l’utilis
 COMMENT ON COLUMN public.purchases.quantity IS 'Quantité de produit achetée.';
 COMMENT ON COLUMN public.purchases.token_debit IS 'Montant exact débité du solde de tokens (token_balance).';
 COMMENT ON COLUMN public.purchases.dollar_debit IS 'Montant exact débité du solde en dollars (dollar_balance).';
-COMMENT ON COLUMN public.purchases.refunded IS 'Indique si cette purchase a déjà été remboursée (true = remboursé).';
 COMMENT ON COLUMN public.purchases.amount IS 'Coût total pour cette ligne d’achat.';
 COMMENT ON COLUMN public.purchases.status IS 'Statut actuel de l’achat de produit (en attente, payée, etc.).';
 COMMENT ON COLUMN public.purchases.note IS 'Note administrative ou commentaire interne.';
@@ -299,8 +295,9 @@ CREATE TABLE public.invoices (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   profile_id UUID NOT NULL,
   amount INTEGER NOT NULL CHECK (amount >= 0),
-  refunded BOOLEAN DEFAULT FALSE NOT NULL,                           
   status invoice_status_enum DEFAULT 'pending',
+  requested_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  processed_at TIMESTAMP,
   note TEXT,
   label label_enum DEFAULT 'none',
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
@@ -312,8 +309,9 @@ COMMENT ON TABLE public.invoices IS 'Factures liées aux achats Stripe (tokens, 
 COMMENT ON COLUMN public.invoices.id IS 'Identifiant unique de la facture.';
 COMMENT ON COLUMN public.invoices.profile_id IS 'Utilisateur concerné par la facture.';
 COMMENT ON COLUMN public.invoices.amount IS 'Montant total de la facture.';
-COMMENT ON COLUMN public.invoices.refunded IS 'Indique si cet invoice a déjà été remboursée (true = remboursé).';
 COMMENT ON COLUMN public.invoices.status IS 'Statut actuel de la facture (en attente, payée, etc.).';
+COMMENT ON COLUMN public.invoices.requested_at IS 'Date de soumission de la demande.';
+COMMENT ON COLUMN public.invoices.processed_at IS 'Date à laquelle la demande a été traitée.';
 COMMENT ON COLUMN public.invoices.note IS 'Note administrative associée à cette facture.';
 COMMENT ON COLUMN public.invoices.label IS 'Étiquette informative ou de suivi.';
 COMMENT ON COLUMN public.invoices.created_at IS 'Date de création de la facture.';
@@ -326,7 +324,6 @@ CREATE TABLE public.payouts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   profile_id UUID NOT NULL,
   amount INTEGER NOT NULL CHECK (amount > 0),
-  refunded BOOLEAN DEFAULT FALSE NOT NULL,                           
   status payout_status_enum DEFAULT 'requested',
   requested_at TIMESTAMP DEFAULT NOW() NOT NULL,
   processed_at TIMESTAMP,
@@ -341,7 +338,6 @@ COMMENT ON TABLE public.payouts IS 'Demandes de retrait de tokens faites par les
 COMMENT ON COLUMN public.payouts.id IS 'Identifiant unique de la demande de retrait.';
 COMMENT ON COLUMN public.payouts.profile_id IS 'Utilisateur ayant demandé le retrait.';
 COMMENT ON COLUMN public.payouts.amount IS 'Montant demandé pour le retrait.';
-COMMENT ON COLUMN public.payouts.refunded IS 'Indique si ce payout a déjà été remboursée (true = remboursé).';
 COMMENT ON COLUMN public.payouts.status IS 'Statut de la demande (en attente, validée, refusée, etc.).';
 COMMENT ON COLUMN public.payouts.requested_at IS 'Date de soumission de la demande.';
 COMMENT ON COLUMN public.payouts.processed_at IS 'Date à laquelle la demande a été traitée.';
@@ -358,7 +354,6 @@ CREATE TABLE public.transactions (
   profile_id UUID NOT NULL,
   type transaction_type_enum NOT NULL,
   ref_id UUID NOT NULL,
-  refunded BOOLEAN DEFAULT FALSE NOT NULL,                           
   status transaction_status_enum DEFAULT 'requested',
   note TEXT,
   label label_enum DEFAULT 'none',
@@ -372,7 +367,6 @@ COMMENT ON COLUMN public.transactions.id IS 'Identifiant unique de la transactio
 COMMENT ON COLUMN public.transactions.profile_id IS 'Utilisateur concerné par la transaction.';
 COMMENT ON COLUMN public.transactions.type IS 'Type de la transaction (achat, retrait, facture).';
 COMMENT ON COLUMN public.transactions.ref_id IS 'Référence à l’élément lié (ex: invoice_id, payout_id).';
-COMMENT ON COLUMN public.transactions.refunded IS 'Indique si cette transaction a déjà été remboursée (true = remboursé).';
 COMMENT ON COLUMN public.transactions.status IS 'Statut actuel de la transaction.';
 COMMENT ON COLUMN public.transactions.note IS 'Note interne ou commentaire.';
 COMMENT ON COLUMN public.transactions.label IS 'Étiquette de priorité ou suivi.';
